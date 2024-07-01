@@ -34,16 +34,13 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const [selectedCategory, setSelectedCategory] = useState(categories[0]);
 	const [tableStatus, setTableStatus] = useState("free");
 	const [currentTableName, setCurrentTableName] = useState(tableName);
-	const [paymentComplete, setPaymentComplete] = useState(false);
 	const [totalPrice, setTotalPrice] = useState(0);
 	const [adjustments, setAdjustments] = useState({
 		service: 0,
-		discount: 0, // Nowy stan dla zniżki
+		discount: 0,
 		addToBill: 0,
 		subtractFromBill: 0,
 	});
-
-	const [serviceApplied, setServiceApplied] = useState(false);
 
 	const modalRef = useRef(null);
 	const overlayRef = useRef(null);
@@ -68,22 +65,15 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			totalAmount += itemPrice * item.quantity;
 		});
 
-		// Obliczanie sumy z uwzględnieniem zniżki
 		const discountAmount = (adjustments.discount / 100) * totalAmount;
-		totalAmount -= discountAmount;
 
-		return { totalItems, totalAmount };
+		return { totalItems, totalAmount, discountAmount };
 	};
 
 	useEffect(() => {
 		const storedSelectedItems = getSelectedItems(tableName);
 		setSelectedItems(storedSelectedItems);
-		if (storedSelectedItems.length > 0) {
-			setTableStatus("occupied");
-		} else {
-			setTableStatus("free");
-		}
-		setPaymentComplete(false);
+		setTableStatus(storedSelectedItems.length > 0 ? "occupied" : "free");
 	}, [tableName]);
 
 	useEffect(() => {
@@ -95,7 +85,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 				overlayRef.current.contains(e.target)
 			) {
 				setShowMenuItemsModal(false);
-				setShowProcentModal(false); // Dodane zamknięcie Procent modal
+				setShowProcentModal(false);
 			}
 			if (searchBarRef.current && !searchBarRef.current.contains(e.target)) {
 				setSearchResults([]);
@@ -243,9 +233,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							item.extras && item.extras.length > 0
 								? Math.max(
 										item.price,
-										item.extras.reduce(
-											(max, extra) => Math.max(max, extra.price),
-											0
+										item.extras.reduce((max, extra) =>
+											Math.max(max, extra.price)
 										)
 								  )
 								: item.price,
@@ -278,13 +267,23 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	};
 
 	const handlePaymentComplete = () => {
+		// Update local storage to include the table name in the served wynos tables list
+		let servedWynosTables =
+			JSON.parse(localStorage.getItem("servedWynosTables")) || [];
+		if (!servedWynosTables.includes(tableName)) {
+			servedWynosTables.push(tableName);
+			localStorage.setItem(
+				"servedWynosTables",
+				JSON.stringify(servedWynosTables)
+			);
+		}
+
 		clearSelectedItems(tableName);
 		setSelectedItems([]);
 		setShowPaymentModal(false);
 		setTableStatus("free");
 		setCurrentTableName(tableName);
 		resetTable();
-		onClose();
 		onClose(totalPrice, adjustments);
 	};
 
@@ -309,7 +308,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		}
 	};
 
-	const { totalItems, totalAmount } = calculateTotalItemsAndAmount();
+	const { totalItems, totalAmount, discountAmount } =
+		calculateTotalItemsAndAmount();
 	const serviceCharge = (adjustments.service / 100) * totalAmount;
 	const calculateAdjustedTotal = () => {
 		let adjustedTotal = totalAmount;
@@ -319,8 +319,10 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			adjustedTotal += (adjustments.service / 100) * totalAmount;
 		}
 
+		// Apply discount if applicable
 		if (adjustments.discount > 0) {
-			adjustedTotal -= (adjustments.discount / 100) * totalAmount;
+			const discountAmount = (adjustments.discount / 100) * totalAmount;
+			adjustedTotal -= discountAmount;
 		}
 
 		// Apply add to bill adjustment if applicable
@@ -333,7 +335,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			adjustedTotal -= adjustments.subtractFromBill;
 		}
 
-		return adjustedTotal.toFixed(2);
+		return adjustedTotal;
 	};
 
 	return (
@@ -351,8 +353,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							{category}
 						</button>
 					))}
-					<button onClick={handleOpenProcentModal}>%</button>{" "}
-					{/* Przycisk otwierający Procent modal */}
+					<button onClick={handleOpenProcentModal}>%</button> {}
 				</div>
 				<div className="search-bar" ref={searchBarRef}>
 					<input
@@ -446,9 +447,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					</ul>
 
 					<p>Liczba pozycji: {totalItems}</p>
-					<p>Suma: {calculateAdjustedTotal()} zł</p>
+					<p>Suma: {calculateAdjustedTotal().toFixed(2)} zł</p>
 
-					{/* Wyświetlanie informacji o zastosowanych modyfikacjach */}
+					{}
 					{adjustments.service > 0 && (
 						<p style={{ color: "red" }}>
 							Zastosowano {adjustments.service}% serwisu (+{" "}
@@ -458,9 +459,11 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					{adjustments.discount > 0 && (
 						<p style={{ color: "blue" }}>
 							Zastosowano {adjustments.discount.toFixed(2)} % zniżki (-{" "}
-							{((adjustments.discount / 100) * totalAmount).toFixed(2)} zł)
+							{discountAmount.toFixed(2)} zł), do zapłaty:{" "}
+							{(totalAmount - discountAmount).toFixed(2)} zł
 						</p>
 					)}
+
 					{adjustments.addToBill > 0 && (
 						<p style={{ color: "green" }}>
 							Dodano {adjustments.addToBill.toFixed(2)} zł do rachunku (+{" "}
