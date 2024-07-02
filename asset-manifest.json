@@ -1,19 +1,19 @@
 {
   "files": {
     "main.css": "/romahalaichuk.github.io/possg.git/static/css/main.8113e014.css",
-    "main.js": "/romahalaichuk.github.io/possg.git/static/js/main.2fd80df6.js",
+    "main.js": "/romahalaichuk.github.io/possg.git/static/js/main.da0c26d5.js",
     "static/js/239.74e8be68.chunk.js": "/romahalaichuk.github.io/possg.git/static/js/239.74e8be68.chunk.js",
     "static/js/213.bc818403.chunk.js": "/romahalaichuk.github.io/possg.git/static/js/213.bc818403.chunk.js",
     "static/js/732.2777ace6.chunk.js": "/romahalaichuk.github.io/possg.git/static/js/732.2777ace6.chunk.js",
     "index.html": "/romahalaichuk.github.io/possg.git/index.html",
     "main.8113e014.css.map": "/romahalaichuk.github.io/possg.git/static/css/main.8113e014.css.map",
-    "main.2fd80df6.js.map": "/romahalaichuk.github.io/possg.git/static/js/main.2fd80df6.js.map",
+    "main.da0c26d5.js.map": "/romahalaichuk.github.io/possg.git/static/js/main.da0c26d5.js.map",
     "239.74e8be68.chunk.js.map": "/romahalaichuk.github.io/possg.git/static/js/239.74e8be68.chunk.js.map",
     "213.bc818403.chunk.js.map": "/romahalaichuk.github.io/possg.git/static/js/213.bc818403.chunk.js.map",
     "732.2777ace6.chunk.js.map": "/romahalaichuk.github.io/possg.git/static/js/732.2777ace6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.8113e014.css",
-    "static/js/main.2fd80df6.js"
+    "static/js/main.da0c26d5.js"
   ]
 }
