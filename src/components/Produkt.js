@@ -372,10 +372,22 @@ export const products = [
 	{ id: 165, name: "Deska Antipasti:", price: 79.9, category: "Przystawki" },
 	{ id: 160, name: "TALERZ KEBAB", price: 41.9, category: "Przystawki" },
 	//Przystawki...........................................................................
-	{ id: 161, name: "Sos czosnkowy:", category: "Przystawki" },
-	{ id: 162, name: "Sos Pomidorowy:", category: "Przystawki" },
+	{ id: 161, name: "Sos czosnkowy:", price: 0, category: "Przystawki" },
+	{ id: 162, name: "Sos Pomidorowy:", price: 0, category: "Przystawki" },
+	{
+		id: 227,
+		name: "Sos Meksykanski (ostry):",
+		price: 0,
+		category: "Przystawki",
+	},
 	{ id: 163, name: "Sos czosnkowy:", price: 3.9, category: "Przystawki" },
 	{ id: 164, name: "Sos Pomidorowy:", price: 3.9, category: "Przystawki" },
+	{
+		id: 228,
+		name: "Sos Meksykanski (ostry):",
+		price: 3.9,
+		category: "Przystawki",
+	},
 	//Sosy...............................................................................
 	{ id: 170, name: "Caldzone Capri:", price: 42.9, category: "Pizza" },
 	{ id: 171, name: "Caldzone Spinachi:", price: 45.9, category: "Pizza" },
@@ -564,7 +576,7 @@ export const products = [
 		category: "Wina",
 	},
 ];
-
+// id 228 start
 // { id: 4, name: "Sałatka Letnia", price: 18, category: "Menu sezonowe" },
 
 // { id: 7, name: "Chianti Classico", price: 80, category: "Wina" },
