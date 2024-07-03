@@ -122,6 +122,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const handleSearchChange = (e) => {
 		const term = e.target.value.trim().toLowerCase();
 		setSearchTerm(e.target.value);
+
 		if (term === "") {
 			setSearchResults([]);
 		} else {
@@ -165,13 +166,12 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			);
 		}
 
-		calculateTotalPrice(); // Wywołaj calculateTotalPrice bez przekazywania updatedItems
+		calculateTotalPrice();
 		setSearchResults([]);
-		setSearchTerm("");
 	};
 
-	const handleItemSelectWithComment = (item, comment) => {
-		const updatedItem = { ...item, comment };
+	const handleItemSelectWithComment = (item) => {
+		const updatedItem = { ...item, comment: "" }; // Clear the comment here
 		handleItemSelect(updatedItem);
 	};
 
@@ -261,13 +261,13 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	};
 
 	const handlePaymentComplete = () => {
-		// Update local storage to include the table name in the served wynos tables list
 		let servedWynosTables =
 			JSON.parse(localStorage.getItem("servedWynosTables")) || [];
 		if (!servedWynosTables.includes(tableName)) {
 			servedWynosTables.push(tableName);
 			localStorage.setItem(
 				"servedWynosTables",
+
 				JSON.stringify(servedWynosTables)
 			);
 		}
@@ -305,6 +305,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const { totalItems, totalAmount, discountAmount } =
 		calculateTotalItemsAndAmount();
 	const serviceCharge = (adjustments.service / 100) * totalAmount;
+
 	const calculateAdjustedTotal = () => {
 		let adjustedTotal = totalAmount;
 
@@ -343,7 +344,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							{category}
 						</button>
 					))}
-					<button onClick={handleOpenProcentModal}>%</button> {}
+					<button onClick={handleOpenProcentModal}>%</button>
 				</div>
 				<div className="search-bar" ref={searchBarRef}>
 					<input
@@ -359,7 +360,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								<div
 									key={item.id}
 									className="search-suggestion"
-									onClick={() => handleItemSelectWithComment(item, searchTerm)}>
+									onClick={() => handleItemSelectWithComment(item)}>
 									{item.name} - {item.price} zł
 								</div>
 							))}
@@ -430,7 +431,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					<p>Liczba pozycji: {totalItems}</p>
 					<p>Suma: {calculateAdjustedTotal().toFixed(2)} zł</p>
 
-					{}
 					{adjustments.service > 0 && (
 						<p style={{ color: "red" }}>
 							Zastosowano {adjustments.service}% serwisu (+{" "}
