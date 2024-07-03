@@ -165,7 +165,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			);
 		}
 
-		calculateTotalPrice();
+		calculateTotalPrice(); // Wywołaj calculateTotalPrice bez przekazywania updatedItems
 		setSearchResults([]);
 		setSearchTerm("");
 	};
@@ -214,35 +214,44 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 				? {
 						...item,
 						extras: item.extras.filter((extra) => extra.id !== extraId),
-						price:
-							item.extras && item.extras.length > 0
-								? Math.max(
-										item.price,
-										item.extras.reduce((max, extra) =>
-											Math.max(max, extra.price)
-										)
-								  )
-								: item.price,
+						price: calculateBasePrice(item, extraId),
 				  }
 				: item
 		);
 		setSelectedItems(updatedItems);
 		updateSelectedItems(tableName, updatedItems);
+		calculateTotalPrice();
+	};
+
+	const calculateBasePrice = (item, extraIdToRemove) => {
+		let basePrice = item.price || 0;
+
+		if (item.extras && item.extras.length > 0) {
+			basePrice = item.extras.reduce((acc, extra) => {
+				if (extra.id !== extraIdToRemove && extra.category === "Dod") {
+					return acc + extra.price;
+				}
+				return acc;
+			}, basePrice);
+		}
+
+		return basePrice;
 	};
 
 	const calculateTotalPrice = () => {
 		let totalPrice = 0;
 		selectedItems.forEach((item) => {
-			totalPrice +=
-				(item.price +
-					(item.extras
-						? item.extras.reduce(
-								(sum, extra) =>
-									extra.category === "Dod" ? sum + extra.price : sum,
-								0
-						  )
-						: 0)) *
-				item.quantity;
+			let itemPrice = item.price || 0;
+
+			if (item.extras && item.extras.length > 0) {
+				item.extras.forEach((extra) => {
+					if (extra.category === "Dod") {
+						itemPrice += extra.price;
+					}
+				});
+			}
+
+			totalPrice += itemPrice * item.quantity;
 		});
 		setTotalPrice(totalPrice);
 	};
@@ -299,23 +308,19 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const calculateAdjustedTotal = () => {
 		let adjustedTotal = totalAmount;
 
-		// Apply service charge if applicable
 		if (adjustments.service > 0) {
 			adjustedTotal += (adjustments.service / 100) * totalAmount;
 		}
 
-		// Apply discount if applicable
 		if (adjustments.discount > 0) {
 			const discountAmount = (adjustments.discount / 100) * totalAmount;
 			adjustedTotal -= discountAmount;
 		}
 
-		// Apply add to bill adjustment if applicable
 		if (adjustments.addToBill > 0) {
 			adjustedTotal += adjustments.addToBill;
 		}
 
-		// Apply subtract from bill adjustment if applicable
 		if (adjustments.subtractFromBill > 0) {
 			adjustedTotal -= adjustments.subtractFromBill;
 		}
