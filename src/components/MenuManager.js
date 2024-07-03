@@ -193,21 +193,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		updateSelectedItems(tableName, updatedItems);
 	};
 
-	const handleCommentAdd = (comment) => {
-		const commentId = `comment_${new Date().getTime()}`;
-		const commentItem = {
-			id: commentId,
-			name: `Komentarz: ${comment}`,
-			price: 0,
-			quantity: 1,
-			comment: comment,
-		};
-
-		const updatedItems = [...selectedItems, commentItem];
-		setSelectedItems(updatedItems);
-		updateSelectedItems(tableName, updatedItems);
-	};
-
 	const handleAddExtra = (itemId, extra) => {
 		const updatedItems = selectedItems.map((item) =>
 			item.id === itemId
@@ -373,15 +358,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 									{item.name} - {item.price} zł
 								</div>
 							))}
-							<div
-								className="search-suggestion"
-								onClick={() => {
-									handleCommentAdd(searchTerm);
-									setSearchResults([]);
-									setSearchTerm("");
-								}}>
-								Dodaj jako komentarz: "{searchTerm}"
-							</div>
 						</div>
 					)}
 				</div>
