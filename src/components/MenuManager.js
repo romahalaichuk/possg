@@ -168,6 +168,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 
 		calculateTotalPrice();
 		setSearchResults([]);
+		setShowMenuItemsModal(false);
 	};
 
 	const handleItemSelectWithComment = (item) => {
@@ -267,7 +268,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			servedWynosTables.push(tableName);
 			localStorage.setItem(
 				"servedWynosTables",
-
 				JSON.stringify(servedWynosTables)
 			);
 		}
@@ -377,14 +377,12 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								<h3>Menu - {selectedCategory}</h3>
 								<ul>
 									{menuItems.map((item) => (
-										<li key={item.id}>
+										<li key={item.id} onClick={() => handleItemSelect(item)}>
 											{item.name} - {item.price} zł
-											<button onClick={() => handleItemSelect(item)}>
-												Dodaj
-											</button>
 										</li>
 									))}
 								</ul>
+
 								<div className="modal-buttons">
 									<button onClick={() => setShowMenuItemsModal(false)}>
 										Zamknij
@@ -398,7 +396,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					<ul>
 						{selectedItems.map((item, index) => (
 							<li key={`${item.id}-${index}`}>
-								{item.name} - {item.price ? item.price : 0} zł x {item.quantity}{" "}
+								{item.name} - {item.price ? item.price : 0} zł x {item.quantity}
 								={" "}
 								{(
 									(item.price +
@@ -417,6 +415,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 									selectedItems={selectedItems}
 									handleAddExtra={handleAddExtra}
 									handleRemoveExtra={handleRemoveExtra}
+									onItemClick={handleItemSelect}
 								/>
 								<input
 									type="text"
