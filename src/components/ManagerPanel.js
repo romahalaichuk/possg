@@ -4,13 +4,12 @@ import { calculateTotalAmount } from "./ManagerPanelFunctions";
 import jsPDF from "jspdf";
 
 const ManagerPanel = ({ tables = [], wynosTables = [], onClose }) => {
-	// Retrieve the list of served tables and served wynos tables from local storage
 	const servedTables = JSON.parse(localStorage.getItem("servedTables")) || [];
 	const servedWynosTables =
 		JSON.parse(localStorage.getItem("servedWynosTables")) || [];
 
-	const totalTablesDuringDay = servedTables.length; // Number of served tables
-	const totalWynos = servedWynosTables.length; // Number of served wynos
+	const totalTablesDuringDay = servedTables.length;
+	const totalWynos = servedWynosTables.length;
 	const totalAmount = calculateTotalAmount(tables, wynosTables);
 
 	const handleExportToPDF = () => {
@@ -31,10 +30,8 @@ const ManagerPanel = ({ tables = [], wynosTables = [], onClose }) => {
 
 		doc.save(`panel_managera_${dateString}.pdf`);
 
-		// Clear localStorage
+		// Clear localStorage and refresh the page
 		localStorage.clear();
-
-		// Refresh the page
 		window.location.reload();
 	};
 
