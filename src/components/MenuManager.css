@@ -112,6 +112,12 @@
 	justify-content: space-between;
 	padding: 10px 0;
 	border-bottom: 1px solid #a2a1a1;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.menu-items li:hover {
+	background-color: #dedbdb;
 }
 
 .menu-items li:last-child {
