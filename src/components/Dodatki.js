@@ -18,7 +18,7 @@ const Dodatki = ({
 
 	const handleAddPizzaToItem = (pizza) => {
 		handleAddExtra(selectedItemId, pizza);
-		closePizzaModal();
+		closeModals();
 	};
 
 	const availableExtras = [
@@ -264,6 +264,11 @@ const Dodatki = ({
 	};
 
 	const closePizzaModal = () => {
+		setShowPizzaModal(false);
+	};
+
+	const closeModals = () => {
+		setShowModal(false);
 		setShowPizzaModal(false);
 	};
 

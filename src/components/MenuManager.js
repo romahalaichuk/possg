@@ -171,7 +171,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	};
 
 	const handleItemSelectWithComment = (item) => {
-		const updatedItem = { ...item, comment: "" }; // Clear the comment here
+		const updatedItem = { ...item, comment: "" };
 		handleItemSelect(updatedItem);
 	};
 
@@ -291,7 +291,10 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	};
 
 	const handleOverlayClick = (e) => {
-		if (e.target.classList.contains("extras-modal-overlay")) {
+		if (
+			e.target.classList.contains("extras-modal-overlay") ||
+			e.target.classList.contains("pizza-modal-overlay")
+		) {
 			setShowMenuItemsModal(false);
 		}
 	};
