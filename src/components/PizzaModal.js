@@ -73,6 +73,13 @@ const PizzaModal = ({ selectedSize, onClose, onAddPizza }) => {
 						</li>
 					))}
 				</ul>
+				{selectedPizza && (
+					<div className="selected-pizza">
+						<h3>Wybrana pizza:</h3>
+						<p>{selectedPizza.name}</p>
+						<p>{selectedPizza.price} zł</p>
+					</div>
+				)}
 				<button onClick={onClose}>Anuluj</button>
 			</div>
 		</div>
