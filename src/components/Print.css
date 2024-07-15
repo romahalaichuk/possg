@@ -9,20 +9,20 @@ body {
 	padding: 5px 0;
 }
 .product-item h2 {
-	font-size: 34pt; /* Przykładowy rozmiar, możesz dostosować do potrzeb */
-	margin-bottom: 28px; /* Opcjonalnie, aby zwiększyć odstęp między nagłówkiem a produktami */
+	font-size: 34pt;
+	margin-bottom: 28px;
 }
 .extras {
 	margin-left: 20px;
 }
 
 .end-space {
-	height: 2mm; /* Zmniejszono wysokość pustej przestrzeni na dole */
+	height: 2mm;
 }
 
 .dashed-line {
 	border-top: 1px dashed black;
-	margin-top: 2mm; /* Zmniejszono margines przed linią */
+	margin-top: 2mm;
 	width: 100%;
 }
 

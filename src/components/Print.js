@@ -1,8 +1,15 @@
 import React, { useRef } from "react";
 import "./Print.css";
 
-const Print = ({ selectedItems }) => {
+const Print = ({ selectedItems, tableName }) => {
 	const printContentRef = useRef(null);
+
+	const getCurrentDateTime = () => {
+		const now = new Date();
+		const date = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`;
+		const time = `${now.getHours()}:${now.getMinutes()}`;
+		return `${date} ${time}`;
+	};
 
 	const handlePrint = () => {
 		const content = printContentRef.current.innerHTML;
@@ -16,60 +23,70 @@ const Print = ({ selectedItems }) => {
 		const doc = iframe.contentWindow.document;
 		doc.open();
 		doc.write(`
-      <html>
-        <head>
-          <title>Drukowanie</title>
-          <style>
-            body {
-              font-size: 10pt;
-              padding: 2px;
-              padding-left: 0;
-              margin: 0;
-            }
-            .product-item {
-              border-bottom: 1px solid black;
-              padding: 5px 0;
-            }
-            .pizza-space{margin-bottom:100px;}
-            .extras {
-              margin-left: 20px;
-            }
-            .end-space {
-              height: 2mm; /* Zmniejszono wysokość pustej przestrzeni na dole */
-            }
-            .dashed-line {
-              border-top: 1px dashed black;
-              margin-top: 2mm; /* Zmniejszono margines przed linią */
-              width: 100%;
-            }
-            @media print {
-              .cut-line {
-                position: absolute;
-                top: 10px;
-                left: 1%;
-                width: 1px;
-                height: 100%;
-                background-color: black;
-                transform: translateX(-50%);
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="cut-line"></div>
-          ${content}
-          <div class="end-space"></div>
-          <div class="dashed-line"></div>
-        </body>
-      </html>
-    `);
+            <html>
+            <head>
+                <title>Drukowanie</title>
+                <style>
+                    body {
+                        font-size: 10pt;
+                        padding: 2px;
+                        padding-left: 5px;
+                        margin: 0;
+                    }
+                    .product-item {
+                        border-bottom: 1px solid black;
+                        padding: 5px 0;
+                    }
+                    .pizza-space {
+                        margin-bottom: 80px;
+                    }
+                    .extras {
+                        margin-left: 20px;
+                    }
+                    .end-space {
+                        height: 2mm;
+                    }
+                    .dashed-line {
+                        border-top: 1px dashed black;
+                        margin-top: 2mm;
+                        width: 100%;
+                    }
+                    .table-name {
+                        margin-top: 10px;
+                        font-weight: bold;
+                    }
+                    .print-time {
+                        margin-bottom: 10px;
+                        font-style: italic;
+                    }
+                    @media print {
+                        .cut-line {
+                            position: absolute;
+                            top: 10px;
+                            left: 1%;
+                            width: 1px;
+                            height: 100%;
+                            background-color: black;
+                            transform: translateX(-50%);
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="cut-line"></div>
+                ${content}
+                <div class="end-space"></div>
+                <div class="dashed-line"></div>
+            </body>
+            </html>
+        `);
 		doc.close();
 		iframe.contentWindow.focus();
 		iframe.contentWindow.print();
 
 		setTimeout(() => {
 			document.body.removeChild(iframe);
-		}, 1000); // Opóźnienie usunięcia iframe dla bezpieczeństwa
+		}, 1000);
 	};
 
 	const groupItemsByCategory = (items) => {
@@ -87,7 +104,7 @@ const Print = ({ selectedItems }) => {
 				case "caldzone":
 				case "focaccia":
 				case "włoskie pieczywo":
-					categories.PIZZA.push(item); // Możesz dostosować te kategorie
+					categories.PIZZA.push(item);
 					break;
 				case "makaron":
 				case "sałatki":
@@ -113,6 +130,7 @@ const Print = ({ selectedItems }) => {
 	const renderCategory = (category, items) => (
 		<div key={category}>
 			<h2>{category}</h2>
+
 			{category === "PIZZA" && <div className="pizza-space"></div>}
 			{items.map((item, index) => (
 				<div key={`${item.id}-${index}`} className="product-item">
@@ -129,7 +147,10 @@ const Print = ({ selectedItems }) => {
 					)}
 				</div>
 			))}
-			<div className="end-space"></div>
+
+			<div className="dashed-line"></div>
+			<div className="table-name">Stolik: {tableName}</div>
+			<div className="print-time">{getCurrentDateTime()}</div>
 			<div className="dashed-line"></div>
 		</div>
 	);
