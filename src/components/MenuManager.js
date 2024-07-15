@@ -4,6 +4,7 @@ import { products } from "./Produkt";
 import PaymentManager from "./PaymentManager";
 import Dodatki from "./Dodatki";
 import Procent from "./Procent";
+import Print from "./Print"; // Importujemy komponent Print
 import {
 	getSelectedItems,
 	addSelectedItem,
@@ -396,7 +397,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					<ul>
 						{selectedItems.map((item, index) => (
 							<li key={`${item.id}-${index}`}>
-								{item.name} - {item.price ? item.price : 0} zł x {item.quantity}
+								{item.name} - {item.price ? item.price : 0} zł x {item.quantity}{" "}
 								={" "}
 								{(
 									(item.price +
@@ -466,6 +467,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					{selectedItems.length > 0 && (
 						<button onClick={handleRozliczClick}>Rozlicz</button>
 					)}
+					<Print selectedItems={selectedItems} />
 				</div>
 				{showPaymentModal && (
 					<div className="payment-modal">

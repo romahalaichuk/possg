@@ -30,7 +30,6 @@ const ManagerPanel = ({ tables = [], wynosTables = [], onClose }) => {
 
 		doc.save(`panel_managera_${dateString}.pdf`);
 
-		// Clear localStorage and refresh the page
 		localStorage.clear();
 		window.location.reload();
 	};

@@ -1,0 +1,39 @@
+body {
+	font-size: 10pt;
+	padding: 2px;
+	margin: 0;
+}
+
+.product-item {
+	border-bottom: 1px solid black;
+	padding: 5px 0;
+}
+.product-item h2 {
+	font-size: 34pt; /* Przykładowy rozmiar, możesz dostosować do potrzeb */
+	margin-bottom: 28px; /* Opcjonalnie, aby zwiększyć odstęp między nagłówkiem a produktami */
+}
+.extras {
+	margin-left: 20px;
+}
+
+.end-space {
+	height: 2mm; /* Zmniejszono wysokość pustej przestrzeni na dole */
+}
+
+.dashed-line {
+	border-top: 1px dashed black;
+	margin-top: 2mm; /* Zmniejszono margines przed linią */
+	width: 100%;
+}
+
+@media print {
+	.cut-line {
+		position: absolute;
+		top: 10px;
+		left: 1%;
+		width: 1px;
+		height: 100%;
+		background-color: black;
+		transform: translateX(-50%);
+	}
+}
