@@ -178,13 +178,23 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	};
 
 	const handleItemRemove = (itemId) => {
-		const updatedItems = selectedItems.map((item) =>
-			item.id === itemId ? { ...item, quantity: item.quantity - 1 } : item
-		);
-		const filteredItems = updatedItems.filter((item) => item.quantity > 0);
-		setSelectedItems(filteredItems);
-		updateSelectedItems(tableName, filteredItems);
-		removeSelectedItem(`${tableName}_${itemId}`);
+		const indexToRemove = selectedItems.findIndex((item) => item.id === itemId);
+
+		if (indexToRemove !== -1) {
+			const updatedItems = [...selectedItems];
+
+			if (updatedItems[indexToRemove].quantity > 1) {
+				updatedItems[indexToRemove].quantity -= 1;
+			} else {
+				updatedItems.splice(indexToRemove, 1);
+			}
+
+			setSelectedItems(updatedItems);
+
+			updateSelectedItems(tableName, updatedItems);
+
+			removeSelectedItem(`${tableName}_${itemId}`);
+		}
 	};
 
 	const handleCommentChange = (comment, itemId) => {
