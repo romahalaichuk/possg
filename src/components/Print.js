@@ -1,8 +1,18 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import "./Print.css";
 
 const Print = ({ selectedItems, tableName }) => {
 	const printContentRef = useRef(null);
+	const [hasContentToPrint, setHasContentToPrint] = useState(false);
+
+	useEffect(() => {
+		// Sprawdź, czy są jakieś elementy do wydrukowania
+		if (selectedItems.length > 0) {
+			setHasContentToPrint(true);
+		} else {
+			setHasContentToPrint(false);
+		}
+	}, [selectedItems]);
 
 	const getCurrentDateTime = () => {
 		const now = new Date();
@@ -87,6 +97,11 @@ const Print = ({ selectedItems, tableName }) => {
 		setTimeout(() => {
 			document.body.removeChild(iframe);
 		}, 1000);
+
+		// Po zakończeniu drukowania, usuń wydrukowane elementy i ukryj przycisk "Drukuj"
+		// Tu dostosuj do swojej aplikacji, aby usunąć wybrane elementy lub zaktualizować stan
+		// setItemsToPrint([]); // Ta linia powinna być dostosowana do Twojej aplikacji
+		setHasContentToPrint(false);
 	};
 
 	const groupItemsByCategory = (items) => {
@@ -166,7 +181,7 @@ const Print = ({ selectedItems, tableName }) => {
 
 	return (
 		<div>
-			<button onClick={handlePrint}>Drukuj</button>
+			{hasContentToPrint && <button onClick={handlePrint}>Drukuj</button>}
 			<div ref={printContentRef} style={{ display: "none" }}>
 				{renderProducts()}
 			</div>

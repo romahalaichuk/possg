@@ -42,6 +42,11 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		addToBill: 0,
 		subtractFromBill: 0,
 	});
+	const [printedItems, setPrintedItems] = useState([]);
+	const addToPrintedItems = (itemId) => {
+		setPrintedItems((prevItems) => [...prevItems, itemId]);
+	};
+	const [itemsToPrint, setItemsToPrint] = useState([]);
 
 	const modalRef = useRef(null);
 	const overlayRef = useRef(null);
@@ -145,7 +150,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			);
 			setSelectedItems(updatedItems);
 			updateSelectedItems(tableName, updatedItems);
-			onAddProduct(existingPizza.id, existingPizza.name, existingPizza.price);
 			addSelectedItem(
 				`${tableName}_${existingPizza.id}`,
 				existingPizza.id,
@@ -157,7 +161,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			const updatedItems = [...selectedItems, { ...item, quantity: 1 }];
 			setSelectedItems(updatedItems);
 			updateSelectedItems(tableName, updatedItems);
-			onAddProduct(item.id, item.name, item.price);
 			addSelectedItem(
 				`${tableName}_${item.id}`,
 				item.id,
@@ -167,6 +170,12 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			);
 		}
 
+		if (!printedItems.includes(item.id)) {
+			addToPrintedItems(item.id);
+		}
+
+		// Dodaj produkt do listy do wydrukowania
+		setItemsToPrint((prevItems) => [...prevItems, item]);
 		calculateTotalPrice();
 		setSearchResults([]);
 		setShowMenuItemsModal(false);
@@ -477,7 +486,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					{selectedItems.length > 0 && (
 						<button onClick={handleRozliczClick}>Rozlicz</button>
 					)}
-					<Print selectedItems={selectedItems} tableName={tableName} />
+					<Print selectedItems={itemsToPrint} tableName={tableName} />
 				</div>
 				{showPaymentModal && (
 					<div className="payment-modal">
