@@ -18,6 +18,7 @@ const WynosListModal = ({ tables, onClose, onTableClick }) => {
 							name={table.name}
 							status={table.status}
 							products={table.products}
+							pizzaSizes={table.pizzaSizes}
 							onTableClick={onTableClick}
 						/>
 					))}

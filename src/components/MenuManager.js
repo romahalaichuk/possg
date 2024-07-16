@@ -109,15 +109,12 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, [showMenuItemsModal, showProcentModal]);
-
 	const handleCategoryClick = (category) => {
 		setSelectedCategory(category);
-		const filteredItems = products.filter(
-			(item) =>
-				item.category === category &&
-				(item.category !== "Pizza" ||
-					!selectedItems.some((si) => si.id === item.id))
-		);
+		const filteredItems = products.filter((item) => {
+			const isPizza32 = item.category === "Pizza" && item.name.includes("32");
+			return item.category === category && (category !== "Pizza" || isPizza32);
+		});
 		setMenuItems(filteredItems);
 		setShowMenuItemsModal(true);
 		setShowPaymentModal(false);
@@ -132,9 +129,13 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		if (term === "") {
 			setSearchResults([]);
 		} else {
-			const filteredItems = products.filter((item) =>
-				item.name.toLowerCase().includes(term)
-			);
+			const filteredItems = products.filter((item) => {
+				const isPizza32 = item.category === "Pizza" && item.name.includes("32");
+				return (
+					item.name.toLowerCase().includes(term) &&
+					(item.category !== "Pizza" || isPizza32)
+				);
+			});
 			setSearchResults(filteredItems);
 		}
 	};
