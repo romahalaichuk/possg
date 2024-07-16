@@ -51,18 +51,16 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		setPrintedItems((prevItems) => [...prevItems, itemId]);
 	};
 	const handleOpenWynosModal = () => {
-		if (showWynosModal) {
-			setShowWynosModal(false);
-		} else {
+		if (!showWynosModal) {
+			setDeliveryMode("Wynos");
 			setShowWynosModal(true);
 			setShowDostawaModal(false);
 		}
 	};
 
 	const handleOpenDostawaModal = () => {
-		if (showDostawaModal) {
-			setShowDostawaModal(false);
-		} else {
+		if (!showDostawaModal) {
+			setDeliveryMode("Dostawa");
 			setShowDostawaModal(true);
 			setShowWynosModal(false);
 		}
@@ -134,13 +132,30 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, [showMenuItemsModal, showProcentModal, showWynosModal, showDostawaModal]);
+	const [deliveryMode, setDeliveryMode] = useState(null); // Początkowo ustawione na null, aby nie zmieniać domyślnej logiki
 
 	const handleCategoryClick = (category) => {
 		setSelectedCategory(category);
-		const filteredItems = products.filter((item) => {
-			const isPizza32 = item.category === "Pizza" && item.name.includes("32");
-			return item.category === category && (category !== "Pizza" || isPizza32);
-		});
+
+		let filteredItems = [];
+
+		if (deliveryMode === "Wynos" || deliveryMode === "Dostawa") {
+			if (category === "Pizza") {
+				// Wybierz wszystkie pizze
+				filteredItems = products.filter((item) => item.category === "Pizza");
+			} else {
+				// Wybierz wszystkie inne kategorie
+				filteredItems = products.filter((item) => item.category === category);
+			}
+		} else {
+			filteredItems = products.filter((item) => {
+				const isPizza32 = item.category === "Pizza" && item.name.includes("32");
+				return (
+					item.category === category && (category !== "Pizza" || isPizza32)
+				);
+			});
+		}
+
 		setMenuItems(filteredItems);
 		setShowMenuItemsModal(true);
 		setShowPaymentModal(false);
