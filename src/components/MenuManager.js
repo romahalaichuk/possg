@@ -5,6 +5,8 @@ import PaymentManager from "./PaymentManager";
 import Dodatki from "./Dodatki";
 import Procent from "./Procent";
 import Print from "./Print"; // Importujemy komponent Print
+import Wynos from "./Wynos"; // Importujemy komponent Wynos
+import Dostawa from "./Dostawa"; // Importujemy komponent Dostawa
 import {
 	getSelectedItems,
 	addSelectedItem,
@@ -29,6 +31,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const [showMenuItemsModal, setShowMenuItemsModal] = useState(false);
 	const [showPaymentModal, setShowPaymentModal] = useState(false);
 	const [showProcentModal, setShowProcentModal] = useState(false);
+	const [showWynosModal, setShowWynosModal] = useState(false); // Stan dla modala Wynos
+	const [showDostawaModal, setShowDostawaModal] = useState(false); // Stan dla modala Dostawa
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchResults, setSearchResults] = useState([]);
 	const [menuItems, setMenuItems] = useState([]);
@@ -46,7 +50,23 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const addToPrintedItems = (itemId) => {
 		setPrintedItems((prevItems) => [...prevItems, itemId]);
 	};
-	const [itemsToPrint, setItemsToPrint] = useState([]);
+	const handleOpenWynosModal = () => {
+		if (showWynosModal) {
+			setShowWynosModal(false);
+		} else {
+			setShowWynosModal(true);
+			setShowDostawaModal(false);
+		}
+	};
+
+	const handleOpenDostawaModal = () => {
+		if (showDostawaModal) {
+			setShowDostawaModal(false);
+		} else {
+			setShowDostawaModal(true);
+			setShowWynosModal(false);
+		}
+	};
 
 	const modalRef = useRef(null);
 	const overlayRef = useRef(null);
@@ -99,7 +119,12 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			}
 		};
 
-		if (showMenuItemsModal || showProcentModal) {
+		if (
+			showMenuItemsModal ||
+			showProcentModal ||
+			showWynosModal ||
+			showDostawaModal
+		) {
 			document.addEventListener("mousedown", handleClickOutside);
 		} else {
 			document.removeEventListener("mousedown", handleClickOutside);
@@ -108,7 +133,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
-	}, [showMenuItemsModal, showProcentModal]);
+	}, [showMenuItemsModal, showProcentModal, showWynosModal, showDostawaModal]);
+
 	const handleCategoryClick = (category) => {
 		setSelectedCategory(category);
 		const filteredItems = products.filter((item) => {
@@ -175,8 +201,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			addToPrintedItems(item.id);
 		}
 
-		// Dodaj produkt do listy do wydrukowania
-		setItemsToPrint((prevItems) => [...prevItems, item]);
 		calculateTotalPrice();
 		setSearchResults([]);
 		setShowMenuItemsModal(false);
@@ -200,9 +224,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			}
 
 			setSelectedItems(updatedItems);
-
 			updateSelectedItems(tableName, updatedItems);
-
 			removeSelectedItem(`${tableName}_${itemId}`);
 		}
 	};
@@ -354,166 +376,190 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	};
 
 	return (
-		<div className={`menu-manager-overlay ${tableStatus}`} ref={overlayRef}>
-			<div className="menu-manager" ref={modalRef}>
-				<div className="menu-header">
-					<h2>{currentTableName}</h2>
-				</div>
-				<div className="category-buttons">
-					{categories.map((category) => (
-						<button
-							key={category}
-							onClick={() => handleCategoryClick(category)}
-							className={category === selectedCategory ? "active" : ""}>
-							{category}
-						</button>
-					))}
-					<button onClick={handleOpenProcentModal}>%</button>
-				</div>
-				<div className="search-bar" ref={searchBarRef}>
-					<input
-						type="text"
-						placeholder="Szukaj produktu..."
-						value={searchTerm}
-						onChange={handleSearchChange}
-					/>
-					<h3>Zamówienie stolika</h3>
-					{searchTerm.trim() !== "" && (
-						<div className="search-suggestions">
-							{searchResults.map((item) => (
-								<div
-									key={item.id}
-									className="search-suggestion"
-									onClick={() => handleItemSelectWithComment(item)}>
-									{item.name} - {item.price} zł
-								</div>
-							))}
-						</div>
-					)}
-				</div>
-				{showMenuItemsModal && (
-					<div className="extras-modal-overlay" onClick={handleOverlayClick}>
-						<div className="menu-items-modal">
-							<div className="menu-items">
-								<h3>Menu - {selectedCategory}</h3>
-								<ul>
-									{menuItems.map((item) => (
-										<li key={item.id} onClick={() => handleItemSelect(item)}>
-											{item.name} - {item.price} zł
-										</li>
-									))}
-								</ul>
-
-								<div className="modal-buttons">
-									<button onClick={() => setShowMenuItemsModal(false)}>
-										Zamknij
-									</button>
+		<>
+			<div className={`menu-manager-overlay ${tableStatus}`} ref={overlayRef}>
+				<div className="menu-manager" ref={modalRef}>
+					{/* Treść modalu */}
+					<div className="menu-header">
+						<h2>{currentTableName}</h2>
+					</div>
+					<div className="category-buttons">
+						{categories.map((category) => (
+							<button
+								key={category}
+								onClick={() => handleCategoryClick(category)}
+								className={category === selectedCategory ? "active" : ""}>
+								{category}
+							</button>
+						))}
+						<button onClick={handleOpenProcentModal}>%</button>
+					</div>
+					<div className="search-bar" ref={searchBarRef}>
+						<input
+							type="text"
+							placeholder="Szukaj produktu..."
+							value={searchTerm}
+							onChange={handleSearchChange}
+						/>
+						<h3>Zamówienie stolika</h3>
+						{searchTerm.trim() !== "" && (
+							<div className="search-suggestions">
+								{searchResults.map((item) => (
+									<div
+										key={item.id}
+										className="search-suggestion"
+										onClick={() => handleItemSelectWithComment(item)}>
+										{item.name} - {item.price} zł
+									</div>
+								))}
+							</div>
+						)}
+					</div>
+					{showMenuItemsModal && (
+						<div className="extras-modal-overlay" onClick={handleOverlayClick}>
+							<div className="menu-items-modal">
+								<div className="menu-items">
+									<h3>Menu - {selectedCategory}</h3>
+									<ul>
+										{menuItems.map((item) => (
+											<li key={item.id} onClick={() => handleItemSelect(item)}>
+												{item.name} - {item.price} zł
+											</li>
+										))}
+									</ul>
+									<div className="modal-buttons">
+										<button onClick={() => setShowMenuItemsModal(false)}>
+											Zamknij
+										</button>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				)}
-				<div className="selected-items">
-					<ul>
-						{selectedItems.map((item, index) => (
-							<li key={`${item.id}-${index}`}>
-								{item.name} - {item.price ? item.price : 0} zł x {item.quantity}{" "}
-								={" "}
-								{(
-									(item.price +
-										(item.extras
-											? item.extras.reduce(
-													(sum, extra) =>
-														extra.category === "Dod" ? sum + extra.price : sum,
-													0
-											  )
-											: 0)) *
-									item.quantity
-								).toFixed(2)}{" "}
-								zł
-								<Dodatki
-									selectedItemId={item.id}
+					)}
+
+					<div className="selected-items">
+						<ul>
+							{selectedItems.map((item, index) => (
+								<li key={`${item.id}-${index}`}>
+									{item.name} - {item.price ? item.price : 0} zł x{" "}
+									{item.quantity} ={" "}
+									{(
+										(item.price +
+											(item.extras
+												? item.extras.reduce(
+														(sum, extra) =>
+															extra.category === "Dod"
+																? sum + extra.price
+																: sum,
+														0
+												  )
+												: 0)) *
+										item.quantity
+									).toFixed(2)}{" "}
+									zł
+									<Dodatki
+										selectedItemId={item.id}
+										selectedItems={selectedItems}
+										handleAddExtra={handleAddExtra}
+										handleRemoveExtra={handleRemoveExtra}
+										onItemClick={handleItemSelect}
+									/>
+									<input
+										type="text"
+										value={item.comment || ""}
+										placeholder="Komentarz"
+										onChange={(e) =>
+											handleCommentChange(e.target.value, item.id)
+										}
+										className="comment-input"
+									/>
+									<button onClick={() => handleItemRemove(item.id)}>-</button>
+									<button onClick={() => handleItemSelect(item)}>+</button>
+								</li>
+							))}
+						</ul>
+						{/* Dodane formularze Wynos i Dostawa */}
+						{showWynosModal && (
+							<div className="order-type-container">
+								<Wynos onClose={() => setShowWynosModal(false)} />
+							</div>
+						)}
+						{showDostawaModal && (
+							<div className="order-type-container">
+								<Dostawa
 									selectedItems={selectedItems}
-									handleAddExtra={handleAddExtra}
-									handleRemoveExtra={handleRemoveExtra}
-									onItemClick={handleItemSelect}
+									tableName={tableName}
+									onClose={() => setShowDostawaModal(false)}
 								/>
-								<input
-									type="text"
-									value={item.comment || ""}
-									placeholder="Komentarz"
-									onChange={(e) => handleCommentChange(e.target.value, item.id)}
-									className="comment-input"
-								/>
-								<button onClick={() => handleItemRemove(item.id)}>-</button>
-								<button onClick={() => handleItemSelect(item)}>+</button>
-							</li>
-						))}
-					</ul>
-
-					<p>Liczba pozycji: {totalItems}</p>
-					<p>Suma: {calculateAdjustedTotal().toFixed(2)} zł</p>
-
-					{adjustments.service > 0 && (
-						<p style={{ color: "red" }}>
-							Zastosowano {adjustments.service}% serwisu (+{" "}
-							{serviceCharge.toFixed(2)} zł)
-						</p>
-					)}
-					{adjustments.discount > 0 && (
-						<p style={{ color: "blue" }}>
-							Zastosowano {adjustments.discount.toFixed(2)} % zniżki (-{" "}
-							{discountAmount.toFixed(2)} zł), do zapłaty:{" "}
-							{(totalAmount - discountAmount).toFixed(2)} zł
-						</p>
-					)}
-
-					{adjustments.addToBill > 0 && (
-						<p style={{ color: "green" }}>
-							Dodano {adjustments.addToBill.toFixed(2)} zł do rachunku (+{" "}
-							{adjustments.addToBill.toFixed(2)} zł)
-						</p>
-					)}
-					{adjustments.subtractFromBill > 0 && (
-						<p style={{ color: "blue" }}>
-							Odejmowano {adjustments.subtractFromBill.toFixed(2)} zł od
-							rachunku (- {adjustments.subtractFromBill.toFixed(2)} zł)
-						</p>
-					)}
-				</div>
-
-				<div className="modal-buttons">
-					<button onClick={onClose}>Zamknij</button>
-					{selectedItems.length > 0 && (
-						<button onClick={handleRozliczClick}>Rozlicz</button>
-					)}
-					<Print
-						selectedItems={itemsToPrint}
-						tableName={tableName}
-						onClose={onClose}
-					/>
-				</div>
-				{showPaymentModal && (
-					<div className="payment-modal">
-						<PaymentManager
+							</div>
+						)}
+						<p>Liczba pozycji: {totalItems}</p>
+						<p>Suma: {calculateAdjustedTotal().toFixed(2)} zł</p>
+						{adjustments.service > 0 && (
+							<p style={{ color: "red" }}>
+								Zastosowano {adjustments.service}% serwisu (+{" "}
+								{serviceCharge.toFixed(2)} zł)
+							</p>
+						)}
+						{adjustments.discount > 0 && (
+							<p style={{ color: "blue" }}>
+								Zastosowano {adjustments.discount.toFixed(2)} % zniżki (-{" "}
+								{discountAmount.toFixed(2)} zł), do zapłaty:{" "}
+								{(totalAmount - discountAmount).toFixed(2)} zł
+							</p>
+						)}
+						{adjustments.addToBill > 0 && (
+							<p style={{ color: "green" }}>
+								Dodano {adjustments.addToBill.toFixed(2)} zł do rachunku (+{" "}
+								{adjustments.addToBill.toFixed(2)} zł)
+							</p>
+						)}
+						{adjustments.subtractFromBill > 0 && (
+							<p style={{ color: "blue" }}>
+								Odejmowano {adjustments.subtractFromBill.toFixed(2)} zł od
+								rachunku (- {adjustments.subtractFromBill.toFixed(2)} zł)
+							</p>
+						)}
+					</div>
+					<div className="modal-buttons">
+						<button onClick={onClose}>Zamknij</button>
+						{selectedItems.length > 0 && (
+							<button onClick={handleRozliczClick}>Rozlicz</button>
+						)}
+						<Print
 							selectedItems={selectedItems}
-							adjustedTotalAmount={calculateAdjustedTotal()}
-							onClose={handlePaymentComplete}
+							tableName={tableName}
+							onClose={onClose}
 						/>
 					</div>
-				)}
-				{showProcentModal && (
-					<div className="procent-modal-overlay" onClick={handleOverlayClickk}>
-						<div className="procent-modal">
-							<Procent
-								onClose={() => setShowProcentModal(false)}
-								onSubmit={handleAdjustmentsSubmit}
+					{showPaymentModal && (
+						<div className="payment-modal">
+							<PaymentManager
+								selectedItems={selectedItems}
+								adjustedTotalAmount={calculateAdjustedTotal()}
+								onClose={handlePaymentComplete}
 							/>
 						</div>
-					</div>
-				)}
+					)}
+					{showProcentModal && (
+						<div
+							className="procent-modal-overlay"
+							onClick={handleOverlayClickk}>
+							<div className="procent-modal">
+								<Procent
+									onClose={() => setShowProcentModal(false)}
+									onSubmit={handleAdjustmentsSubmit}
+								/>
+							</div>
+						</div>
+					)}
+				</div>
 			</div>
-		</div>
+			<div className="button-container">
+				<button onClick={handleOpenWynosModal}>Wynos</button>
+				<button onClick={handleOpenDostawaModal}>Dostawa</button>
+			</div>
+		</>
 	);
 };
 
