@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./Wynos.css"; // Zaimportowanie pliku z stylami
 
 const Wynos = ({ onClose }) => {
 	const [minutesToPickup, setMinutesToPickup] = useState("");
@@ -58,6 +59,7 @@ const Wynos = ({ onClose }) => {
 				onChange={handleMinutesChange}
 				min="1"
 				required
+				className="time-input"
 			/>
 			<h3>Odbiór na (godz:min)</h3>
 			<input
@@ -65,9 +67,13 @@ const Wynos = ({ onClose }) => {
 				value={customPickupTime}
 				onChange={handleCustomTimeChange}
 				placeholder="np. 21:35"
+				className="time-input"
 			/>
 			{pickupTime && (
-				<p>
+				<p
+					className={`pickup-time ${
+						customPickupTime.includes(":") ? "pickup-time-na" : ""
+					}`}>
 					{pickupTime === "Invalid Date"
 						? "Odbiór na: Invalid Date"
 						: customPickupTime.includes(":")
