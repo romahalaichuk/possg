@@ -486,7 +486,11 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					{selectedItems.length > 0 && (
 						<button onClick={handleRozliczClick}>Rozlicz</button>
 					)}
-					<Print selectedItems={itemsToPrint} tableName={tableName} />
+					<Print
+						selectedItems={itemsToPrint}
+						tableName={tableName}
+						onClose={onClose}
+					/>
 				</div>
 				{showPaymentModal && (
 					<div className="payment-modal">

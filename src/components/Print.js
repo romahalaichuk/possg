@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./Print.css";
 
-const Print = ({ selectedItems, tableName }) => {
+const Print = ({ selectedItems, tableName, onClose }) => {
 	const printContentRef = useRef(null);
 	const [hasContentToPrint, setHasContentToPrint] = useState(false);
 
@@ -98,10 +98,8 @@ const Print = ({ selectedItems, tableName }) => {
 			document.body.removeChild(iframe);
 		}, 1000);
 
-		// Po zakończeniu drukowania, usuń wydrukowane elementy i ukryj przycisk "Drukuj"
-		// Tu dostosuj do swojej aplikacji, aby usunąć wybrane elementy lub zaktualizować stan
-		// setItemsToPrint([]); // Ta linia powinna być dostosowana do Twojej aplikacji
 		setHasContentToPrint(false);
+		onClose();
 	};
 
 	const groupItemsByCategory = (items) => {
