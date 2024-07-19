@@ -7,6 +7,8 @@ const Print = ({
 	pickupTime,
 	customPickupTime,
 	pickupTimeData = { minutesToPickup: 0, customPickupTime: "" },
+	deliveryDetails,
+	showDeliveryDetails,
 	onClose,
 }) => {
 	const printContentRef = useRef(null);
@@ -207,6 +209,16 @@ const Print = ({
 							? `Odbiór na: ${pickupTime}`
 							: `Odbiór do: ${pickupTime}`}
 					</p>
+				</div>
+			)}
+			{showDeliveryDetails && deliveryDetails && (
+				<div>
+					<h3>Dostawa:</h3>
+					<p>Adres: {deliveryDetails.address}</p>
+					<p>Mieszkanie: {deliveryDetails.apartment}</p>
+					<p>Piętro: {deliveryDetails.floor}</p>
+					<p>Komentarz: {deliveryDetails.comment}</p>
+					<p>Metoda płatności: {deliveryDetails.paymentMethod}</p>
 				</div>
 			)}
 			<div className="dashed-line"></div>

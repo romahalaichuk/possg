@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Dostawa = ({ onClose }) => {
+const Dostawa = ({ onClose, setDeliveryDetails }) => {
 	const [address, setAddress] = useState("");
 	const [apartment, setApartment] = useState("");
 	const [floor, setFloor] = useState("");
@@ -8,23 +8,48 @@ const Dostawa = ({ onClose }) => {
 	const [paymentMethod, setPaymentMethod] = useState("Karta");
 
 	const handleAddressChange = (e) => {
-		setAddress(e.target.value);
+		const newAddress = e.target.value;
+		setAddress(newAddress);
+		setDeliveryDetails((prevDetails) => ({
+			...prevDetails,
+			address: newAddress,
+		}));
 	};
 
 	const handleApartmentChange = (e) => {
-		setApartment(e.target.value);
+		const newApartment = e.target.value;
+		setApartment(newApartment);
+		setDeliveryDetails((prevDetails) => ({
+			...prevDetails,
+			apartment: newApartment,
+		}));
 	};
 
 	const handleFloorChange = (e) => {
-		setFloor(e.target.value);
+		const newFloor = e.target.value;
+		setFloor(newFloor);
+		setDeliveryDetails((prevDetails) => ({
+			...prevDetails,
+			floor: newFloor,
+		}));
 	};
 
 	const handleCommentChange = (e) => {
-		setComment(e.target.value);
+		const newComment = e.target.value;
+		setComment(newComment);
+		setDeliveryDetails((prevDetails) => ({
+			...prevDetails,
+			comment: newComment,
+		}));
 	};
 
 	const handlePaymentMethodChange = (e) => {
-		setPaymentMethod(e.target.value);
+		const newPaymentMethod = e.target.value;
+		setPaymentMethod(newPaymentMethod);
+		setDeliveryDetails((prevDetails) => ({
+			...prevDetails,
+			paymentMethod: newPaymentMethod,
+		}));
 	};
 
 	return (

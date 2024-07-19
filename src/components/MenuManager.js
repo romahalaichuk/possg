@@ -68,12 +68,14 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setDeliveryMode("Dostawa");
 			setShowDostawaModal(true);
 			setShowWynosModal(false);
+			setShowDeliveryDetails(true);
 		}
 	};
 
 	const modalRef = useRef(null);
 	const overlayRef = useRef(null);
 	const searchBarRef = useRef(null);
+	const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
 
 	const calculateTotalItemsAndAmount = () => {
 		let totalItems = 0;
@@ -440,6 +442,13 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		}
 	};
 
+	const [deliveryDetails, setDeliveryDetails] = useState({
+		address: "",
+		apartment: "",
+		floor: "",
+		comment: "",
+		paymentMethod: "Karta",
+	});
 	return (
 		<>
 			<div className={`menu-manager-overlay ${tableStatus}`} ref={overlayRef}>
@@ -586,9 +595,11 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 									selectedItems={selectedItems}
 									tableName={tableName}
 									onClose={() => setShowDostawaModal(false)}
+									setDeliveryDetails={setDeliveryDetails} // Przekaż funkcję ustawiającą dane dostawy
 								/>
 							</div>
 						)}
+
 						<p>Liczba pozycji: {totalItems}</p>
 						<p>Suma: {calculateAdjustedTotal().toFixed(2)} zł</p>
 						{adjustments.service > 0 && (
@@ -628,6 +639,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							pickupTime={pickupTime}
 							customPickupTime={customPickupTime}
 							pickupTimeData={pickupTimeData}
+							deliveryDetails={deliveryDetails}
+							showDeliveryDetails={showDeliveryDetails}
 							onClose={onClose}
 						/>
 					</div>
