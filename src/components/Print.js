@@ -1,28 +1,34 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./Print.css";
 
-const Print = ({ selectedItems, tableName, onClose }) => {
+const Print = ({
+	selectedItems,
+	tableName,
+	pickupTime,
+	customPickupTime,
+	pickupTimeData = { minutesToPickup: 0, customPickupTime: "" },
+	onClose,
+}) => {
 	const printContentRef = useRef(null);
 	const [hasContentToPrint, setHasContentToPrint] = useState(false);
 
 	useEffect(() => {
-		// Sprawdź, czy są jakieś elementy do wydrukowania
-		if (selectedItems.length > 0) {
-			setHasContentToPrint(true);
-		} else {
-			setHasContentToPrint(false);
-		}
+		setHasContentToPrint(selectedItems.length > 0);
 	}, [selectedItems]);
 
 	const getCurrentDateTime = () => {
 		const now = new Date();
 		const date = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`;
-		const time = `${now.getHours()}:${now.getMinutes()}`;
+		const time = `${now.getHours()}:${now
+			.getMinutes()
+			.toString()
+			.padStart(2, "0")}`;
 		return `${date} ${time}`;
 	};
 
 	const handlePrint = () => {
 		const content = printContentRef.current.innerHTML;
+		console.log("Content to print:", content);
 
 		const iframe = document.createElement("iframe");
 		iframe.style.position = "absolute";
@@ -33,63 +39,87 @@ const Print = ({ selectedItems, tableName, onClose }) => {
 		const doc = iframe.contentWindow.document;
 		doc.open();
 		doc.write(`
-            <html>
-            <head>
-                <title>Drukowanie</title>
-                <style>
-                    body {
-                        font-size: 10pt;
-                        padding: 2px;
-                        padding-left: 5px;
-                        margin: 0;
-                    }
-                    .product-item {
-                        border-bottom: 1px solid black;
-                        padding: 5px 0;
-                    }
-                    .pizza-space {
-                        margin-bottom: 80px;
-                    }
-                    .extras {
-                        margin-left: 20px;
-                    }
-                    .end-space {
-                        height: 2mm;
-                    }
-                    .dashed-line {
-                        border-top: 1px dashed black;
-                        margin-top: 2mm;
-                        width: 100%;
-                    }
-                    .table-name {
-                        margin-top: 10px;
-                        font-weight: bold;
-                    }
-                    .print-time {
-                        margin-bottom: 10px;
-                        font-style: italic;
-                    }
-                    @media print {
-                        .cut-line {
-                            position: absolute;
-                            top: 10px;
-                            left: 1%;
-                            width: 1px;
-                            height: 100%;
-                            background-color: black;
-                            transform: translateX(-50%);
-                        }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="cut-line"></div>
-                ${content}
-                <div class="end-space"></div>
-                <div class="dashed-line"></div>
-            </body>
-            </html>
-        `);
+			<html>
+			<head>
+				<title>Drukowanie</title>
+				<style>
+					body {
+						font-size: 10pt;
+						padding: 2px 5px;
+						margin: 0;
+					}
+					.product-item {
+						border-bottom: 1px solid black;
+						padding: 5px 0;
+					}
+					.pizza-space {
+						margin-bottom: 80px;
+					}
+					.extras {
+						margin-left: 20px;
+					}
+					.end-space {
+						height: 2mm;
+					}
+					.dashed-line {
+						border-top: 1px dashed black;
+						margin-top: 2mm;
+						width: 100%;
+					}
+					.table-name {
+						margin-top: 10px;
+						font-weight: bold;
+					}
+					.print-time {
+						margin-bottom: 10px;
+						font-style: italic;
+					}
+					.pickup-time {
+						margin-top: 10px;
+						font-weight: bold;
+					}
+					.pickup-time-na-container {
+						background-color: black;
+						color: white;
+						padding: 5px;
+						border-radius: 3px;
+						text-align: center;
+						font-size: 12pt;
+					}
+					.pickup-time-na {
+						background-color: black;
+						color: white;
+						padding: 5px;
+						border-radius: 3px;
+					}
+					@media print {
+						.cut-line {
+							position: absolute;
+							top: 10px;
+							left: 1%;
+							width: 1px;
+							height: 100%;
+							background-color: black;
+							transform: translateX(-50%);
+						}
+						.pickup-time-na-container,
+						.pickup-time-na {
+							background-color: black;
+							color: white;
+							padding: 5px;
+							border-radius: 3px;
+						}
+					}
+				</style>
+			</head>
+			<body>
+				<div class="cut-line"></div>
+				${content}
+				<div class="end-space"></div>
+				<div class="dashed-line"></div>
+			</body>
+			</html>
+		`);
 		doc.close();
 		iframe.contentWindow.focus();
 		iframe.contentWindow.print();
@@ -112,9 +142,7 @@ const Print = ({ selectedItems, tableName, onClose }) => {
 		items.forEach((item) => {
 			switch (item.category.toLowerCase()) {
 				case "pizza":
-					categories.PIZZA.push(item);
-					break;
-				case "caldzone":
+				case "calzone":
 				case "focaccia":
 				case "włoskie pieczywo":
 					categories.PIZZA.push(item);
@@ -133,6 +161,7 @@ const Print = ({ selectedItems, tableName, onClose }) => {
 					categories.BAR.push(item);
 					break;
 				default:
+					console.warn(`Nieznana kategoria: ${item.category}`);
 					break;
 			}
 		});
@@ -143,7 +172,6 @@ const Print = ({ selectedItems, tableName, onClose }) => {
 	const renderCategory = (category, items) => (
 		<div key={category}>
 			<h2>{category}</h2>
-
 			{category === "PIZZA" && <div className="pizza-space"></div>}
 			{items.map((item, index) => (
 				<div key={`${item.id}-${index}`} className="product-item">
@@ -160,10 +188,26 @@ const Print = ({ selectedItems, tableName, onClose }) => {
 					)}
 				</div>
 			))}
-
 			<div className="dashed-line"></div>
 			<div className="table-name">Stolik: {tableName}</div>
 			<div className="print-time">{getCurrentDateTime()}</div>
+			{pickupTime && (
+				<div
+					className={
+						customPickupTime.includes(":") ? "pickup-time-na-container" : ""
+					}>
+					<p
+						className={`pickup-time ${
+							customPickupTime.includes(":") ? "pickup-time-na" : ""
+						}`}>
+						{pickupTime === "Invalid Date"
+							? "Odbiór na: Invalid Date"
+							: customPickupTime.includes(":")
+							? `Odbiór na: ${pickupTime}`
+							: `Odbiór do: ${pickupTime}`}
+					</p>
+				</div>
+			)}
 			<div className="dashed-line"></div>
 		</div>
 	);

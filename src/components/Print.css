@@ -37,3 +37,30 @@ body {
 		transform: translateX(-50%);
 	}
 }
+/* Dodaj styl dla "Odbiór na:" z czarnym tłem i białym tekstem */
+.pickup-time-na-container {
+	background-color: black;
+	color: white;
+	padding: 5px;
+	border-radius: 3px;
+	font-weight: bold;
+}
+
+.pickup-time-na {
+	background-color: black;
+	color: white;
+	padding: 5px;
+	border-radius: 3px;
+}
+@media print {
+	@page {
+		margin: 20mm; /* lub inna odpowiednia wartość */
+	}
+	.pickup-time-na-container,
+	.pickup-time-na {
+		background-color: black;
+		color: white;
+		padding: 5px;
+		border-radius: 3px;
+	}
+}

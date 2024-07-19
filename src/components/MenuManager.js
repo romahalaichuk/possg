@@ -5,7 +5,7 @@ import PaymentManager from "./PaymentManager";
 import Dodatki from "./Dodatki";
 import Procent from "./Procent";
 import Print from "./Print"; // Importujemy komponent Print
-import Wynos from "./Wynos"; // Importujemy komponent Wynos
+
 import Dostawa from "./Dostawa"; // Importujemy komponent Dostawa
 import {
 	getSelectedItems,
@@ -27,6 +27,9 @@ const categories = [
 ];
 
 const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
+	const [minutesToPickup, setMinutesToPickup] = useState("");
+	const [pickupTime, setPickupTime] = useState("");
+	const [customPickupTime, setCustomPickupTime] = useState("");
 	const [selectedItems, setSelectedItems] = useState([]);
 	const [showMenuItemsModal, setShowMenuItemsModal] = useState(false);
 	const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -34,6 +37,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const [showWynosModal, setShowWynosModal] = useState(false); // Stan dla modala Wynos
 	const [showDostawaModal, setShowDostawaModal] = useState(false); // Stan dla modala Dostawa
 	const [searchTerm, setSearchTerm] = useState("");
+	const [pickupTimeData, setPickupTimeData] = useState(null);
+
 	const [searchResults, setSearchResults] = useState([]);
 	const [menuItems, setMenuItems] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState(categories[0]);
@@ -389,6 +394,51 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 
 		return adjustedTotal;
 	};
+	const handleMinutesChange = (e) => {
+		const minutes = parseInt(e.target.value, 10);
+		setMinutesToPickup(minutes);
+		calculatePickupTime(minutes, customPickupTime);
+		setPickupTimeData({ minutesToPickup: minutes, customPickupTime });
+	};
+
+	const handleCustomTimeChange = (e) => {
+		const time = e.target.value;
+		if (time.length === 2 && !time.includes(":")) {
+			setCustomPickupTime(time + ":");
+		} else {
+			setCustomPickupTime(time);
+		}
+		calculatePickupTime(minutesToPickup, time);
+		setPickupTimeData({ minutesToPickup, customPickupTime: time });
+	};
+
+	const calculatePickupTime = (minutes, customTime) => {
+		const currentTime = new Date();
+		let pickup;
+
+		if (customTime) {
+			const [hours, mins] = customTime.split(":");
+			pickup = new Date(
+				currentTime.getFullYear(),
+				currentTime.getMonth(),
+				currentTime.getDate(),
+				parseInt(hours, 10),
+				parseInt(mins, 10)
+			);
+		} else {
+			pickup = new Date(currentTime.getTime() + minutes * 60000);
+		}
+
+		if (!isNaN(pickup.getTime())) {
+			const formattedPickupTime = pickup.toLocaleTimeString([], {
+				hour: "2-digit",
+				minute: "2-digit",
+			});
+			setPickupTime(formattedPickupTime);
+		} else {
+			setPickupTime("Invalid Date");
+		}
+	};
 
 	return (
 		<>
@@ -496,7 +546,38 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 						{/* Dodane formularze Wynos i Dostawa */}
 						{showWynosModal && (
 							<div className="order-type-container">
-								<Wynos onClose={() => setShowWynosModal(false)} />
+								<h3>Odbiór za ile minut?</h3>
+								<input
+									type="number"
+									value={minutesToPickup}
+									onChange={handleMinutesChange}
+									min="1"
+									required
+									className="time-input"
+								/>
+								<h3>Odbiór na (godz:min)</h3>
+								<input
+									type="text"
+									value={customPickupTime}
+									onChange={handleCustomTimeChange}
+									placeholder="np. 21:35"
+									className="time-input"
+								/>
+								{pickupTime && (
+									<p
+										className={`pickup-time ${
+											customPickupTime.includes(":") ? "pickup-time-na" : ""
+										}`}>
+										{pickupTime === "Invalid Date"
+											? "Odbiór na: Invalid Date"
+											: customPickupTime.includes(":")
+											? `Odbiór na: ${pickupTime}`
+											: `Odbiór do: ${pickupTime}`}
+									</p>
+								)}
+								<button onClick={() => setShowWynosModal(false)}>
+									Zamknij
+								</button>
 							</div>
 						)}
 						{showDostawaModal && (
@@ -544,6 +625,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 						<Print
 							selectedItems={selectedItems}
 							tableName={tableName}
+							pickupTime={pickupTime}
+							customPickupTime={customPickupTime}
+							pickupTimeData={pickupTimeData}
 							onClose={onClose}
 						/>
 					</div>
