@@ -74,23 +74,18 @@ const Print = ({
 						margin-bottom: 10px;
 						font-style: italic;
 					}
-					.pickup-time {
-						margin-top: 10px;
-						font-weight: bold;
-					}
-					.pickup-time-na-container {
+					.pickup-time-container {
+						border: 2px solid black;
 						background-color: black;
 						color: white;
-						padding: 5px;
-						border-radius: 3px;
+						padding: 10px;
+						border-radius: 5px;
 						text-align: center;
-						font-size: 12pt;
+						font-size: 14pt;
+						margin: 10px 0;
 					}
-					.pickup-time-na {
-						background-color: black;
-						color: white;
-						padding: 5px;
-						border-radius: 3px;
+					.pickup-time {
+						font-weight: bold;
 					}
 					@media print {
 						.cut-line {
@@ -102,12 +97,18 @@ const Print = ({
 							background-color: black;
 							transform: translateX(-50%);
 						}
-						.pickup-time-na-container,
-						.pickup-time-na {
-							background-color: black;
-							color: white;
-							padding: 5px;
-							border-radius: 3px;
+					.pickup-time-container {
+							border: 7px solid black;
+							
+							color: black;
+							padding: 0;
+							
+							
+							 font-weight: bold;
+							font-size: 8pt;
+							margin: 0;
+							width: 100%;
+							box-sizing: border-box;
 						}
 					}
 				</style>
@@ -194,7 +195,7 @@ const Print = ({
 			{pickupTime && (
 				<div
 					className={
-						customPickupTime.includes(":") ? "pickup-time-na-container" : ""
+						customPickupTime.includes(":") ? "pickup-time-container" : ""
 					}>
 					<p
 						className={`pickup-time ${
