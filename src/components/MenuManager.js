@@ -447,7 +447,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		apartment: "",
 		floor: "",
 		comment: "",
-		paymentMethod: "Karta",
+		paymentMethod: "",
 	});
 	return (
 		<>

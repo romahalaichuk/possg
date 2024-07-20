@@ -5,7 +5,8 @@ const Dostawa = ({ onClose, setDeliveryDetails }) => {
 	const [apartment, setApartment] = useState("");
 	const [floor, setFloor] = useState("");
 	const [comment, setComment] = useState("");
-	const [paymentMethod, setPaymentMethod] = useState("Karta");
+	const [paymentMethod, setPaymentMethod] = useState("");
+	const [phone, setPhoneNumber] = useState("");
 
 	const handleAddressChange = (e) => {
 		const newAddress = e.target.value;
@@ -24,7 +25,14 @@ const Dostawa = ({ onClose, setDeliveryDetails }) => {
 			apartment: newApartment,
 		}));
 	};
-
+	const handlePhoneChange = (e) => {
+		const phone = e.target.value;
+		setPhoneNumber(phone);
+		setDeliveryDetails((prevDetails) => ({
+			...prevDetails,
+			apartment: phone,
+		}));
+	};
 	const handleFloorChange = (e) => {
 		const newFloor = e.target.value;
 		setFloor(newFloor);
@@ -61,6 +69,12 @@ const Dostawa = ({ onClose, setDeliveryDetails }) => {
 				value={address}
 				onChange={handleAddressChange}
 				required
+			/>
+			<input
+				type="text"
+				placeholder="Phone"
+				value={phone}
+				onChange={handlePhoneChange}
 			/>
 			<input
 				type="text"

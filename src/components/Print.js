@@ -214,6 +214,7 @@ const Print = ({
 			{showDeliveryDetails && deliveryDetails && (
 				<div>
 					<h3>Dostawa:</h3>
+					<p>Numer telefonu: {deliveryDetails.phoneNumber}</p>
 					<p>Adres: {deliveryDetails.address}</p>
 					<p>Mieszkanie: {deliveryDetails.apartment}</p>
 					<p>Piętro: {deliveryDetails.floor}</p>
