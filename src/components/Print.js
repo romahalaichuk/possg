@@ -47,7 +47,7 @@ const Print = ({
 				<title>Drukowanie</title>
 				<style>
 					body {
-						font-size: 10pt;
+						font-size: 12pt;
 						padding: 2px 5px;
 						margin: 0;
 					}
@@ -56,7 +56,7 @@ const Print = ({
 						padding: 2px 0; /* Zmniejszono padding */
 					}
 					.pizza-space {
-						margin-bottom: 40px; /* Zmniejszono margines */
+						margin-bottom: 70px; /* Zmniejszono margines */
 					}
 					.extras {
 						margin-left: 10px; /* Zmniejszono margines */
@@ -74,7 +74,7 @@ const Print = ({
 					    justify-content: space-between;
 					    align-items: center;
 					    width: 100%;
-					    margin-top: 5px; /* Dodano margines do zmniejszenia odstępów */
+					    margin-top: 5px; 
 					}
 					.arrow-down {
 					    width: 0;
@@ -84,8 +84,8 @@ const Print = ({
 					    border-top: 10px solid black;
 					}
 					.table-name {
-						margin-top: 5px; /* Zmniejszono margines */
-						font-weight: bold;
+						margin-top: 5px; 
+						// font-weight: bold;
 					}
 					.print-time {
 						margin-bottom: 5px; /* Zmniejszono margines */

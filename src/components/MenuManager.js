@@ -596,6 +596,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								<Dostawa
 									selectedItems={selectedItems}
 									tableName={tableName}
+									adjustedTotalAmount={calculateAdjustedTotal()}
 									onClose={() => setShowDostawaModal(false)}
 									setDeliveryDetails={setDeliveryDetails}
 								/>

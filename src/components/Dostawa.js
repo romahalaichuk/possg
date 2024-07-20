@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Dostawa = ({ onClose, setDeliveryDetails }) => {
+const Dostawa = ({ onClose, setDeliveryDetails, adjustedTotalAmount }) => {
 	const [address, setAddress] = useState("");
 	const [apartment, setApartment] = useState("");
 	const [floor, setFloor] = useState("");
