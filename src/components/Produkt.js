@@ -673,7 +673,7 @@ export const products = [
 	{
 		id: 261,
 		name: "Lemoniada Kwiatkowa Magiczna 0.4 L",
-		price: 10.9,
+		price: 14.9,
 		category: "napoje",
 	},
 	{
