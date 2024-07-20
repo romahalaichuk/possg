@@ -595,7 +595,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 									selectedItems={selectedItems}
 									tableName={tableName}
 									onClose={() => setShowDostawaModal(false)}
-									setDeliveryDetails={setDeliveryDetails} // Przekaż funkcję ustawiającą dane dostawy
+									setDeliveryDetails={setDeliveryDetails}
 								/>
 							</div>
 						)}

@@ -26,13 +26,14 @@ const Dostawa = ({ onClose, setDeliveryDetails }) => {
 		}));
 	};
 	const handlePhoneChange = (e) => {
-		const phone = e.target.value;
-		setPhoneNumber(phone);
+		const newPhone = e.target.value;
+		setPhoneNumber(newPhone);
 		setDeliveryDetails((prevDetails) => ({
 			...prevDetails,
-			apartment: phone,
+			phone: newPhone, // Używamy "phone" zamiast "phoneNumber"
 		}));
 	};
+
 	const handleFloorChange = (e) => {
 		const newFloor = e.target.value;
 		setFloor(newFloor);
@@ -70,12 +71,7 @@ const Dostawa = ({ onClose, setDeliveryDetails }) => {
 				onChange={handleAddressChange}
 				required
 			/>
-			<input
-				type="text"
-				placeholder="Phone"
-				value={phone}
-				onChange={handlePhoneChange}
-			/>
+
 			<input
 				type="text"
 				placeholder="Mieszkanie"
@@ -92,6 +88,12 @@ const Dostawa = ({ onClose, setDeliveryDetails }) => {
 				placeholder="Komentarz"
 				value={comment}
 				onChange={handleCommentChange}></textarea>
+			<input
+				type="text"
+				placeholder="Phone"
+				value={phone}
+				onChange={handlePhoneChange}
+			/>
 			<select value={paymentMethod} onChange={handlePaymentMethodChange}>
 				<option value="Karta">Karta</option>
 				<option value="Gotówka">Gotówka</option>

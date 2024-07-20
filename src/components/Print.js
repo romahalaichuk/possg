@@ -52,39 +52,53 @@ const Print = ({
 					}
 					.product-item {
 						border-bottom: 1px solid black;
-						padding: 5px 0;
+						padding: 2px 0; /* Zmniejszono padding */
 					}
 					.pizza-space {
-						margin-bottom: 80px;
+						margin-bottom: 40px; /* Zmniejszono margines */
 					}
 					.extras {
-						margin-left: 20px;
+						margin-left: 10px; /* Zmniejszono margines */
 					}
 					.end-space {
-						height: 2mm;
+						height: 1mm; /* Zmniejszono wysokość */
 					}
 					.dashed-line {
-						border-top: 1px dashed black;
-						margin-top: 2mm;
+						border-top: 3px dashed black; /* Zmniejszono szerokość */
+						margin-top: 1mm; /* Zmniejszono margines */
 						width: 100%;
 					}
+					.arrow-row {
+					    display: flex;
+					    justify-content: space-between;
+					    align-items: center;
+					    width: 100%;
+					    margin-top: 5px; /* Dodano margines do zmniejszenia odstępów */
+					}
+					.arrow-down {
+					    width: 0;
+					    height: 0;
+					    border-left: 5px solid transparent;
+					    border-right: 5px solid transparent;
+					    border-top: 10px solid black;
+					}
 					.table-name {
-						margin-top: 10px;
+						margin-top: 5px; /* Zmniejszono margines */
 						font-weight: bold;
 					}
 					.print-time {
-						margin-bottom: 10px;
+						margin-bottom: 5px; /* Zmniejszono margines */
 						font-style: italic;
 					}
 					.pickup-time-container {
 						border: 2px solid black;
 						background-color: black;
 						color: white;
-						padding: 10px;
+						padding: 5px; /* Zmniejszono padding */
 						border-radius: 5px;
 						text-align: center;
 						font-size: 14pt;
-						margin: 10px 0;
+						margin: 5px 0; /* Zmniejszono margines */
 					}
 					.pickup-time {
 						font-weight: bold;
@@ -92,7 +106,7 @@ const Print = ({
 					@media print {
 						.cut-line {
 							position: absolute;
-							top: 10px;
+							top: 5px; /* Zmniejszono margines */
 							left: 1%;
 							width: 1px;
 							height: 100%;
@@ -100,13 +114,10 @@ const Print = ({
 							transform: translateX(-50%);
 						}
 					.pickup-time-container {
-							border: 7px solid black;
-							
+							border: 5px solid black; /* Zmniejszono szerokość */
 							color: black;
 							padding: 0;
-							
-							
-							 font-weight: bold;
+							font-weight: bold;
 							font-size: 8pt;
 							margin: 0;
 							width: 100%;
@@ -119,7 +130,6 @@ const Print = ({
 				<div class="cut-line"></div>
 				${content}
 				<div class="end-space"></div>
-				<div class="dashed-line"></div>
 			</body>
 			</html>
 		`);
@@ -140,32 +150,37 @@ const Print = ({
 			PIZZA: [],
 			MAKARONY: [],
 			BAR: [],
+			DOSTAWA: [],
 		};
 
 		items.forEach((item) => {
-			switch (item.category.toLowerCase()) {
-				case "pizza":
-				case "calzone":
-				case "focaccia":
-				case "włoskie pieczywo":
-					categories.PIZZA.push(item);
-					break;
-				case "makaron":
-				case "sałatki":
-				case "desery":
-				case "frytki":
-				case "przekąski":
-					categories.MAKARONY.push(item);
-					break;
-				case "napoje":
-				case "soki":
-				case "wina":
-				case "drinki":
-					categories.BAR.push(item);
-					break;
-				default:
-					console.warn(`Nieznana kategoria: ${item.category}`);
-					break;
+			if (showDeliveryDetails) {
+				categories.DOSTAWA.push(item);
+			} else {
+				switch (item.category.toLowerCase()) {
+					case "pizza":
+					case "calzone":
+					case "focaccia":
+					case "włoskie pieczywo":
+						categories.PIZZA.push(item);
+						break;
+					case "makaron":
+					case "sałatki":
+					case "desery":
+					case "frytki":
+					case "przekąski":
+						categories.MAKARONY.push(item);
+						break;
+					case "napoje":
+					case "soki":
+					case "wina":
+					case "drinki":
+						categories.BAR.push(item);
+						break;
+					default:
+						console.warn(`Nieznana kategoria: ${item.category}`);
+						break;
+				}
 			}
 		});
 
@@ -173,8 +188,35 @@ const Print = ({
 	};
 
 	const renderCategory = (category, items) => (
-		<div key={category}>
-			<h2>{category}</h2>
+		<div key={category} style={{ marginBottom: "5px" }}>
+			{" "}
+			<h2 style={{ margin: "5px 0" }}>{category}</h2>{" "}
+			{category === "DOSTAWA" && deliveryDetails && (
+				<div style={{ marginBottom: "5px" }}>
+					{" "}
+					<h3 style={{ margin: "3px 0" }}>Dostawa:</h3>{" "}
+					<p style={{ margin: "2px 0" }}>Adres: {deliveryDetails.address}</p>{" "}
+					<p style={{ margin: "2px 0" }}>
+						Mieszkanie: {deliveryDetails.apartment}
+					</p>{" "}
+					<p style={{ margin: "2px 0" }}>Piętro: {deliveryDetails.floor}</p>{" "}
+					<p style={{ margin: "2px 0" }}>
+						Komentarz: {deliveryDetails.comment}
+					</p>{" "}
+					<p style={{ margin: "2px 0" }}>
+						Numer telefonu: {deliveryDetails.phone}
+					</p>{" "}
+					<p style={{ margin: "2px 0" }}>
+						Metoda płatności: {deliveryDetails.paymentMethod}
+					</p>{" "}
+					<div className="arrow-row">
+						<div className="arrow-down"></div>
+						<div className="arrow-down"></div>
+						<div className="arrow-down"></div>
+						<div className="arrow-down"></div>
+					</div>
+				</div>
+			)}
 			{category === "PIZZA" && <div className="pizza-space"></div>}
 			{items.map((item, index) => (
 				<div key={`${item.id}-${index}`} className="product-item">
@@ -191,7 +233,6 @@ const Print = ({
 					)}
 				</div>
 			))}
-			<div className="dashed-line"></div>
 			<div className="table-name">Stolik: {tableName}</div>
 			<div className="print-time">{getCurrentDateTime()}</div>
 			{pickupTime && (
@@ -211,27 +252,22 @@ const Print = ({
 					</p>
 				</div>
 			)}
-			{showDeliveryDetails && deliveryDetails && (
-				<div>
-					<h3>Dostawa:</h3>
-					<p>Numer telefonu: {deliveryDetails.phoneNumber}</p>
-					<p>Adres: {deliveryDetails.address}</p>
-					<p>Mieszkanie: {deliveryDetails.apartment}</p>
-					<p>Piętro: {deliveryDetails.floor}</p>
-					<p>Komentarz: {deliveryDetails.comment}</p>
-					<p>Metoda płatności: {deliveryDetails.paymentMethod}</p>
-				</div>
-			)}
 			<div className="dashed-line"></div>
 		</div>
 	);
 
 	const renderProducts = () => {
 		const groupedItems = groupItemsByCategory(selectedItems);
-		return Object.keys(groupedItems).map((category) =>
-			groupedItems[category].length > 0
-				? renderCategory(category, groupedItems[category])
-				: null
+		return (
+			<>
+				{Object.keys(groupedItems).map((category) =>
+					groupedItems[category].length > 0
+						? renderCategory(category, groupedItems[category])
+						: null
+				)}
+				{showDeliveryDetails &&
+					renderCategory("DOSTAWA", groupedItems["DOSTAWA"])}
+			</>
 		);
 	};
 
