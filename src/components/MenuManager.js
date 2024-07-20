@@ -441,6 +441,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setPickupTime("Invalid Date");
 		}
 	};
+	// jdjexjsjmldk
 
 	const [deliveryDetails, setDeliveryDetails] = useState({
 		address: "",
@@ -449,6 +450,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		comment: "",
 		paymentMethod: "",
 	});
+
 	return (
 		<>
 			<div className={`menu-manager-overlay ${tableStatus}`} ref={overlayRef}>
@@ -564,7 +566,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 									required
 									className="time-input"
 								/>
-								<h3>Odbiór na (godz:min)</h3>
+								<h3>Odbiór na </h3>
 								<input
 									type="text"
 									value={customPickupTime}
@@ -597,6 +599,37 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 									onClose={() => setShowDostawaModal(false)}
 									setDeliveryDetails={setDeliveryDetails}
 								/>
+								<div className="order-type-container">
+									<h3>Dostawa DO</h3>
+									<input
+										type="number"
+										value={minutesToPickup}
+										onChange={handleMinutesChange}
+										min="1"
+										required
+										className="time-input"
+									/>
+									<h3>Dostawa NA</h3>
+									<input
+										type="text"
+										value={customPickupTime}
+										onChange={handleCustomTimeChange}
+										placeholder="np. 21:40"
+										className="time-input"
+									/>
+									{pickupTime && (
+										<p
+											className={`pickup-time ${
+												customPickupTime.includes(":") ? "pickup-time-na" : ""
+											}`}>
+											{pickupTime === "Invalid Date"
+												? "Dostawa na: Invalid Date"
+												: customPickupTime.includes(":")
+												? `Dostawa DO: ${pickupTime}`
+												: `Dostawa NA: ${pickupTime}`}
+										</p>
+									)}
+								</div>
 							</div>
 						)}
 

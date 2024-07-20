@@ -357,6 +357,7 @@ export const products = [
 
 	//PIZZA.........................................................................
 	{ id: 157, name: "FOCACCIA", price: 16.9, category: "Przystawki" },
+	{ id: 229, name: "FOCACCIA", price: 16.9, category: "Pizza" },
 	{
 		id: 158,
 		name: "WŁOSKIE PIECZYWO CZOSNKOWE",
@@ -364,10 +365,22 @@ export const products = [
 		category: "Przystawki",
 	},
 	{
+		id: 228,
+		name: "WŁOSKIE PIECZYWO CZOSNKOWE",
+		price: 21.9,
+		category: "Pizza",
+	},
+	{
 		id: 159,
 		name: "MISA FRYTEK Z KETCHUPEM",
 		price: 17.9,
 		category: "Przystawki",
+	},
+	{
+		id: 230,
+		name: "MISA FRYTEK Z KETCHUPEM",
+		price: 17.9,
+		category: "Makaron",
 	},
 	{ id: 165, name: "Deska Antipasti:", price: 79.9, category: "Przystawki" },
 	{ id: 160, name: "TALERZ KEBAB", price: 41.9, category: "Przystawki" },

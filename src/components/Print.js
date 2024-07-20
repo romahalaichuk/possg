@@ -5,6 +5,7 @@ const Print = ({
 	selectedItems,
 	tableName,
 	pickupTime,
+	pickupTimes,
 	customPickupTime,
 	pickupTimeData = { minutesToPickup: 0, customPickupTime: "" },
 	deliveryDetails,
