@@ -602,9 +602,71 @@ export const products = [
 		price: 20,
 		category: "Wina",
 	},
+	{
+		id: 232,
+		name: "Włoskie wino Domowe Karafka 0.5 l",
+		price: 29.9,
+		category: "Wina",
+	},
+	{
+		id: 233,
+		name: "Włoskie wino Domowe Karafka 0.25 l",
+		price: 17.9,
+		category: "Wina",
+	},
+	{
+		id: 234,
+		name: "Casa Lunardi SAN GIOVANNI (Czerwone)",
+		price: 69.9,
+		category: "Wina",
+	},
+	{
+		id: 235,
+		name: "Casa Lunardi SAN GIOVANNI (Białe)",
+		price: 69.9,
+		category: "Wina",
+	},
+	{
+		id: 236,
+		name: "Kieliszek wina domowego",
+		price: 16.9,
+		category: "Wina",
+	},
+	{
+		id: 237,
+		name: "Piwo z beczki 0.5",
+		price: 15.9,
+		category: "Wina",
+	},
+	{
+		id: 238,
+		name: "Piwo z beczki 0.3",
+		price: 10.9,
+		category: "Wina",
+	},
+	{
+		id: 239,
+		name: "Piwo butelkowe z asortymentu",
+		price: 15.9,
+		category: "Wina",
+	},
+	{
+		id: 240,
+		name: "Sok do piwa malina",
+		price: 1.0,
+		category: "Wina",
+	},
+	{
+		id: 241,
+		name: "Sok do piwa imbyr",
+		price: 1.0,
+		category: "Wina",
+	},
+	// BAR>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	{ id: 242, name: "Sałatka z Kozim serem", price: 41.9, category: "sałatki" },
 ];
 // id 228 start
-// { id: 4, name: "Sałatka Letnia", price: 18, category: "Menu sezonowe" },
+// { id: 242, name: "Sałatka Letnia", price: 18, category: "Menu sezonowe" },
 
 // { id: 7, name: "Chianti Classico", price: 80, category: "Wina" },
 // { id: 8, name: "Mojito", price: 20, category: "Drinki" },
