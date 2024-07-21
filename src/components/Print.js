@@ -52,6 +52,8 @@ const Print = ({
 						margin: 0;
 					}
 					.product-item {
+					font-size: 14pt;
+					font-weight: bold;
 						border-bottom: 1px solid black;
 						padding: 2px 0; /* Zmniejszono padding */
 					}
@@ -65,6 +67,7 @@ const Print = ({
 						height: 1mm; /* Zmniejszono wysokość */
 					}
 					.dashed-line {
+					margin-bottom: 80px;
 						border-top: 3px dashed black; /* Zmniejszono szerokość */
 						margin-top: 1mm; /* Zmniejszono margines */
 						width: 100%;
