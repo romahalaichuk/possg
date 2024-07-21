@@ -57,19 +57,20 @@ const Print = ({
 						margin: 0;
 					}
 					.product-item {
-					font-size: 12pt;
+					font-size: 10pt;
 					font-weight: bold;
+					border-top: 1px solid black;
 						border-bottom: 1px solid black;
-						padding: 2px 0; /* Zmniejszono padding */
+						padding: 2px 0;
 					}
 					.pizza-space {
-						margin-bottom: 70px; /* Zmniejszono margines */
+						margin-bottom: 70px; 
 					}
 					.extras {
-						margin-left: 10px; /* Zmniejszono margines */
+						margin-left: 10px; 
 					}
 					.end-space {
-						height: 1mm; /* Zmniejszono wysokość */
+						height: 1mm;
 					}
 					.dashed-line {
 					margin-bottom: 80px;
