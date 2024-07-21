@@ -59,15 +59,15 @@ const Print = ({
 					.product-item {
 						font-size: 11pt;
 						font-weight: bold;
-						border-top: 1px solid black;
-						border-bottom: 1px solid black;
+						border-top: 2px solid black;
+						border-bottom: 2px solid black;
 						padding: 2px 0;
 					}
 					.pizza-space {
 						margin-bottom: 70px;
 					}
 					.extras {
-						margin-left: 35px;
+						margin-left: 39px;
 					}
 					.end-space {
 						height: 1mm;
