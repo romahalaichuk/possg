@@ -99,6 +99,14 @@ const Print = ({
 						margin-bottom: 5px; /* Zmniejszono margines */
 						font-style: italic;
 					}
+					.dashed-linee{margin-bottom: 80px;
+						border-top: 2px solid black; /* Zmniejszono szerokość */
+						margin-top: 1mm; /* Zmniejszono margines */
+						width: 100%;}
+						.dashed-lineee{margin-bottom: 1px;
+						border-top: 2px solid black; /* Zmniejszono szerokość */
+						margin-top: 1mm; /* Zmniejszono margines */
+						width: 100%;}
 					.pickup-time-container {
 						border: 2px solid black;
 						background-color: black;
@@ -199,7 +207,9 @@ const Print = ({
 	const renderCategory = (category, items) => (
 		<div key={category} style={{ marginBottom: "5px" }}>
 			{" "}
+			<div className="dashed-lineee"></div>
 			<h2 style={{ margin: "5px 0" }}>{category}</h2>{" "}
+			<div className="dashed-linee"></div>
 			{category === "DOSTAWA" && deliveryDetails && (
 				<div style={{ marginBottom: "5px" }}>
 					{" "}
