@@ -208,7 +208,7 @@ const Print = ({
 		return categories;
 	};
 
-	const renderCategory = (category, items, hasPizzaAndMakaron) => (
+	const renderCategory = (category, items, hasPizza, hasMakaron) => (
 		<div key={category} style={{ marginBottom: "5px" }}>
 			<div className="dashed-lineee"></div>
 			<h2 style={{ margin: "5px 0" }}>{category}</h2>
@@ -278,14 +278,24 @@ const Print = ({
 					)}
 				</div>
 			))}
-			{hasPizzaAndMakaron && (
+			{category === "PIZZA" && hasMakaron && (
 				<div
 					style={{
 						textAlign: "center",
 						marginTop: "10px",
 						fontWeight: "bold",
 					}}>
-					Razem z Pizzą lub Razem z Makaronem
+					Razem z Makaronem
+				</div>
+			)}
+			{category === "MAKARONY" && hasPizza && (
+				<div
+					style={{
+						textAlign: "center",
+						marginTop: "10px",
+						fontWeight: "bold",
+					}}>
+					Razem z Pizzą
 				</div>
 			)}
 			<div className="table-name">Stolik: {tableName}</div>
@@ -313,8 +323,8 @@ const Print = ({
 
 	const renderProducts = () => {
 		const groupedItems = groupItemsByCategory(selectedItems);
-		const hasPizzaAndMakaron =
-			groupedItems.PIZZA.length > 0 && groupedItems.MAKARONY.length > 0;
+		const hasPizza = groupedItems.PIZZA.length > 0;
+		const hasMakaron = groupedItems.MAKARONY.length > 0;
 
 		return (
 			<>
@@ -323,12 +333,13 @@ const Print = ({
 						? renderCategory(
 								category,
 								groupedItems[category],
-								hasPizzaAndMakaron
+								hasPizza,
+								hasMakaron
 						  )
 						: null
 				)}
 				{showDeliveryDetails &&
-					renderCategory("DOSTAWA", groupedItems["DOSTAWA"], false)}
+					renderCategory("DOSTAWA", groupedItems["DOSTAWA"], false, false)}
 			</>
 		);
 	};
