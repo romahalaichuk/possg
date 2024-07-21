@@ -214,7 +214,7 @@ const Print = ({
 					</p>{" "}
 					<p style={{ margin: "2px 0" }}>Telefon: {deliveryDetails.phone}</p>{" "}
 					<p style={{ margin: "2px 0" }}>
-						Metoda płatności: {deliveryDetails.paymentMethod}
+						Płatność: {deliveryDetails.paymentMethod}
 					</p>{" "}
 					<p>Suma: {totalAmount.toFixed(2)} zł</p>
 					{adjustments.service > 0 && (
@@ -226,8 +226,7 @@ const Print = ({
 					{adjustments.discount > 0 && (
 						<p style={{ color: "blue" }}>
 							Zastosowano {adjustments.discount.toFixed(2)} % zniżki (-{" "}
-							{discountAmount.toFixed(2)} zł), do zapłaty:{" "}
-							{(totalAmount - discountAmount).toFixed(2)} zł
+							{discountAmount.toFixed(2)} zł)
 						</p>
 					)}
 					{adjustments.addToBill > 0 && (
@@ -310,54 +309,6 @@ const Print = ({
 			{hasContentToPrint && <button onClick={handlePrint}>Drukuj</button>}
 			<div ref={printContentRef} style={{ display: "none" }}>
 				{renderProducts()}
-				{/* <h3>Podsumowanie zamówienia</h3>
-				<p>Stolik: {tableName}</p>
-				<ul>
-					{selectedItems.map((item, index) => (
-						<li key={`${item.id}-${index}`}>
-							{item.name} - {item.price ? item.price : 0} zł x {item.quantity} ={" "}
-							{(
-								(item.price +
-									(item.extras
-										? item.extras.reduce(
-												(sum, extra) =>
-													extra.category === "Dod" ? sum + extra.price : sum,
-												0
-										  )
-										: 0)) *
-								item.quantity
-							).toFixed(2)}{" "}
-							zł
-						</li>
-					))}
-				</ul>
-				<p>Suma: {totalAmount.toFixed(2)} zł</p>
-				{adjustments.service > 0 && (
-					<p style={{ color: "red" }}>
-						Zastosowano {adjustments.service}% serwisu (+{" "}
-						{serviceCharge.toFixed(2)} zł)
-					</p>
-				)}
-				{adjustments.discount > 0 && (
-					<p style={{ color: "blue" }}>
-						Zastosowano {adjustments.discount.toFixed(2)} % zniżki (-{" "}
-						{discountAmount.toFixed(2)} zł), do zapłaty:{" "}
-						{(totalAmount - discountAmount).toFixed(2)} zł
-					</p>
-				)}
-				{adjustments.addToBill > 0 && (
-					<p style={{ color: "green" }}>
-						Dodano {adjustments.addToBill.toFixed(2)} zł do rachunku (+{" "}
-						{adjustments.addToBill.toFixed(2)} zł)
-					</p>
-				)}
-				{adjustments.subtractFromBill > 0 && (
-					<p style={{ color: "blue" }}>
-						Odejmowano {adjustments.subtractFromBill.toFixed(2)} zł od rachunku
-						(- {adjustments.subtractFromBill.toFixed(2)} zł)
-					</p>
-				)}
-				<p>Łącznie do zapłaty: {totalPrice.toFixed(2)} zł</p> */}
 			</div>
 		</div>
 	);
