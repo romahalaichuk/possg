@@ -437,13 +437,13 @@ export const products = [
 	{ id: 192, name: "Kinley", price: 9.9, category: "Soki" },
 	{
 		id: 193,
-		name: "Kropla beskidu Gaz",
+		name: "Kropla beskidu Gaz Woda",
 		price: 9.9,
 		category: "Soki",
 	},
 	{
 		id: 194,
-		name: "Kropla beskidu NIE Gaz",
+		name: "Kropla beskidu NIE Gaz Woda",
 		price: 9.9,
 		category: "Soki",
 	},

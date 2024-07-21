@@ -57,25 +57,25 @@ const Print = ({
 						margin: 0;
 					}
 					.product-item {
-					font-size: 10pt;
-					font-weight: bold;
-					border-top: 1px solid black;
+						font-size: 10pt;
+						font-weight: bold;
+						border-top: 1px solid black;
 						border-bottom: 1px solid black;
 						padding: 2px 0;
 					}
 					.pizza-space {
-						margin-bottom: 70px; 
+						margin-bottom: 70px;
 					}
 					.extras {
-						margin-left: 10px; 
+						margin-left: 10px;
 					}
 					.end-space {
 						height: 1mm;
 					}
 					.dashed-line {
-					margin-bottom: 80px;
-						border-top: 3px dashed black; /* Zmniejszono szerokość */
-						margin-top: 1mm; /* Zmniejszono margines */
+						margin-bottom: 80px;
+						border-top: 3px dashed black;
+						margin-top: 1mm;
 						width: 100%;
 					}
 					.arrow-row {
@@ -83,7 +83,7 @@ const Print = ({
 					    justify-content: space-between;
 					    align-items: center;
 					    width: 100%;
-					    margin-top: 5px; 
+					    margin-top: 5px;
 					}
 					.arrow-down {
 					    width: 0;
@@ -93,30 +93,33 @@ const Print = ({
 					    border-top: 10px solid black;
 					}
 					.table-name {
-						margin-top: 5px; 
-						// font-weight: bold;
+						margin-top: 5px;
 					}
 					.print-time {
-						margin-bottom: 5px; /* Zmniejszono margines */
+						margin-bottom: 5px;
 						font-style: italic;
 					}
-					.dashed-linee{margin-bottom: 80px;
-						border-top: 2px solid black; /* Zmniejszono szerokość */
-						margin-top: 1mm; /* Zmniejszono margines */
-						width: 100%;}
-						.dashed-lineee{margin-bottom: 1px;
-						border-top: 2px solid black; /* Zmniejszono szerokość */
-						margin-top: 1mm; /* Zmniejszono margines */
-						width: 100%;}
+					.dashed-linee {
+						margin-bottom: 80px;
+						border-top: 2px solid black;
+						margin-top: 1mm;
+						width: 100%;
+					}
+					.dashed-lineee {
+						margin-bottom: 1px;
+						border-top: 2px solid black;
+						margin-top: 1mm;
+						width: 100%;
+					}
 					.pickup-time-container {
 						border: 2px solid black;
 						background-color: black;
 						color: white;
-						padding: 5px; /* Zmniejszono padding */
+						padding: 5px;
 						border-radius: 5px;
 						text-align: center;
 						font-size: 14pt;
-						margin: 5px 0; /* Zmniejszono margines */
+						margin: 5px 0;
 					}
 					.pickup-time {
 						font-weight: bold;
@@ -124,15 +127,15 @@ const Print = ({
 					@media print {
 						.cut-line {
 							position: absolute;
-							top: 5px; /* Zmniejszono margines */
+							top: 5px;
 							left: 1%;
 							width: 1px;
 							height: 100%;
 							background-color: black;
 							transform: translateX(-50%);
 						}
-					.pickup-time-container {
-							border: 5px solid black; /* Zmniejszono szerokość */
+						.pickup-time-container {
+							border: 5px solid black;
 							color: black;
 							padding: 0;
 							font-weight: bold;
@@ -205,28 +208,26 @@ const Print = ({
 		return categories;
 	};
 
-	const renderCategory = (category, items) => (
+	const renderCategory = (category, items, hasPizzaAndMakaron) => (
 		<div key={category} style={{ marginBottom: "5px" }}>
-			{" "}
 			<div className="dashed-lineee"></div>
-			<h2 style={{ margin: "5px 0" }}>{category}</h2>{" "}
+			<h2 style={{ margin: "5px 0" }}>{category}</h2>
 			<div className="dashed-linee"></div>
 			{category === "DOSTAWA" && deliveryDetails && (
 				<div style={{ marginBottom: "5px" }}>
-					{" "}
-					<h3 style={{ margin: "3px 0" }}>Dostawa:</h3>{" "}
-					<p style={{ margin: "2px 0" }}>Adres: {deliveryDetails.address}</p>{" "}
+					<h3 style={{ margin: "3px 0" }}>Dostawa:</h3>
+					<p style={{ margin: "2px 0" }}>Adres: {deliveryDetails.address}</p>
 					<p style={{ margin: "2px 0" }}>
 						Mieszkanie: {deliveryDetails.apartment}
-					</p>{" "}
-					<p style={{ margin: "2px 0" }}>Piętro: {deliveryDetails.floor}</p>{" "}
+					</p>
+					<p style={{ margin: "2px 0" }}>Piętro: {deliveryDetails.floor}</p>
 					<p style={{ margin: "2px 0" }}>
 						Komentarz: {deliveryDetails.comment}
-					</p>{" "}
-					<p style={{ margin: "2px 0" }}>Telefon: {deliveryDetails.phone}</p>{" "}
+					</p>
+					<p style={{ margin: "2px 0" }}>Telefon: {deliveryDetails.phone}</p>
 					<p style={{ margin: "2px 0" }}>
 						Płatność: {deliveryDetails.paymentMethod}
-					</p>{" "}
+					</p>
 					<p>Suma: {totalAmount.toFixed(2)} zł</p>
 					{adjustments.service > 0 && (
 						<p style={{ color: "red" }}>
@@ -277,6 +278,16 @@ const Print = ({
 					)}
 				</div>
 			))}
+			{hasPizzaAndMakaron && (
+				<div
+					style={{
+						textAlign: "center",
+						marginTop: "10px",
+						fontWeight: "bold",
+					}}>
+					Razem z Pizzą lub Razem z Makaronem
+				</div>
+			)}
 			<div className="table-name">Stolik: {tableName}</div>
 			<div className="print-time">{getCurrentDateTime()}</div>
 			{pickupTime && (
@@ -302,15 +313,22 @@ const Print = ({
 
 	const renderProducts = () => {
 		const groupedItems = groupItemsByCategory(selectedItems);
+		const hasPizzaAndMakaron =
+			groupedItems.PIZZA.length > 0 && groupedItems.MAKARONY.length > 0;
+
 		return (
 			<>
 				{Object.keys(groupedItems).map((category) =>
 					groupedItems[category].length > 0
-						? renderCategory(category, groupedItems[category])
+						? renderCategory(
+								category,
+								groupedItems[category],
+								hasPizzaAndMakaron
+						  )
 						: null
 				)}
 				{showDeliveryDetails &&
-					renderCategory("DOSTAWA", groupedItems["DOSTAWA"])}
+					renderCategory("DOSTAWA", groupedItems["DOSTAWA"], false)}
 			</>
 		);
 	};
