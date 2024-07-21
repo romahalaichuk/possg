@@ -139,7 +139,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, [showMenuItemsModal, showProcentModal, showWynosModal, showDostawaModal]);
-	const [deliveryMode, setDeliveryMode] = useState(null); // Początkowo ustawione na null, aby nie zmieniać domyślnej logiki
+	const [deliveryMode, setDeliveryMode] = useState(null);
 
 	const handleCategoryClick = (category) => {
 		setSelectedCategory(category);
@@ -148,10 +148,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 
 		if (deliveryMode === "Wynos" || deliveryMode === "Dostawa") {
 			if (category === "Pizza") {
-				// Wybierz wszystkie pizze
 				filteredItems = products.filter((item) => item.category === "Pizza");
 			} else {
-				// Wybierz wszystkie inne kategorie
 				filteredItems = products.filter((item) => item.category === category);
 			}
 		} else {
@@ -179,9 +177,14 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		} else {
 			const filteredItems = products.filter((item) => {
 				const isPizza32 = item.category === "Pizza" && item.name.includes("32");
+				const isDifferentSizePizza =
+					item.category === "Pizza" && !item.name.includes("32");
+
 				return (
 					item.name.toLowerCase().includes(term) &&
-					(item.category !== "Pizza" || isPizza32)
+					(deliveryMode === "Wynos" || deliveryMode === "Dostawa"
+						? item.category !== "Pizza" || isDifferentSizePizza
+						: item.category !== "Pizza" || isPizza32)
 				);
 			});
 			setSearchResults(filteredItems);
