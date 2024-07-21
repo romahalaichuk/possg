@@ -57,7 +57,7 @@ const Print = ({
 						margin: 0;
 					}
 					.product-item {
-					font-size: 14pt;
+					font-size: 12pt;
 					font-weight: bold;
 						border-bottom: 1px solid black;
 						padding: 2px 0; /* Zmniejszono padding */
