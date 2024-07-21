@@ -216,16 +216,16 @@ const Print = ({
 			{category === "DOSTAWA" && deliveryDetails && (
 				<div style={{ marginBottom: "5px" }}>
 					<h3 style={{ margin: "3px 0" }}>Dostawa:</h3>
-					<p style={{ margin: "2px 0" }}>Adres: {deliveryDetails.address}</p>
-					<p style={{ margin: "2px 0" }}>
+					<p style={{ margin: "1px 0" }}>Adres: {deliveryDetails.address}</p>
+					<p style={{ margin: "1px 0" }}>
 						Mieszkanie: {deliveryDetails.apartment}
 					</p>
-					<p style={{ margin: "2px 0" }}>Piętro: {deliveryDetails.floor}</p>
-					<p style={{ margin: "2px 0" }}>
+					<p style={{ margin: "1px 0" }}>Piętro: {deliveryDetails.floor}</p>
+					<p style={{ margin: "1px 0" }}>
 						Komentarz: {deliveryDetails.comment}
 					</p>
-					<p style={{ margin: "2px 0" }}>Telefon: {deliveryDetails.phone}</p>
-					<p style={{ margin: "2px 0" }}>
+					<p style={{ margin: "1px 0" }}>Telefon: {deliveryDetails.phone}</p>
+					<p style={{ margin: "1px 0" }}>
 						Płatność: {deliveryDetails.paymentMethod}
 					</p>
 					<p>Suma: {totalAmount.toFixed(2)} zł</p>
