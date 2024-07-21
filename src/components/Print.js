@@ -52,12 +52,12 @@ const Print = ({
 				<title>Drukowanie</title>
 				<style>
 					body {
-						font-size: 12pt;
+						font-size: 9pt;
 						padding: 2px 5px;
 						margin: 0;
 					}
 					.product-item {
-						font-size: 10pt;
+						font-size: 11pt;
 						font-weight: bold;
 						border-top: 1px solid black;
 						border-bottom: 1px solid black;
@@ -67,7 +67,7 @@ const Print = ({
 						margin-bottom: 70px;
 					}
 					.extras {
-						margin-left: 10px;
+						margin-left: 35px;
 					}
 					.end-space {
 						height: 1mm;
