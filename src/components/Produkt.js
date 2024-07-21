@@ -420,6 +420,11 @@ export const products = [
 		category: "Makaron",
 	},
 	//MAKARONY...........................................................................
+	//SAŁATKI...................................
+	{ id: 263, name: "Sałatka  Grecka", price: 36.9, category: "sałatki" },
+	{ id: 264, name: "Sałatka  z Kurczakiem", price: 39.9, category: "sałatki" },
+	{ id: 265, name: "Sałatka  z Tuńczykiem", price: 39.9, category: "sałatki" },
+	{ id: 266, name: "Sałatka  Parmeńska", price: 42.9, category: "sałatki" },
 	{ id: 188, name: "Coca-Cola", price: 9.9, category: "Soki" },
 	{
 		id: 189,
@@ -683,7 +688,7 @@ export const products = [
 		category: "napoje",
 	},
 ];
-// id 228 start
+// id 267 start
 // { id: 242, name: "Sałatka Letnia", price: 18, category: "Menu sezonowe" },
 
 // { id: 7, name: "Chianti Classico", price: 80, category: "Wina" },

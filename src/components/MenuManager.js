@@ -676,6 +676,11 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							deliveryDetails={deliveryDetails}
 							showDeliveryDetails={showDeliveryDetails}
 							onClose={onClose}
+							totalAmount={totalAmount}
+							discountAmount={discountAmount}
+							serviceCharge={serviceCharge}
+							adjustments={adjustments}
+							calculateAdjustedTotal={calculateAdjustedTotal}
 						/>
 					</div>
 					{showPaymentModal && (
