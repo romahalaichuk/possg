@@ -1,16 +1,40 @@
 import React, { useState } from "react";
 
-const Dostawa = ({ onClose, setDeliveryDetails, adjustedTotalAmount }) => {
-	const [address, setAddress] = useState("");
-	const [apartment, setApartment] = useState("");
-	const [floor, setFloor] = useState("");
-	const [comment, setComment] = useState("");
-	const [paymentMethod, setPaymentMethod] = useState("");
-	const [phone, setPhoneNumber] = useState("");
+const Dostawa = ({
+	onClose,
+	setDeliveryDetails,
+	adjustedTotalAmount,
+	tableName,
+}) => {
+	const addressKey = `${tableName}_address`;
+	const apartmentKey = `${tableName}_apartment`;
+	const floorKey = `${tableName}_floor`;
+	const commentKey = `${tableName}_comment`;
+	const paymentMethodKey = `${tableName}_paymentMethod`;
+	const phoneKey = `${tableName}_phone`;
 
+	const [address, setAddress] = useState(
+		localStorage.getItem(addressKey) || ""
+	);
+	const [apartment, setApartment] = useState(
+		localStorage.getItem(apartmentKey) || ""
+	);
+	const [floor, setFloor] = useState(localStorage.getItem(floorKey) || "");
+	const [comment, setComment] = useState(
+		localStorage.getItem(commentKey) || ""
+	);
+	const [paymentMethod, setPaymentMethod] = useState(
+		localStorage.getItem(paymentMethodKey) || ""
+	);
+	const [phone, setPhoneNumber] = useState(
+		localStorage.getItem(phoneKey) || ""
+	);
+
+	// Funkcje obsługujące zmiany wartości oraz zapisujące do localStorage
 	const handleAddressChange = (e) => {
 		const newAddress = e.target.value;
 		setAddress(newAddress);
+		localStorage.setItem(addressKey, newAddress);
 		setDeliveryDetails((prevDetails) => ({
 			...prevDetails,
 			address: newAddress,
@@ -20,23 +44,27 @@ const Dostawa = ({ onClose, setDeliveryDetails, adjustedTotalAmount }) => {
 	const handleApartmentChange = (e) => {
 		const newApartment = e.target.value;
 		setApartment(newApartment);
+		localStorage.setItem(apartmentKey, newApartment);
 		setDeliveryDetails((prevDetails) => ({
 			...prevDetails,
 			apartment: newApartment,
 		}));
 	};
+
 	const handlePhoneChange = (e) => {
 		const newPhone = e.target.value;
 		setPhoneNumber(newPhone);
+		localStorage.setItem(phoneKey, newPhone);
 		setDeliveryDetails((prevDetails) => ({
 			...prevDetails,
-			phone: newPhone, // Używamy "phone" zamiast "phoneNumber"
+			phone: newPhone,
 		}));
 	};
 
 	const handleFloorChange = (e) => {
 		const newFloor = e.target.value;
 		setFloor(newFloor);
+		localStorage.setItem(floorKey, newFloor);
 		setDeliveryDetails((prevDetails) => ({
 			...prevDetails,
 			floor: newFloor,
@@ -46,6 +74,7 @@ const Dostawa = ({ onClose, setDeliveryDetails, adjustedTotalAmount }) => {
 	const handleCommentChange = (e) => {
 		const newComment = e.target.value;
 		setComment(newComment);
+		localStorage.setItem(commentKey, newComment);
 		setDeliveryDetails((prevDetails) => ({
 			...prevDetails,
 			comment: newComment,
@@ -55,6 +84,7 @@ const Dostawa = ({ onClose, setDeliveryDetails, adjustedTotalAmount }) => {
 	const handlePaymentMethodChange = (e) => {
 		const newPaymentMethod = e.target.value;
 		setPaymentMethod(newPaymentMethod);
+		localStorage.setItem(paymentMethodKey, newPaymentMethod);
 		setDeliveryDetails((prevDetails) => ({
 			...prevDetails,
 			paymentMethod: newPaymentMethod,
