@@ -192,22 +192,20 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	};
 
 	const handleItemSelect = (item) => {
-		const existingPizza = selectedItems.find(
-			(i) => i.category === "Pizza" && i.id === item.id
-		);
+		const existingItem = selectedItems.find((i) => i.id === item.id);
 
-		if (existingPizza) {
+		if (existingItem) {
 			const updatedItems = selectedItems.map((i) =>
-				i === existingPizza ? { ...i, quantity: i.quantity + 1 } : i
+				i.id === existingItem.id ? { ...i, quantity: i.quantity + 1 } : i
 			);
 			setSelectedItems(updatedItems);
 			updateSelectedItems(tableName, updatedItems);
 			addSelectedItem(
-				`${tableName}_${existingPizza.id}`,
-				existingPizza.id,
-				existingPizza.name,
-				existingPizza.price,
-				existingPizza.comment || ""
+				`${tableName}_${existingItem.id}`,
+				existingItem.id,
+				existingItem.name,
+				existingItem.price,
+				existingItem.comment || ""
 			);
 		} else {
 			const updatedItems = [...selectedItems, { ...item, quantity: 1 }];
