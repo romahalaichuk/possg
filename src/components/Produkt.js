@@ -394,10 +394,10 @@ export const products = [
 		category: "pizza",
 	},
 	//Sosy...............................................................................
-	{ id: 170, name: "Caldzone Capri:", price: 42.9, category: "Pizza" },
-	{ id: 171, name: "Caldzone Spinachi:", price: 45.9, category: "Pizza" },
-	{ id: 172, name: "Caldzone Extra:", price: 47.9, category: "Pizza" },
-	{ id: 173, name: "Caldzone Gyros:", price: 45.9, category: "Pizza" },
+	{ id: 170, name: "Caldzone Capri:", price: 42.9, category: "pizza" },
+	{ id: 171, name: "Caldzone Spinachi:", price: 45.9, category: "pizza" },
+	{ id: 172, name: "Caldzone Extra:", price: 47.9, category: "pizza" },
+	{ id: 173, name: "Caldzone Gyros:", price: 45.9, category: "pizza" },
 	//Caldzone.........................................................................
 	{ id: 174, name: "AGLIO OLIO", price: 34.9, category: "Makaron" },
 	{ id: 175, name: "BOLOGNESE", price: 36.9, category: "Makaron" },
@@ -752,6 +752,12 @@ export const products = [
 		name: "Lemoniada Kwiatkowa Magiczna 1 L",
 		price: 26.9,
 		category: "napoje",
+	},
+	{
+		id: 249,
+		name: "Mus czekoladowy, Krem czekoladowy",
+		price: 19.9,
+		category: "desery",
 	},
 ];
 // id 267 start
