@@ -419,6 +419,18 @@ export const products = [
 		price: 44.9,
 		category: "Makaron",
 	},
+	{
+		id: 268,
+		name: "Tagliatelle VERDE del Mare",
+		price: 44.9,
+		category: "Makaron",
+	},
+	{
+		id: 269,
+		name: "Tagliatelle Gambaretti",
+		price: 45.9,
+		category: "Makaron",
+	},
 	//MAKARONY...........................................................................
 	//SAŁATKI...................................
 	{ id: 263, name: "Sałatka  Grecka", price: 36.9, category: "sałatki" },
