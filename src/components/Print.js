@@ -15,6 +15,7 @@ const Print = ({
 	serviceCharge,
 	adjustments,
 	calculateAdjustedTotal,
+	resetDeliveryDetails, // Dodaj ten prop
 }) => {
 	const totalPrice = calculateAdjustedTotal();
 	const printContentRef = useRef(null);

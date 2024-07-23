@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./ManagerPanel.css";
 import jsPDF from "jspdf";
-import {
-	getTableDetails,
-	calculateTotalTablesDuringDay,
-	calculateTotalWynos,
-	calculateTotalAmount,
-} from "./LocalStorageManager";
+import { getTableDetails } from "./LocalStorageManager";
 
 const ManagerPanel = ({ onClose }) => {
 	const [tables, setTables] = useState([]);
 	const [wynosTables, setWynosTables] = useState([]);
+	const [paymentDetails, setPaymentDetails] = useState({ cash: 0, card: 0 });
 
 	useEffect(() => {
 		const loadData = async () => {
@@ -19,22 +15,20 @@ const ManagerPanel = ({ onClose }) => {
 					JSON.parse(localStorage.getItem("servedTables")) || [];
 				const storedWynosTables =
 					JSON.parse(localStorage.getItem("servedWynosTables")) || [];
+				const storedPaymentDetails = JSON.parse(
+					localStorage.getItem("paymentDetails")
+				) || { cash: 0, card: 0 };
 
-				console.log("Stored Tables:", storedTables);
-				console.log("Stored Wynos Tables:", storedWynosTables);
-
-				const tableDetails = storedTables.map((tableName) =>
-					getTableDetails(tableName)
+				const tableDetails = await Promise.all(
+					storedTables.map((tableName) => getTableDetails(tableName))
 				);
-				const wynosDetails = storedWynosTables.map((tableName) =>
-					getTableDetails(tableName)
+				const wynosDetails = await Promise.all(
+					storedWynosTables.map((tableName) => getTableDetails(tableName))
 				);
-
-				console.log("Table Details:", tableDetails);
-				console.log("Wynos Details:", wynosDetails);
 
 				setTables(tableDetails);
 				setWynosTables(wynosDetails);
+				setPaymentDetails(storedPaymentDetails);
 			} catch (error) {
 				console.error("Error loading data from local storage:", error);
 			}
@@ -43,8 +37,20 @@ const ManagerPanel = ({ onClose }) => {
 		loadData();
 	}, []);
 
-	const totalTablesDuringDay = calculateTotalTablesDuringDay(tables);
-	const totalWynos = calculateTotalWynos(wynosTables);
+	const calculateTotalTablesDuringDay = tables.length;
+	const calculateTotalWynos = wynosTables.length;
+	const calculateTotalAmount = (tables, wynosTables) => {
+		const tableTotal = tables.reduce(
+			(sum, table) => sum + table.totalAmount,
+			0
+		);
+		const wynosTotal = wynosTables.reduce(
+			(sum, table) => sum + table.totalAmount,
+			0
+		);
+		return tableTotal + wynosTotal;
+	};
+
 	const totalAmount = calculateTotalAmount(tables, wynosTables);
 
 	const handleExportToPDF = () => {
@@ -53,49 +59,56 @@ const ManagerPanel = ({ onClose }) => {
 		const dateString = `${currentDate.getDate()}-${
 			currentDate.getMonth() + 1
 		}-${currentDate.getFullYear()}`;
+		let yOffset = 10;
 
-		doc.text("Panel Managera", 20, 10);
+		doc.text("Panel Managera", 20, yOffset);
+		yOffset += 10;
 		doc.text(
-			`Łączna liczba stolików (w ciągu dnia): ${totalTablesDuringDay}`,
+			`Łączna liczba stolików (w ciągu dnia): ${calculateTotalTablesDuringDay}`,
 			20,
-			20
+			yOffset
 		);
-		doc.text(`Łączna liczba wynosów: ${totalWynos}`, 20, 30);
-		doc.text(`Łączna kwota: ${totalAmount} PLN`, 20, 40);
+		yOffset += 10;
+		doc.text(`Łączna liczba wynosów: ${calculateTotalWynos}`, 20, yOffset);
+		yOffset += 10;
+		doc.text(`Łączna kwota: ${totalAmount} PLN`, 20, yOffset);
+		yOffset += 10;
+		doc.text(`Łączna kwota gotówki: ${paymentDetails.cash} PLN`, 20, yOffset);
+		yOffset += 10;
+		doc.text(`Łączna kwota kartą: ${paymentDetails.card} PLN`, 20, yOffset);
+		yOffset += 10;
 
-		let yOffset = 50;
+		const addTableDetails = (tableList, type) => {
+			tableList.forEach((table, index) => {
+				if (yOffset > 260) {
+					// Check if yOffset exceeds page height
+					doc.addPage();
+					yOffset = 10;
+				}
+				doc.text(
+					`${type}: ${table.name}, Produkty: ${table.products
+						.map((p) => `${p.name} (${p.quantity} x ${p.price} PLN)`)
+						.join(", ")}, Zniżka: ${table.discount}, Kwota: ${
+						table.totalAmount
+					} PLN, Płatność: ${table.paymentMethod}`,
+					20,
+					yOffset
+				);
+				yOffset += 10;
+			});
+		};
 
-		tables.forEach((table) => {
-			doc.text(
-				`Stolik: ${table.name}, Produkty: ${table.products
-					.map((p) => `${p.name} (${p.quantity} x ${p.price} PLN)`)
-					.join(", ")}, Zniżka: ${table.discount}, Kwota: ${
-					table.totalAmount
-				} PLN, Płatność: ${table.paymentMethod}`,
-				20,
-				yOffset
-			);
-			yOffset += 10;
-		});
-
-		wynosTables.forEach((table) => {
-			doc.text(
-				`Wynos: ${table.name}, Produkty: ${table.products
-					.map((p) => `${p.name} (${p.quantity} x ${p.price} PLN)`)
-					.join(", ")}, Zniżka: ${table.discount}, Kwota: ${
-					table.totalAmount
-				} PLN, Płatność: ${table.paymentMethod}`,
-				20,
-				yOffset
-			);
-			yOffset += 10;
-		});
+		addTableDetails(tables, "Stolik");
+		addTableDetails(wynosTables, "Wynos");
 
 		doc.save(`panel_managera_${dateString}.pdf`);
 
 		localStorage.removeItem("servedTables");
 		localStorage.removeItem("servedWynosTables");
-		window.location.reload();
+		localStorage.removeItem("paymentDetails");
+		setTables([]);
+		setWynosTables([]);
+		setPaymentDetails({ cash: 0, card: 0 });
 	};
 
 	return (
@@ -107,13 +120,19 @@ const ManagerPanel = ({ onClose }) => {
 			<div className="manager-info">
 				<div className="info-item">
 					<strong>Łączna liczba stolików (w ciągu dnia):</strong>{" "}
-					{totalTablesDuringDay}
+					{calculateTotalTablesDuringDay}
 				</div>
 				<div className="info-item">
-					<strong>Łączna liczba wynosów:</strong> {totalWynos}
+					<strong>Łączna liczba wynosów:</strong> {calculateTotalWynos}
 				</div>
 				<div className="info-item">
 					<strong>Łączna kwota:</strong> {totalAmount} PLN
+				</div>
+				<div className="info-item">
+					<strong>Łączna kwota gotówki:</strong> {paymentDetails.cash} PLN
+				</div>
+				<div className="info-item">
+					<strong>Łączna kwota kartą:</strong> {paymentDetails.card} PLN
 				</div>
 				<div className="info-item">
 					<strong>Szczegóły stolików i wynosów:</strong>

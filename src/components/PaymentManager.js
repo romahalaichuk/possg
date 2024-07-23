@@ -20,9 +20,20 @@ const PaymentManager = ({ selectedItems, adjustedTotalAmount, onClose }) => {
 	}, [amountGiven, adjustedTotalAmount]);
 
 	const handleFinalizePayment = () => {
-		console.log("Płatność została zakończona");
+		const paymentDetails = {
+			totalAmount: adjustedTotalAmount,
+			paymentType: selectedPaymentType,
+			amountGiven: parseFloat(amountGiven) || 0,
+			changeAmount,
+		};
+
+		console.log("Płatność została zakończona:", paymentDetails);
+
+		// Save payment details to localStorage or pass it to the parent component
+		localStorage.setItem("paymentDetails", JSON.stringify(paymentDetails));
+
 		setSelectedPaymentType(null);
-		onClose();
+		onClose(paymentDetails); // Pass payment details to parent component
 	};
 
 	const handlePaymentTypeClick = (paymentType) => {
