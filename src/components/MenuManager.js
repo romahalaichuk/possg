@@ -15,16 +15,7 @@ import {
 	updateSelectedItems,
 } from "./LocalStorageManager";
 
-const categories = [
-	"Przystawki",
-	"Pizza",
-	"Makaron",
-	"Menu sezonowe",
-	"Desery",
-	"Napój bezalkoholowy",
-	"Wina",
-	"Drinki",
-];
+const categories = ["Pizza", "Makaron", "Wina", "Piwo", "Desery", "Drinki"];
 
 const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const [minutesToPickup, setMinutesToPickup] = useState("");

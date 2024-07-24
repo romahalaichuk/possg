@@ -195,6 +195,7 @@ const Print = ({
 						break;
 					case "napoje":
 					case "soki":
+					case "piwo":
 					case "wina":
 					case "drinki":
 						categories.BAR.push(item);

@@ -37,8 +37,8 @@ const ManagerPanel = ({ onClose }) => {
 		loadData();
 	}, []);
 
-	const calculateTotalTablesDuringDay = tables.length;
-	const calculateTotalWynos = wynosTables.length;
+	const calculateTotalTablesDuringDay = () => tables.length;
+	const calculateTotalWynos = () => wynosTables.length;
 	const calculateTotalAmount = (tables, wynosTables) => {
 		const tableTotal = tables.reduce(
 			(sum, table) => sum + table.totalAmount,
@@ -64,12 +64,12 @@ const ManagerPanel = ({ onClose }) => {
 		doc.text("Panel Managera", 20, yOffset);
 		yOffset += 10;
 		doc.text(
-			`Łączna liczba stolików (w ciągu dnia): ${calculateTotalTablesDuringDay}`,
+			`Łączna liczba stolików (w ciągu dnia): ${calculateTotalTablesDuringDay()}`,
 			20,
 			yOffset
 		);
 		yOffset += 10;
-		doc.text(`Łączna liczba wynosów: ${calculateTotalWynos}`, 20, yOffset);
+		doc.text(`Łączna liczba wynosów: ${calculateTotalWynos()}`, 20, yOffset);
 		yOffset += 10;
 		doc.text(`Łączna kwota: ${totalAmount} PLN`, 20, yOffset);
 		yOffset += 10;
@@ -103,9 +103,8 @@ const ManagerPanel = ({ onClose }) => {
 
 		doc.save(`panel_managera_${dateString}.pdf`);
 
-		localStorage.removeItem("servedTables");
-		localStorage.removeItem("servedWynosTables");
-		localStorage.removeItem("paymentDetails");
+		// Clear entire localStorage and reset state
+		localStorage.clear();
 		setTables([]);
 		setWynosTables([]);
 		setPaymentDetails({ cash: 0, card: 0 });
@@ -120,10 +119,10 @@ const ManagerPanel = ({ onClose }) => {
 			<div className="manager-info">
 				<div className="info-item">
 					<strong>Łączna liczba stolików (w ciągu dnia):</strong>{" "}
-					{calculateTotalTablesDuringDay}
+					{calculateTotalTablesDuringDay()}
 				</div>
 				<div className="info-item">
-					<strong>Łączna liczba wynosów:</strong> {calculateTotalWynos}
+					<strong>Łączna liczba wynosów:</strong> {calculateTotalWynos()}
 				</div>
 				<div className="info-item">
 					<strong>Łączna kwota:</strong> {totalAmount} PLN
