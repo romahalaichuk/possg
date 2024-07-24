@@ -32,8 +32,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const [showMenuItemsModal, setShowMenuItemsModal] = useState(false);
 	const [showPaymentModal, setShowPaymentModal] = useState(false);
 	const [showProcentModal, setShowProcentModal] = useState(false);
-	const [showWynosModal, setShowWynosModal] = useState(false); // Stan dla modala Wynos
-	const [showDostawaModal, setShowDostawaModal] = useState(false); // Stan dla modala Dostawa
+	const [showWynosModal, setShowWynosModal] = useState(false);
+	const [showDostawaModal, setShowDostawaModal] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [pickupTimeData, setPickupTimeData] = useState(null);
 	const [isWynos, setIsWynos] = useState(false);

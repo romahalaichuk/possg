@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ManagerPanel.css";
 import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const ManagerPanel = ({ onClose }) => {
 	const [tables, setTables] = useState([]);
@@ -18,6 +19,10 @@ const ManagerPanel = ({ onClose }) => {
 		setWynosTables(storedWynosTables);
 		setPaymentDetails(storedPaymentDetails);
 	}, []);
+
+	const formatCurrency = (amount) => {
+		return amount.toFixed(2);
+	};
 
 	const calculateTotalAmount = (tables, wynosTables) => {
 		const tableTotal = tables.reduce((total, table) => {
@@ -43,15 +48,21 @@ const ManagerPanel = ({ onClose }) => {
 		return tableTotal + wynosTotal;
 	};
 
-	const totalAmount = calculateTotalAmount(tables, wynosTables);
-	const totalCash = paymentDetails
-		.filter((p) => p.paymentType === "GOTÓWA")
-		.reduce((total, p) => total + p.totalAmount, 0);
-	const totalCard = paymentDetails
-		.filter((p) => p.paymentType === "KARTA")
-		.reduce((total, p) => total + p.totalAmount, 0);
+	const totalAmount = formatCurrency(calculateTotalAmount(tables, wynosTables));
+	const totalCash = formatCurrency(
+		paymentDetails
+			.filter((p) => p.paymentType === "GOTÓWA")
+			.reduce((total, p) => total + p.totalAmount, 0)
+	);
+	const totalCard = formatCurrency(
+		paymentDetails
+			.filter((p) => p.paymentType === "KARTA")
+			.reduce((total, p) => total + p.totalAmount, 0)
+	);
 
-	const totalSales = totalCash + totalCard;
+	const totalSales = formatCurrency(
+		parseFloat(totalCash) + parseFloat(totalCard)
+	);
 
 	const handleExportToPDF = () => {
 		const doc = new jsPDF();
@@ -61,44 +72,68 @@ const ManagerPanel = ({ onClose }) => {
 		}-${currentDate.getFullYear()}`;
 		let yOffset = 10;
 
-		doc.text("Panel Managera", 20, yOffset);
-		yOffset += 10;
-		doc.text(`Łączna kwota: ${totalAmount} PLN`, 20, yOffset);
-		yOffset += 10;
-		doc.text(`Łączna kwota gotówki: ${totalCash} PLN`, 20, yOffset);
-		yOffset += 10;
-		doc.text(`Łączna kwota kartą: ${totalCard} PLN`, 20, yOffset);
-		yOffset += 10;
+		doc.setFontSize(12);
 
-		// Dodaj informację o sali utarg
+		doc.text("Panel Managera", 20, yOffset);
+		yOffset += 15;
+
+		doc.setFontSize(10);
 		doc.text(`SALA UTARG: ${totalSales} PLN`, 20, yOffset);
 		yOffset += 10;
+		doc.text(`Razem gotówki z salo: ${totalCash} PLN`, 20, yOffset);
+		yOffset += 10;
+		doc.text(`Razem kart z sali: ${totalCard} PLN`, 20, yOffset);
+		yOffset += 15;
+
+		// Dodanie tabeli z szczegółami płatności
+		doc.autoTable({
+			startY: yOffset,
+			head: [["Stolik", "Kwota", "Płatność"]],
+			body: paymentDetails.map((detail) => [
+				detail.tableName,
+				`${formatCurrency(detail.totalAmount)} PLN`,
+				detail.paymentType,
+			]),
+			theme: "striped",
+			headStyles: { fillColor: [255, 0, 0] }, // Kolor nagłówka tabeli
+			margin: { top: 20 },
+			pageBreak: "auto",
+			styles: { fontSize: 8 },
+		});
+
+		let finalY = doc.autoTable.previous.finalY;
+		if (finalY > 260) {
+			doc.addPage();
+			finalY = 10;
+		}
 
 		paymentDetails.forEach((detail) => {
-			if (yOffset > 260) {
+			if (finalY > 260) {
 				doc.addPage();
-				yOffset = 10;
+				finalY = 10;
 			}
 			doc.text(
-				`Stolik: ${detail.tableName}, Kwota: ${detail.totalAmount} PLN, Płatność: ${detail.paymentType}`,
+				`Stolik: ${detail.tableName}, Kwota: ${formatCurrency(
+					detail.totalAmount
+				)} PLN, Płatność: ${detail.paymentType}`,
 				20,
-				yOffset
+				finalY
 			);
-			yOffset += 10;
+			finalY += 10;
 
 			if (detail.selectedItems && detail.selectedItems.length > 0) {
 				detail.selectedItems.forEach((item) => {
 					doc.text(
-						`Produkt: ${item.name}, Ilość: ${item.quantity}, Cena: ${
-							item.price * item.quantity
-						} PLN`,
+						`Produkt: ${item.name}, Ilość: ${
+							item.quantity
+						}, Cena: ${formatCurrency(item.price * item.quantity)} PLN`,
 						20,
-						yOffset
+						finalY
 					);
-					yOffset += 10;
+					finalY += 10;
 				});
 			}
-			yOffset += 10;
+			finalY += 10;
 		});
 
 		doc.save(`panel_managera_${dateString}.pdf`);
@@ -130,14 +165,15 @@ const ManagerPanel = ({ onClose }) => {
 					<ul>
 						{paymentDetails.map((detail) => (
 							<li key={detail.id}>
-								Stolik: {detail.tableName}, Kwota: {detail.totalAmount} PLN,
-								Płatność: {detail.paymentType}
+								Stolik: {detail.tableName}, Kwota:{" "}
+								{formatCurrency(detail.totalAmount)} PLN, Płatność:{" "}
+								{detail.paymentType}
 								{detail.selectedItems && detail.selectedItems.length > 0 && (
 									<ul>
 										{detail.selectedItems.map((item) => (
 											<li key={item.id}>
 												Produkt: {item.name}, Ilość: {item.quantity}, Cena:{" "}
-												{item.price * item.quantity} PLN
+												{formatCurrency(item.price * item.quantity)} PLN
 											</li>
 										))}
 									</ul>
