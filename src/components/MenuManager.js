@@ -38,7 +38,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const [showDostawaModal, setShowDostawaModal] = useState(false); // Stan dla modala Dostawa
 	const [searchTerm, setSearchTerm] = useState("");
 	const [pickupTimeData, setPickupTimeData] = useState(null);
-
+	const [isWynos, setIsWynos] = useState(false);
 	const [searchResults, setSearchResults] = useState([]);
 	const [menuItems, setMenuItems] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState(categories[0]);
@@ -60,6 +60,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setDeliveryMode("Wynos");
 			setShowWynosModal(true);
 			setShowDostawaModal(false);
+			setIsWynos(true);
 		}
 	};
 
@@ -69,6 +70,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setShowDostawaModal(true);
 			setShowWynosModal(false);
 			setShowDeliveryDetails(true);
+			setIsWynos(false);
 		}
 	};
 
@@ -560,6 +562,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 						{/* Dodane formularze Wynos i Dostawa */}
 						{showWynosModal && (
 							<div className="order-type-container">
+								<h3 style={{ margin: "3px 0" }}>Wynos:</h3>
 								<h3>Odbiór za ile minut?</h3>
 								<input
 									type="number"
@@ -684,6 +687,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							serviceCharge={serviceCharge}
 							adjustments={adjustments}
 							calculateAdjustedTotal={calculateAdjustedTotal}
+							isWynos={isWynos}
 						/>
 					</div>
 					{showPaymentModal && (

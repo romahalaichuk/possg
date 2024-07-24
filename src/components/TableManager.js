@@ -244,6 +244,7 @@ const TableManager = () => {
 					<ManagerPanel tables={tables} wynosTables={wynosTables} />
 				</div>
 			)}
+
 			{wynosModalOpen && (
 				<div className="modal-overlay" onClick={handleWynosModalClose}>
 					<WynosListModal

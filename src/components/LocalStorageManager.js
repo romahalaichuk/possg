@@ -1,10 +1,8 @@
-// Retrieves the list of selected items for a given table from local storage
 export const getSelectedItems = (tableName) => {
 	const storedItems = localStorage.getItem(tableName);
 	return storedItems ? JSON.parse(storedItems) : [];
 };
 
-// Adds or updates a product in the selected items list for a given table
 export const addSelectedItem = (
 	tableName,
 	productId,
@@ -33,7 +31,6 @@ export const addSelectedItem = (
 	localStorage.setItem(tableName, JSON.stringify(selectedItems));
 };
 
-// Removes or updates a product's quantity in the selected items list for a given table
 export const removeSelectedItem = (tableName, productId) => {
 	const selectedItems = getSelectedItems(tableName);
 	const updatedItems = selectedItems
@@ -48,17 +45,14 @@ export const removeSelectedItem = (tableName, productId) => {
 	localStorage.setItem(tableName, JSON.stringify(updatedItems));
 };
 
-// Clears all selected items for a given table
 export const clearSelectedItems = (tableName) => {
 	localStorage.removeItem(tableName);
 };
 
-// Updates the list of selected items for a given table
 export const updateSelectedItems = (tableName, items) => {
 	localStorage.setItem(tableName, JSON.stringify(items));
 };
 
-// Adds an extra to a product's extras list for a given table
 export const addExtraToItem = (tableName, productId, extra) => {
 	const selectedItems = getSelectedItems(tableName);
 	const itemIndex = selectedItems.findIndex((item) => item.id === productId);
@@ -73,7 +67,6 @@ export const addExtraToItem = (tableName, productId, extra) => {
 	}
 };
 
-// Removes an extra from a product's extras list for a given table
 export const removeExtraFromItem = (tableName, productId, extraId) => {
 	const selectedItems = getSelectedItems(tableName);
 	const itemIndex = selectedItems.findIndex((item) => item.id === productId);
@@ -84,8 +77,6 @@ export const removeExtraFromItem = (tableName, productId, extraId) => {
 		localStorage.setItem(tableName, JSON.stringify(selectedItems));
 	}
 };
-
-// Retrieves details for a given table including discount and payment method
 export const getTableDetails = (tableName) => {
 	const storedItems = getSelectedItems(tableName);
 	const discount = parseFloat(
@@ -114,7 +105,6 @@ export const getTableDetails = (tableName) => {
 	};
 };
 
-// Calculates the total number of tables with specific statuses
 export const calculateTotalTablesDuringDay = (tables) => {
 	const occupiedTables = tables.filter(
 		(table) =>
@@ -125,7 +115,6 @@ export const calculateTotalTablesDuringDay = (tables) => {
 	return occupiedTables.length;
 };
 
-// Calculates the total number of wynos (takeaways) with specific status
 export const calculateTotalWynos = (wynosTables) => {
 	const occupiedWynos = wynosTables.filter(
 		(table) => table.status === "occupied"
@@ -133,7 +122,6 @@ export const calculateTotalWynos = (wynosTables) => {
 	return occupiedWynos.length;
 };
 
-// Calculates the total amount for both tables and wynos
 export const calculateTotalAmount = (tables, wynosTables) => {
 	const totalAmountTables = tables.reduce(
 		(accumulator, currentTable) =>

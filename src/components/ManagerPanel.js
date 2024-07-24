@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./ManagerPanel.css";
 import jsPDF from "jspdf";
-import { getTableDetails } from "./LocalStorageManager";
+import {
+	getTableDetails,
+	calculateTotalTablesDuringDay,
+	calculateTotalWynos,
+	calculateTotalAmount,
+} from "./LocalStorageManager";
 
 const ManagerPanel = ({ onClose }) => {
 	const [tables, setTables] = useState([]);
@@ -19,12 +24,18 @@ const ManagerPanel = ({ onClose }) => {
 					localStorage.getItem("paymentDetails")
 				) || { cash: 0, card: 0 };
 
+				console.log("Stored Tables:", storedTables);
+				console.log("Stored Wynos Tables:", storedWynosTables);
+
 				const tableDetails = await Promise.all(
 					storedTables.map((tableName) => getTableDetails(tableName))
 				);
 				const wynosDetails = await Promise.all(
 					storedWynosTables.map((tableName) => getTableDetails(tableName))
 				);
+
+				console.log("Table Details:", tableDetails);
+				console.log("Wynos Details:", wynosDetails);
 
 				setTables(tableDetails);
 				setWynosTables(wynosDetails);
@@ -36,20 +47,6 @@ const ManagerPanel = ({ onClose }) => {
 
 		loadData();
 	}, []);
-
-	const calculateTotalTablesDuringDay = () => tables.length;
-	const calculateTotalWynos = () => wynosTables.length;
-	const calculateTotalAmount = (tables, wynosTables) => {
-		const tableTotal = tables.reduce(
-			(sum, table) => sum + table.totalAmount,
-			0
-		);
-		const wynosTotal = wynosTables.reduce(
-			(sum, table) => sum + table.totalAmount,
-			0
-		);
-		return tableTotal + wynosTotal;
-	};
 
 	const totalAmount = calculateTotalAmount(tables, wynosTables);
 
@@ -64,12 +61,18 @@ const ManagerPanel = ({ onClose }) => {
 		doc.text("Panel Managera", 20, yOffset);
 		yOffset += 10;
 		doc.text(
-			`Łączna liczba stolików (w ciągu dnia): ${calculateTotalTablesDuringDay()}`,
+			`Łączna liczba stolików (w ciągu dnia): ${calculateTotalTablesDuringDay(
+				tables
+			)}`,
 			20,
 			yOffset
 		);
 		yOffset += 10;
-		doc.text(`Łączna liczba wynosów: ${calculateTotalWynos()}`, 20, yOffset);
+		doc.text(
+			`Łączna liczba wynosów: ${calculateTotalWynos(wynosTables)}`,
+			20,
+			yOffset
+		);
 		yOffset += 10;
 		doc.text(`Łączna kwota: ${totalAmount} PLN`, 20, yOffset);
 		yOffset += 10;
@@ -81,7 +84,6 @@ const ManagerPanel = ({ onClose }) => {
 		const addTableDetails = (tableList, type) => {
 			tableList.forEach((table, index) => {
 				if (yOffset > 260) {
-					// Check if yOffset exceeds page height
 					doc.addPage();
 					yOffset = 10;
 				}
@@ -103,7 +105,7 @@ const ManagerPanel = ({ onClose }) => {
 
 		doc.save(`panel_managera_${dateString}.pdf`);
 
-		// Clear entire localStorage and reset state
+		// Optionally clear localStorage and reset state
 		localStorage.clear();
 		setTables([]);
 		setWynosTables([]);
@@ -119,10 +121,11 @@ const ManagerPanel = ({ onClose }) => {
 			<div className="manager-info">
 				<div className="info-item">
 					<strong>Łączna liczba stolików (w ciągu dnia):</strong>{" "}
-					{calculateTotalTablesDuringDay()}
+					{calculateTotalTablesDuringDay(tables)}
 				</div>
 				<div className="info-item">
-					<strong>Łączna liczba wynosów:</strong> {calculateTotalWynos()}
+					<strong>Łączna liczba wynosów:</strong>{" "}
+					{calculateTotalWynos(wynosTables)}
 				</div>
 				<div className="info-item">
 					<strong>Łączna kwota:</strong> {totalAmount} PLN

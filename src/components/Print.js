@@ -16,6 +16,7 @@ const Print = ({
 	adjustments,
 	calculateAdjustedTotal,
 	resetDeliveryDetails,
+	isWynos,
 }) => {
 	const totalPrice = calculateAdjustedTotal();
 	const printContentRef = useRef(null);
@@ -123,6 +124,10 @@ const Print = ({
             font-size: 14pt;
             margin: 5px 0;
           }
+			.wynosh{font-size:15px;
+			margin:0;
+			padding:0;
+			  font-weight: bold;}
           .pickup-time {
             font-weight: bold;
           }
@@ -181,6 +186,7 @@ const Print = ({
 			MAKARONY: [],
 			BAR: [],
 			DOSTAWA: [],
+			WYNOS: [],
 		};
 
 		const itemMap = {};
@@ -199,6 +205,8 @@ const Print = ({
 		Object.values(itemMap).forEach((item) => {
 			if (showDeliveryDetails) {
 				categories.DOSTAWA.push(item);
+			} else if (item.category.toLowerCase().includes("wynos")) {
+				categories.WYNOS.push(item);
 			} else {
 				switch (item.category.toLowerCase()) {
 					case "pizza":
@@ -235,6 +243,20 @@ const Print = ({
 
 	const renderCategory = (category, items, hasPizza, hasMakaron) => (
 		<div key={category} style={{ marginBottom: "5px" }}>
+			<div className="arrow-row">
+				<div className="arrow-down"></div>
+				<div className="arrow-down"></div>
+				<div className="arrow-down"></div>
+				<div className="arrow-down"></div>
+				<div className="arrow-down"></div>
+				<div className="arrow-down"></div>
+				<div className="arrow-down"></div>
+				<div className="arrow-down"></div>
+				<div className="arrow-down"></div>
+				<div className="arrow-down"></div>
+				<div className="arrow-down"></div>
+				<div className="arrow-down"></div>
+			</div>
 			<div className="dashed-lineee"></div>
 			<h2 style={{ margin: "5px 0" }}>{category}</h2>
 			<div className="dashed-linee"></div>
@@ -278,7 +300,7 @@ const Print = ({
 							{adjustments.subtractFromBill.toFixed(2)} zł)
 						</p>
 					)}
-					<p>Suma po korektach: {totalPrice.toFixed(2)} zł</p>
+					<p>Łącznie: {totalPrice.toFixed(2)} zł</p>
 					<div className="arrow-row">
 						<div className="arrow-down"></div>
 						<div className="arrow-down"></div>
@@ -287,7 +309,9 @@ const Print = ({
 					</div>
 				</div>
 			)}
-			{category === "PIZZA" && <div className="pizza-space"></div>}
+
+			{category === "WYNOS" && <div className="pizza-space"></div>}
+
 			{items.map((item, index) => (
 				<div key={`${item.id}-${index}`} className="product-item">
 					{item.name} {item.quantity > 1 && `(${item.quantity})`}
@@ -303,7 +327,8 @@ const Print = ({
 					)}
 				</div>
 			))}
-			{category === "PIZZA" && hasMakaron && (
+
+			{category === "WYNOS" && hasMakaron && (
 				<div
 					style={{
 						textAlign: "center",
@@ -325,6 +350,7 @@ const Print = ({
 			)}
 			<div className="table-name">Stolik: {tableName}</div>
 			<div className="print-time">{getCurrentDateTime()}</div>
+			{isWynos && <h3 className="wynosh">WYNOS</h3>}
 			{pickupTime && (
 				<div
 					className={
@@ -365,6 +391,9 @@ const Print = ({
 				)}
 				{showDeliveryDetails &&
 					renderCategory("DOSTAWA", groupedItems["DOSTAWA"], false, false)}
+				{!showDeliveryDetails &&
+					groupedItems["WYNOS"].length > 0 &&
+					renderCategory("WYNOS", groupedItems["WYNOS"], false, false)}
 			</>
 		);
 	};
@@ -372,6 +401,7 @@ const Print = ({
 	return (
 		<div>
 			{hasContentToPrint && <button onClick={handlePrint}>Drukuj</button>}
+
 			<div ref={printContentRef} style={{ display: "none" }}>
 				{renderProducts()}
 			</div>
