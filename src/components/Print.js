@@ -20,17 +20,11 @@ const Print = ({
 	const totalPrice = calculateAdjustedTotal();
 	const printContentRef = useRef(null);
 	const [hasContentToPrint, setHasContentToPrint] = useState(false);
-	const [printedItems, setPrintedItems] = useState({});
+	const [printedItems, setPrintedItems] = useState([]);
 
 	useEffect(() => {
 		setHasContentToPrint(selectedItems.length > 0);
 	}, [selectedItems]);
-
-	useEffect(() => {
-		const storedPrintedItems =
-			JSON.parse(localStorage.getItem("printedItems")) || {};
-		setPrintedItems(storedPrintedItems);
-	}, []);
 
 	const getCurrentDateTime = () => {
 		const now = new Date();
@@ -46,7 +40,6 @@ const Print = ({
 		const content = printContentRef.current.innerHTML;
 		console.log("Content to print:", content);
 
-		// Utwórz iframe do drukowania
 		const iframe = document.createElement("iframe");
 		iframe.style.position = "absolute";
 		iframe.style.width = "0px";
@@ -88,18 +81,18 @@ const Print = ({
             width: 100%;
           }
           .arrow-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            margin-top: 5px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+              margin-top: 5px;
           }
           .arrow-down {
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 10px solid black;
+              width: 0;
+              height: 0;
+              border-left: 5px solid transparent;
+              border-right: 5px solid transparent;
+              border-top: 10px solid black;
           }
           .table-name {
             margin-top: 5px;
@@ -171,16 +164,12 @@ const Print = ({
 			document.body.removeChild(iframe);
 		}, 1000);
 
-		// Aktualizuj stan wydrukowanych produktów
-		const tableId = tableName; // Możesz użyć innego identyfikatora stolika, jeśli dostępny
-		const newPrintedItems = selectedItems.map((item) => item.id);
-		const updatedPrintedItems = {
-			...printedItems,
-			[tableId]: [...(printedItems[tableId] || []), ...newPrintedItems],
-		};
-
-		localStorage.setItem("printedItems", JSON.stringify(updatedPrintedItems));
-		setPrintedItems(updatedPrintedItems);
+		// Aktualizowanie printedItems przed zamknięciem okna drukowania
+		setPrintedItems((prevPrintedItems) => {
+			const printedItemIds = selectedItems.map((item) => item.id);
+			console.log("Items to add to printedItems:", printedItemIds);
+			return [...prevPrintedItems, ...printedItemIds];
+		});
 
 		setHasContentToPrint(false);
 		onClose();
@@ -194,12 +183,23 @@ const Print = ({
 			DOSTAWA: [],
 		};
 
-		const tableId = tableName; // Możesz użyć innego identyfikatora stolika, jeśli dostępny
-		const printedForTable = printedItems[tableId] || [];
+		const itemMap = {};
 
 		items
-			.filter((item) => !printedForTable.includes(item.id))
+			.filter((item) => !printedItems.includes(item.id))
 			.forEach((item) => {
+				const key = `${item.name}-${item.category}`;
+				if (itemMap[key]) {
+					itemMap[key].quantity += item.quantity;
+				} else {
+					itemMap[key] = { ...item };
+				}
+			});
+
+		Object.values(itemMap).forEach((item) => {
+			if (showDeliveryDetails) {
+				categories.DOSTAWA.push(item);
+			} else {
 				switch (item.category.toLowerCase()) {
 					case "pizza":
 					case "calzone":
@@ -223,14 +223,12 @@ const Print = ({
 					case "drinki":
 						categories.BAR.push(item);
 						break;
-					case "dostawa":
-						categories.DOSTAWA.push(item);
-						break;
 					default:
 						console.warn(`Nieznana kategoria: ${item.category}`);
 						break;
 				}
-			});
+			}
+		});
 
 		return categories;
 	};
