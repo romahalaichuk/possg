@@ -16,6 +16,19 @@ const ManagerPanel = ({ onClose }) => {
 		return amount.toFixed(2);
 	};
 
+	const getProductsSummary = () => {
+		const productSummary = {};
+		paymentDetails.forEach((detail) => {
+			detail.selectedItems.forEach((item) => {
+				if (!productSummary[item.name]) {
+					productSummary[item.name] = 0;
+				}
+				productSummary[item.name] += item.quantity;
+			});
+		});
+		return productSummary;
+	};
+
 	const totalCash = formatCurrency(
 		paymentDetails
 			.filter((p) => p.paymentType === "GOTÓWA")
@@ -114,6 +127,17 @@ const ManagerPanel = ({ onClose }) => {
 			yOffset += 15; // Przerwa między stolikami
 		});
 
+		// Dodanie sekcji z podsumowaniem produktów
+		doc.setFontSize(10);
+		doc.text("Podsumowanie produktów:", 20, yOffset);
+		yOffset += 10;
+
+		const productSummary = getProductsSummary();
+		Object.entries(productSummary).forEach(([productName, quantity]) => {
+			doc.text(`${productName}: ${quantity} szt.`, 20, yOffset);
+			yOffset += 10;
+		});
+
 		doc.save(`panel_managera_${dateString}.pdf`);
 
 		localStorage.clear();
@@ -161,6 +185,16 @@ const ManagerPanel = ({ onClose }) => {
 								)}
 							</li>
 						))}
+					</ul>
+					<strong>Podsumowanie produktów:</strong>
+					<ul>
+						{Object.entries(getProductsSummary()).map(
+							([productName, quantity]) => (
+								<li key={productName}>
+									{productName}: {quantity} szt.
+								</li>
+							)
+						)}
 					</ul>
 				</div>
 			</div>
