@@ -45,13 +45,12 @@ const ManagerPanel = ({ onClose }) => {
 
 	const totalAmount = calculateTotalAmount(tables, wynosTables);
 	const totalCash = paymentDetails
-		.filter((p) => p.paymentType === "cash")
+		.filter((p) => p.paymentType === "GOTÓWA")
 		.reduce((total, p) => total + p.totalAmount, 0);
 	const totalCard = paymentDetails
-		.filter((p) => p.paymentType === "card")
+		.filter((p) => p.paymentType === "KARTA")
 		.reduce((total, p) => total + p.totalAmount, 0);
 
-	// Oblicz całkowity utarg jako sumę gotówki i kartą
 	const totalSales = totalCash + totalCard;
 
 	const handleExportToPDF = () => {
@@ -130,10 +129,7 @@ const ManagerPanel = ({ onClose }) => {
 					<strong>Szczegóły płatności:</strong>
 					<ul>
 						{paymentDetails.map((detail) => (
-							<li
-								key={
-									detail.tableName + detail.totalAmount + detail.paymentType
-								}>
+							<li key={detail.id}>
 								Stolik: {detail.tableName}, Kwota: {detail.totalAmount} PLN,
 								Płatność: {detail.paymentType}
 								{detail.selectedItems && detail.selectedItems.length > 0 && (

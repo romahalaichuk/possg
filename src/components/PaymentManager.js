@@ -100,18 +100,18 @@ const PaymentManager = ({
 					<div className="payment-options">
 						<button
 							className="button-pay"
-							onClick={() => handlePaymentTypeClick("cash")}>
+							onClick={() => handlePaymentTypeClick("GOTÓWA")}>
 							Gotówka
 						</button>
 						<button
 							className="button-pay"
-							onClick={() => handlePaymentTypeClick("card")}>
+							onClick={() => handlePaymentTypeClick("KARTA")}>
 							Karta
 						</button>
 					</div>
 				) : null}
 
-				{selectedPaymentType === "cash" && (
+				{selectedPaymentType === "GOTÓWA" && (
 					<div className="cash-payment">
 						<h3>Do zapłaty: {adjustedTotalAmount} zł</h3>
 						<input
@@ -127,7 +127,7 @@ const PaymentManager = ({
 					</div>
 				)}
 
-				{selectedPaymentType === "card" && (
+				{selectedPaymentType === "KARTA" && (
 					<div className="card-payment">
 						<h3>Implementacja płatności kartą</h3>
 						<button className="finalize-button" onClick={handleFinalizePayment}>
