@@ -1,6 +1,7 @@
+// LocalStorageManager.js
+
 export const getSelectedItems = (tableName) => {
-	const storedItems = localStorage.getItem(tableName);
-	return storedItems ? JSON.parse(storedItems) : [];
+	return JSON.parse(localStorage.getItem(tableName)) || [];
 };
 
 export const addSelectedItem = (
@@ -77,6 +78,7 @@ export const removeExtraFromItem = (tableName, productId, extraId) => {
 		localStorage.setItem(tableName, JSON.stringify(selectedItems));
 	}
 };
+
 export const getTableDetails = (tableName) => {
 	const storedItems = getSelectedItems(tableName);
 	const discount = parseFloat(
@@ -127,8 +129,7 @@ export const calculateTotalAmount = (tables, wynosTables) => {
 		(accumulator, currentTable) =>
 			accumulator +
 			currentTable.products.reduce(
-				(accumulator, product) =>
-					accumulator + product.price * product.quantity,
+				(acc, product) => acc + product.price * product.quantity,
 				0
 			) -
 			currentTable.discount,
@@ -139,8 +140,7 @@ export const calculateTotalAmount = (tables, wynosTables) => {
 		(accumulator, currentTable) =>
 			accumulator +
 			currentTable.products.reduce(
-				(accumulator, product) =>
-					accumulator + product.price * product.quantity,
+				(acc, product) => acc + product.price * product.quantity,
 				0
 			) -
 			currentTable.discount,

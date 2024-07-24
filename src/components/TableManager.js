@@ -148,7 +148,7 @@ const TableManager = () => {
 		}
 	};
 
-	const handleAddProduct = (productId, productName) => {
+	const handleAddProduct = (productId, productName, productPrice) => {
 		const updatedTables = isWynos
 			? wynosTables.map((table) =>
 					table.id === selectedTableId
@@ -156,7 +156,12 @@ const TableManager = () => {
 								...table,
 								products: [
 									...table.products,
-									{ id: productId, name: productName },
+									{
+										id: productId,
+										name: productName,
+										price: productPrice,
+										quantity: 1,
+									},
 								],
 						  }
 						: table
@@ -167,7 +172,12 @@ const TableManager = () => {
 								...table,
 								products: [
 									...table.products,
-									{ id: productId, name: productName },
+									{
+										id: productId,
+										name: productName,
+										price: productPrice,
+										quantity: 1,
+									},
 								],
 						  }
 						: table
@@ -192,20 +202,12 @@ const TableManager = () => {
 		const updatedTables = isWynos
 			? wynosTables.map((table) =>
 					table.id === tableId
-						? {
-								...table,
-								status: "free",
-								products: [],
-						  }
+						? { ...table, status: "free", products: [] }
 						: table
 			  )
 			: tables.map((table) =>
 					table.id === tableId
-						? {
-								...table,
-								status: "free",
-								products: [],
-						  }
+						? { ...table, status: "free", products: [] }
 						: table
 			  );
 
@@ -241,7 +243,11 @@ const TableManager = () => {
 			</button>
 			{managerPanelOpen && (
 				<div className="modal-overlay" onClick={toggleManagerPanel}>
-					<ManagerPanel tables={tables} wynosTables={wynosTables} />
+					<ManagerPanel
+						tables={tables}
+						wynosTables={wynosTables}
+						onClose={toggleManagerPanel}
+					/>
 				</div>
 			)}
 

@@ -1,54 +1,58 @@
 import React, { useEffect, useState } from "react";
 import "./ManagerPanel.css";
 import jsPDF from "jspdf";
-import {
-	getTableDetails,
-	calculateTotalTablesDuringDay,
-	calculateTotalWynos,
-	calculateTotalAmount,
-} from "./LocalStorageManager";
 
 const ManagerPanel = ({ onClose }) => {
 	const [tables, setTables] = useState([]);
 	const [wynosTables, setWynosTables] = useState([]);
-	const [paymentDetails, setPaymentDetails] = useState({ cash: 0, card: 0 });
+	const [paymentDetails, setPaymentDetails] = useState([]);
 
 	useEffect(() => {
-		const loadData = async () => {
-			try {
-				const storedTables =
-					JSON.parse(localStorage.getItem("servedTables")) || [];
-				const storedWynosTables =
-					JSON.parse(localStorage.getItem("servedWynosTables")) || [];
-				const storedPaymentDetails = JSON.parse(
-					localStorage.getItem("paymentDetails")
-				) || { cash: 0, card: 0 };
+		const storedTables = JSON.parse(localStorage.getItem("tables")) || [];
+		const storedWynosTables =
+			JSON.parse(localStorage.getItem("wynosTables")) || [];
+		const storedPaymentDetails =
+			JSON.parse(localStorage.getItem("paymentDetails")) || [];
 
-				console.log("Stored Tables:", storedTables);
-				console.log("Stored Wynos Tables:", storedWynosTables);
-
-				const tableDetails = await Promise.all(
-					storedTables.map((tableName) => getTableDetails(tableName))
-				);
-				const wynosDetails = await Promise.all(
-					storedWynosTables.map((tableName) => getTableDetails(tableName))
-				);
-
-				console.log("Table Details:", tableDetails);
-				console.log("Wynos Details:", wynosDetails);
-
-				setTables(tableDetails);
-				setWynosTables(wynosDetails);
-				setPaymentDetails(storedPaymentDetails);
-			} catch (error) {
-				console.error("Error loading data from local storage:", error);
-			}
-		};
-
-		loadData();
+		setTables(storedTables);
+		setWynosTables(storedWynosTables);
+		setPaymentDetails(storedPaymentDetails);
 	}, []);
 
+	const calculateTotalAmount = (tables, wynosTables) => {
+		const tableTotal = tables.reduce((total, table) => {
+			return (
+				total +
+				table.products.reduce(
+					(sum, product) => sum + product.price * product.quantity,
+					0
+				)
+			);
+		}, 0);
+
+		const wynosTotal = wynosTables.reduce((total, table) => {
+			return (
+				total +
+				table.products.reduce(
+					(sum, product) => sum + product.price * product.quantity,
+					0
+				)
+			);
+		}, 0);
+
+		return tableTotal + wynosTotal;
+	};
+
 	const totalAmount = calculateTotalAmount(tables, wynosTables);
+	const totalCash = paymentDetails
+		.filter((p) => p.paymentType === "cash")
+		.reduce((total, p) => total + p.totalAmount, 0);
+	const totalCard = paymentDetails
+		.filter((p) => p.paymentType === "card")
+		.reduce((total, p) => total + p.totalAmount, 0);
+
+	// Oblicz całkowity utarg jako sumę gotówki i kartą
+	const totalSales = totalCash + totalCard;
 
 	const handleExportToPDF = () => {
 		const doc = new jsPDF();
@@ -60,56 +64,50 @@ const ManagerPanel = ({ onClose }) => {
 
 		doc.text("Panel Managera", 20, yOffset);
 		yOffset += 10;
-		doc.text(
-			`Łączna liczba stolików (w ciągu dnia): ${calculateTotalTablesDuringDay(
-				tables
-			)}`,
-			20,
-			yOffset
-		);
-		yOffset += 10;
-		doc.text(
-			`Łączna liczba wynosów: ${calculateTotalWynos(wynosTables)}`,
-			20,
-			yOffset
-		);
-		yOffset += 10;
 		doc.text(`Łączna kwota: ${totalAmount} PLN`, 20, yOffset);
 		yOffset += 10;
-		doc.text(`Łączna kwota gotówki: ${paymentDetails.cash} PLN`, 20, yOffset);
+		doc.text(`Łączna kwota gotówki: ${totalCash} PLN`, 20, yOffset);
 		yOffset += 10;
-		doc.text(`Łączna kwota kartą: ${paymentDetails.card} PLN`, 20, yOffset);
+		doc.text(`Łączna kwota kartą: ${totalCard} PLN`, 20, yOffset);
 		yOffset += 10;
 
-		const addTableDetails = (tableList, type) => {
-			tableList.forEach((table, index) => {
-				if (yOffset > 260) {
-					doc.addPage();
-					yOffset = 10;
-				}
-				doc.text(
-					`${type}: ${table.name}, Produkty: ${table.products
-						.map((p) => `${p.name} (${p.quantity} x ${p.price} PLN)`)
-						.join(", ")}, Zniżka: ${table.discount}, Kwota: ${
-						table.totalAmount
-					} PLN, Płatność: ${table.paymentMethod}`,
-					20,
-					yOffset
-				);
-				yOffset += 10;
-			});
-		};
+		// Dodaj informację o sali utarg
+		doc.text(`SALA UTARG: ${totalSales} PLN`, 20, yOffset);
+		yOffset += 10;
 
-		addTableDetails(tables, "Stolik");
-		addTableDetails(wynosTables, "Wynos");
+		paymentDetails.forEach((detail) => {
+			if (yOffset > 260) {
+				doc.addPage();
+				yOffset = 10;
+			}
+			doc.text(
+				`Stolik: ${detail.tableName}, Kwota: ${detail.totalAmount} PLN, Płatność: ${detail.paymentType}`,
+				20,
+				yOffset
+			);
+			yOffset += 10;
+
+			if (detail.selectedItems && detail.selectedItems.length > 0) {
+				detail.selectedItems.forEach((item) => {
+					doc.text(
+						`Produkt: ${item.name}, Ilość: ${item.quantity}, Cena: ${
+							item.price * item.quantity
+						} PLN`,
+						20,
+						yOffset
+					);
+					yOffset += 10;
+				});
+			}
+			yOffset += 10;
+		});
 
 		doc.save(`panel_managera_${dateString}.pdf`);
 
-		// Optionally clear localStorage and reset state
 		localStorage.clear();
 		setTables([]);
 		setWynosTables([]);
-		setPaymentDetails({ cash: 0, card: 0 });
+		setPaymentDetails([]);
 	};
 
 	return (
@@ -120,43 +118,31 @@ const ManagerPanel = ({ onClose }) => {
 			<h2>Panel Managera</h2>
 			<div className="manager-info">
 				<div className="info-item">
-					<strong>Łączna liczba stolików (w ciągu dnia):</strong>{" "}
-					{calculateTotalTablesDuringDay(tables)}
+					<strong>SALA UTARG:</strong> {totalSales} PLN
 				</div>
 				<div className="info-item">
-					<strong>Łączna liczba wynosów:</strong>{" "}
-					{calculateTotalWynos(wynosTables)}
+					<strong>Łączna kwota gotówki:</strong> {totalCash} PLN
 				</div>
 				<div className="info-item">
-					<strong>Łączna kwota:</strong> {totalAmount} PLN
+					<strong>Łączna kwota kartą:</strong> {totalCard} PLN
 				</div>
 				<div className="info-item">
-					<strong>Łączna kwota gotówki:</strong> {paymentDetails.cash} PLN
-				</div>
-				<div className="info-item">
-					<strong>Łączna kwota kartą:</strong> {paymentDetails.card} PLN
-				</div>
-				<div className="info-item">
-					<strong>Szczegóły stolików i wynosów:</strong>
+					<strong>Szczegóły płatności:</strong>
 					<ul>
-						{tables.map((table, index) => (
+						{paymentDetails.map((detail, index) => (
 							<li key={index}>
-								Stolik: {table.name}, Produkty:{" "}
-								{table.products
-									.map((p) => `${p.name} (${p.quantity} x ${p.price} PLN)`)
-									.join(", ")}
-								, Zniżka: {table.discount}, Kwota: {table.totalAmount} PLN,
-								Płatność: {table.paymentMethod}
-							</li>
-						))}
-						{wynosTables.map((table, index) => (
-							<li key={index + tables.length}>
-								Wynos: {table.name}, Produkty:{" "}
-								{table.products
-									.map((p) => `${p.name} (${p.quantity} x ${p.price} PLN)`)
-									.join(", ")}
-								, Zniżka: {table.discount}, Kwota: {table.totalAmount} PLN,
-								Płatność: {table.paymentMethod}
+								Stolik: {detail.tableName}, Kwota: {detail.totalAmount} PLN,
+								Płatność: {detail.paymentType}
+								{detail.selectedItems && detail.selectedItems.length > 0 && (
+									<ul>
+										{detail.selectedItems.map((item) => (
+											<li key={item.id}>
+												Produkt: {item.name}, Ilość: {item.quantity}, Cena:{" "}
+												{item.price * item.quantity} PLN
+											</li>
+										))}
+									</ul>
+								)}
 							</li>
 						))}
 					</ul>

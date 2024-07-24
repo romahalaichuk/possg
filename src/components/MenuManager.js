@@ -196,31 +196,17 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const handleItemSelect = (item) => {
 		const existingItem = selectedItems.find((i) => i.id === item.id);
 
+		let updatedItems;
 		if (existingItem) {
-			const updatedItems = selectedItems.map((i) =>
+			updatedItems = selectedItems.map((i) =>
 				i.id === existingItem.id ? { ...i, quantity: i.quantity + 1 } : i
 			);
-			setSelectedItems(updatedItems);
-			updateSelectedItems(tableName, updatedItems);
-			addSelectedItem(
-				`${tableName}_${existingItem.id}`,
-				existingItem.id,
-				existingItem.name,
-				existingItem.price,
-				existingItem.comment || ""
-			);
 		} else {
-			const updatedItems = [...selectedItems, { ...item, quantity: 1 }];
-			setSelectedItems(updatedItems);
-			updateSelectedItems(tableName, updatedItems);
-			addSelectedItem(
-				`${tableName}_${item.id}`,
-				item.id,
-				item.name,
-				item.price,
-				item.comment || ""
-			);
+			updatedItems = [...selectedItems, { ...item, quantity: 1 }];
 		}
+
+		setSelectedItems(updatedItems);
+		updateSelectedItems(tableName, updatedItems);
 
 		if (!printedItems.includes(item.id)) {
 			addToPrintedItems(item.id);
@@ -239,26 +225,24 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	};
 
 	const handleItemRemove = (itemId) => {
-		const indexToRemove = selectedItems.findIndex((item) => item.id === itemId);
-
-		if (indexToRemove !== -1) {
-			const updatedItems = [...selectedItems];
-
-			if (updatedItems[indexToRemove].quantity > 1) {
-				updatedItems[indexToRemove].quantity -= 1;
+		const updatedItems = selectedItems.reduce((acc, item) => {
+			if (item.id === itemId) {
+				if (item.quantity > 1) {
+					acc.push({ ...item, quantity: item.quantity - 1 });
+				}
 			} else {
-				updatedItems.splice(indexToRemove, 1);
+				acc.push(item);
 			}
+			return acc;
+		}, []);
 
-			setSelectedItems(updatedItems);
-			updateSelectedItems(tableName, updatedItems);
-			removeSelectedItem(`${tableName}_${itemId}`);
-		}
+		setSelectedItems(updatedItems);
+		updateSelectedItems(tableName, updatedItems);
 	};
 
 	const handleCommentChange = (comment, itemId) => {
 		const updatedItems = selectedItems.map((item) =>
-			item.id === itemId ? { ...item, comment: comment } : item
+			item.id === itemId ? { ...item, comment } : item
 		);
 		setSelectedItems(updatedItems);
 		updateSelectedItems(tableName, updatedItems);
@@ -696,6 +680,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								selectedItems={selectedItems}
 								adjustedTotalAmount={calculateAdjustedTotal()}
 								onClose={handlePaymentComplete}
+								tableName={currentTableName}
 							/>
 						</div>
 					)}

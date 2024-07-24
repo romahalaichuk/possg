@@ -3,7 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import "./PaymentManager.css";
 
-const PaymentManager = ({ selectedItems, adjustedTotalAmount, onClose }) => {
+const PaymentManager = ({
+	tableName,
+	adjustedTotalAmount,
+	onClose,
+	selectedItems, // Upewnij się, że przekazujesz selectedItems do komponentu
+}) => {
 	const [amountGiven, setAmountGiven] = useState("");
 	const [changeAmount, setChangeAmount] = useState(0);
 	const [selectedPaymentType, setSelectedPaymentType] = useState(null);
@@ -21,19 +26,26 @@ const PaymentManager = ({ selectedItems, adjustedTotalAmount, onClose }) => {
 
 	const handleFinalizePayment = () => {
 		const paymentDetails = {
+			tableName,
 			totalAmount: adjustedTotalAmount,
 			paymentType: selectedPaymentType,
 			amountGiven: parseFloat(amountGiven) || 0,
 			changeAmount,
+			selectedItems, // Dodaj selectedItems do płatności
 		};
 
 		console.log("Płatność została zakończona:", paymentDetails);
 
-		// Save payment details to localStorage or pass it to the parent component
-		localStorage.setItem("paymentDetails", JSON.stringify(paymentDetails));
+		const storedPaymentDetails =
+			JSON.parse(localStorage.getItem("paymentDetails")) || [];
+		storedPaymentDetails.push(paymentDetails);
+		localStorage.setItem(
+			"paymentDetails",
+			JSON.stringify(storedPaymentDetails)
+		);
 
 		setSelectedPaymentType(null);
-		onClose(paymentDetails); // Pass payment details to parent component
+		onClose(paymentDetails);
 	};
 
 	const handlePaymentTypeClick = (paymentType) => {
@@ -50,7 +62,7 @@ const PaymentManager = ({ selectedItems, adjustedTotalAmount, onClose }) => {
 
 	const handleBackToPaymentTypeSelection = () => {
 		setSelectedPaymentType(null);
-		setModalVisible(true); // Pokazuje ponownie modal
+		setModalVisible(true);
 	};
 
 	return modalVisible ? (
@@ -59,6 +71,15 @@ const PaymentManager = ({ selectedItems, adjustedTotalAmount, onClose }) => {
 				<div className="payment-header">
 					{selectedPaymentType === null ? (
 						<>
+							<p>Stolik: {tableName}</p>
+							<ul>
+								{selectedItems.map((item) => (
+									<li key={item.id}>
+										{item.name} - {item.quantity}x -{" "}
+										{item.price * item.quantity} zł
+									</li>
+								))}
+							</ul>
 							<h2>Metoda płatności</h2>
 							<button className="close-button" onClick={handleCancelPayment}>
 								<FontAwesomeIcon icon={faTimes} />
