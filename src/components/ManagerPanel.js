@@ -4,19 +4,11 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 
 const ManagerPanel = ({ onClose }) => {
-	const [tables, setTables] = useState([]);
-	const [wynosTables, setWynosTables] = useState([]);
 	const [paymentDetails, setPaymentDetails] = useState([]);
 
 	useEffect(() => {
-		const storedTables = JSON.parse(localStorage.getItem("tables")) || [];
-		const storedWynosTables =
-			JSON.parse(localStorage.getItem("wynosTables")) || [];
 		const storedPaymentDetails =
 			JSON.parse(localStorage.getItem("paymentDetails")) || [];
-
-		setTables(storedTables);
-		setWynosTables(storedWynosTables);
 		setPaymentDetails(storedPaymentDetails);
 	}, []);
 
@@ -24,31 +16,6 @@ const ManagerPanel = ({ onClose }) => {
 		return amount.toFixed(2);
 	};
 
-	const calculateTotalAmount = (tables, wynosTables) => {
-		const tableTotal = tables.reduce((total, table) => {
-			return (
-				total +
-				table.products.reduce(
-					(sum, product) => sum + product.price * product.quantity,
-					0
-				)
-			);
-		}, 0);
-
-		const wynosTotal = wynosTables.reduce((total, table) => {
-			return (
-				total +
-				table.products.reduce(
-					(sum, product) => sum + product.price * product.quantity,
-					0
-				)
-			);
-		}, 0);
-
-		return tableTotal + wynosTotal;
-	};
-
-	const totalAmount = formatCurrency(calculateTotalAmount(tables, wynosTables));
 	const totalCash = formatCurrency(
 		paymentDetails
 			.filter((p) => p.paymentType === "GOTÓWA")
@@ -73,74 +40,83 @@ const ManagerPanel = ({ onClose }) => {
 		let yOffset = 10;
 
 		doc.setFontSize(12);
-
 		doc.text("Panel Managera", 20, yOffset);
 		yOffset += 15;
 
 		doc.setFontSize(10);
 		doc.text(`SALA UTARG: ${totalSales} PLN`, 20, yOffset);
 		yOffset += 10;
-		doc.text(`Razem gotówki z salo: ${totalCash} PLN`, 20, yOffset);
+		doc.text(`Razem gotówki z sali: ${totalCash} PLN`, 20, yOffset);
 		yOffset += 10;
 		doc.text(`Razem kart z sali: ${totalCard} PLN`, 20, yOffset);
 		yOffset += 15;
 
-		// Dodanie tabeli z szczegółami płatności
-		doc.autoTable({
-			startY: yOffset,
-			head: [["Stolik", "Kwota", "Płatność"]],
-			body: paymentDetails.map((detail) => [
-				detail.tableName,
-				`${formatCurrency(detail.totalAmount)} PLN`,
-				detail.paymentType,
-			]),
-			theme: "striped",
-			headStyles: { fillColor: [255, 0, 0] }, // Kolor nagłówka tabeli
-			margin: { top: 20 },
-			pageBreak: "auto",
-			styles: { fontSize: 8 },
-		});
+		// Grupowanie płatności według stolików
+		const tablesData = paymentDetails.reduce((acc, detail) => {
+			if (!acc[detail.tableName]) {
+				acc[detail.tableName] = [];
+			}
+			acc[detail.tableName].push(detail);
+			return acc;
+		}, {});
 
-		let finalY = doc.autoTable.previous.finalY;
-		if (finalY > 260) {
-			doc.addPage();
-			finalY = 10;
-		}
+		// Iterowanie przez stoliki i dodawanie ich do PDF
+		Object.keys(tablesData).forEach((tableName) => {
+			const details = tablesData[tableName];
 
-		paymentDetails.forEach((detail) => {
-			if (finalY > 260) {
+			if (yOffset > 260) {
 				doc.addPage();
-				finalY = 10;
+				yOffset = 10;
 			}
-			doc.text(
-				`Stolik: ${detail.tableName}, Kwota: ${formatCurrency(
-					detail.totalAmount
-				)} PLN, Płatność: ${detail.paymentType}`,
-				20,
-				finalY
-			);
-			finalY += 10;
 
-			if (detail.selectedItems && detail.selectedItems.length > 0) {
-				detail.selectedItems.forEach((item) => {
-					doc.text(
-						`Produkt: ${item.name}, Ilość: ${
-							item.quantity
-						}, Cena: ${formatCurrency(item.price * item.quantity)} PLN`,
-						20,
-						finalY
-					);
-					finalY += 10;
-				});
-			}
-			finalY += 10;
+			// Tabela dla każdego stolika
+			doc.autoTable({
+				startY: yOffset,
+				head: [
+					["Stolik", "Kwota", "Płatność", "Produkt", "Ilość", "Cena", "Zniżka"],
+				],
+				body: details.flatMap((detail) =>
+					detail.selectedItems.map((item) => [
+						tableName,
+						formatCurrency(detail.totalAmount),
+						detail.paymentType,
+						item.name,
+						item.quantity,
+						formatCurrency(item.price * item.quantity),
+						detail.discount ? formatCurrency(detail.discount) : "Brak",
+					])
+				),
+				theme: "striped",
+				margin: { top: 10, bottom: 10 },
+				styles: {
+					fontSize: 6, // Mniejsza czcionka
+					cellPadding: 2,
+					overflow: "linebreak",
+				},
+				columnStyles: {
+					0: { cellWidth: "auto" },
+					1: { cellWidth: "auto" },
+					2: { cellWidth: "auto" },
+					3: { cellWidth: "auto", minCellWidth: 30 },
+					4: { cellWidth: "auto" },
+					5: { cellWidth: "auto" },
+					6: { cellWidth: "auto" },
+				},
+				tableLineColor: [0, 0, 0],
+				tableLineWidth: 0.75,
+			});
+
+			yOffset = doc.lastAutoTable.finalY + 10;
+
+			// Dodanie linii oddzielającej sekcje
+			doc.line(20, yOffset - 5, 190, yOffset - 5);
+
+			yOffset += 15; // Przerwa między stolikami
 		});
 
 		doc.save(`panel_managera_${dateString}.pdf`);
 
 		localStorage.clear();
-		setTables([]);
-		setWynosTables([]);
 		setPaymentDetails([]);
 	};
 
@@ -174,6 +150,11 @@ const ManagerPanel = ({ onClose }) => {
 											<li key={item.id}>
 												Produkt: {item.name}, Ilość: {item.quantity}, Cena:{" "}
 												{formatCurrency(item.price * item.quantity)} PLN
+												{detail.discount && (
+													<span>
+														, Zniżka: {formatCurrency(detail.discount)} PLN
+													</span>
+												)}
 											</li>
 										))}
 									</ul>
