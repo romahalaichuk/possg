@@ -129,8 +129,11 @@ const ManagerPanel = ({ onClose }) => {
 				<div className="info-item">
 					<strong>Szczegóły płatności:</strong>
 					<ul>
-						{paymentDetails.map((detail, index) => (
-							<li key={index}>
+						{paymentDetails.map((detail) => (
+							<li
+								key={
+									detail.tableName + detail.totalAmount + detail.paymentType
+								}>
 								Stolik: {detail.tableName}, Kwota: {detail.totalAmount} PLN,
 								Płatność: {detail.paymentType}
 								{detail.selectedItems && detail.selectedItems.length > 0 && (
@@ -148,6 +151,7 @@ const ManagerPanel = ({ onClose }) => {
 					</ul>
 				</div>
 			</div>
+
 			<button className="export-button" onClick={handleExportToPDF}>
 				Zamknij dzień i pobierz PDF
 			</button>

@@ -9,8 +9,6 @@ import Print from "./Print";
 import Dostawa from "./Dostawa";
 import {
 	getSelectedItems,
-	addSelectedItem,
-	removeSelectedItem,
 	clearSelectedItems,
 	updateSelectedItems,
 } from "./LocalStorageManager";
