@@ -15,15 +15,22 @@ const Print = ({
 	serviceCharge,
 	adjustments,
 	calculateAdjustedTotal,
-	resetDeliveryDetails, // Dodaj ten prop
+	resetDeliveryDetails,
 }) => {
 	const totalPrice = calculateAdjustedTotal();
 	const printContentRef = useRef(null);
 	const [hasContentToPrint, setHasContentToPrint] = useState(false);
+	const [printedItems, setPrintedItems] = useState({});
 
 	useEffect(() => {
 		setHasContentToPrint(selectedItems.length > 0);
 	}, [selectedItems]);
+
+	useEffect(() => {
+		const storedPrintedItems =
+			JSON.parse(localStorage.getItem("printedItems")) || {};
+		setPrintedItems(storedPrintedItems);
+	}, []);
 
 	const getCurrentDateTime = () => {
 		const now = new Date();
@@ -39,6 +46,7 @@ const Print = ({
 		const content = printContentRef.current.innerHTML;
 		console.log("Content to print:", content);
 
+		// Utwórz iframe do drukowania
 		const iframe = document.createElement("iframe");
 		iframe.style.position = "absolute";
 		iframe.style.width = "0px";
@@ -48,113 +56,113 @@ const Print = ({
 		const doc = iframe.contentWindow.document;
 		doc.open();
 		doc.write(`
-			<html>
-			<head>
-				<title>Drukowanie</title>
-				<style>
-					body {
-						font-size: 9pt;
-						padding: 2px 5px;
-						margin: 0;
-					}
-					.product-item {
-						font-size: 11pt;
-						font-weight: bold;
-						border-top: 2px solid black;
-						border-bottom: 2px solid black;
-						padding: 2px 0;
-					}
-					.pizza-space {
-						margin-bottom: 70px;
-					}
-					.extras {
-						margin-left: 39px;
-					}
-					.end-space {
-						height: 1mm;
-					}
-					.dashed-line {
-						margin-bottom: 80px;
-						border-top: 3px dashed black;
-						margin-top: 1mm;
-						width: 100%;
-					}
-					.arrow-row {
-					    display: flex;
-					    justify-content: space-between;
-					    align-items: center;
-					    width: 100%;
-					    margin-top: 5px;
-					}
-					.arrow-down {
-					    width: 0;
-					    height: 0;
-					    border-left: 5px solid transparent;
-					    border-right: 5px solid transparent;
-					    border-top: 10px solid black;
-					}
-					.table-name {
-						margin-top: 5px;
-					}
-					.print-time {
-						margin-bottom: 5px;
-						font-style: italic;
-					}
-					.dashed-linee {
-						margin-bottom: 80px;
-						border-top: 2px solid black;
-						margin-top: 1mm;
-						width: 100%;
-					}
-					.dashed-lineee {
-						margin-bottom: 1px;
-						border-top: 2px solid black;
-						margin-top: 1mm;
-						width: 100%;
-					}
-					.pickup-time-container {
-						border: 2px solid black;
-						background-color: black;
-						color: white;
-						padding: 5px;
-						border-radius: 5px;
-						text-align: center;
-						font-size: 14pt;
-						margin: 5px 0;
-					}
-					.pickup-time {
-						font-weight: bold;
-					}
-					@media print {
-						.cut-line {
-							position: absolute;
-							top: 5px;
-							left: 1%;
-							width: 1px;
-							height: 100%;
-							background-color: black;
-							transform: translateX(-50%);
-						}
-						.pickup-time-container {
-							border: 5px solid black;
-							color: black;
-							padding: 0;
-							font-weight: bold;
-							font-size: 8pt;
-							margin: 0;
-							width: 100%;
-							box-sizing: border-box;
-						}
-					}
-				</style>
-			</head>
-			<body>
-				<div class="cut-line"></div>
-				${content}
-				<div class="end-space"></div>
-			</body>
-			</html>
-		`);
+      <html>
+      <head>
+        <title>Drukowanie</title>
+        <style>
+          body {
+            font-size: 9pt;
+            padding: 2px 5px;
+            margin: 0;
+          }
+          .product-item {
+            font-size: 11pt;
+            font-weight: bold;
+            border-top: 2px solid black;
+            border-bottom: 2px solid black;
+            padding: 2px 0;
+          }
+          .pizza-space {
+            margin-bottom: 70px;
+          }
+          .extras {
+            margin-left: 39px;
+          }
+          .end-space {
+            height: 1mm;
+          }
+          .dashed-line {
+            margin-bottom: 80px;
+            border-top: 3px dashed black;
+            margin-top: 1mm;
+            width: 100%;
+          }
+          .arrow-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 5px;
+          }
+          .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 10px solid black;
+          }
+          .table-name {
+            margin-top: 5px;
+          }
+          .print-time {
+            margin-bottom: 5px;
+            font-style: italic;
+          }
+          .dashed-linee {
+            margin-bottom: 80px;
+            border-top: 2px solid black;
+            margin-top: 1mm;
+            width: 100%;
+          }
+          .dashed-lineee {
+            margin-bottom: 1px;
+            border-top: 2px solid black;
+            margin-top: 1mm;
+            width: 100%;
+          }
+          .pickup-time-container {
+            border: 2px solid black;
+            background-color: black;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14pt;
+            margin: 5px 0;
+          }
+          .pickup-time {
+            font-weight: bold;
+          }
+          @media print {
+            .cut-line {
+              position: absolute;
+              top: 5px;
+              left: 1%;
+              width: 1px;
+              height: 100%;
+              background-color: black;
+              transform: translateX(-50%);
+            }
+            .pickup-time-container {
+              border: 5px solid black;
+              color: black;
+              padding: 0;
+              font-weight: bold;
+              font-size: 8pt;
+              margin: 0;
+              width: 100%;
+              box-sizing: border-box;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="cut-line"></div>
+        ${content}
+        <div class="end-space"></div>
+      </body>
+      </html>
+    `);
 		doc.close();
 		iframe.contentWindow.focus();
 		iframe.contentWindow.print();
@@ -162,6 +170,17 @@ const Print = ({
 		setTimeout(() => {
 			document.body.removeChild(iframe);
 		}, 1000);
+
+		// Aktualizuj stan wydrukowanych produktów
+		const tableId = tableName; // Możesz użyć innego identyfikatora stolika, jeśli dostępny
+		const newPrintedItems = selectedItems.map((item) => item.id);
+		const updatedPrintedItems = {
+			...printedItems,
+			[tableId]: [...(printedItems[tableId] || []), ...newPrintedItems],
+		};
+
+		localStorage.setItem("printedItems", JSON.stringify(updatedPrintedItems));
+		setPrintedItems(updatedPrintedItems);
 
 		setHasContentToPrint(false);
 		onClose();
@@ -175,10 +194,12 @@ const Print = ({
 			DOSTAWA: [],
 		};
 
-		items.forEach((item) => {
-			if (showDeliveryDetails) {
-				categories.DOSTAWA.push(item);
-			} else {
+		const tableId = tableName; // Możesz użyć innego identyfikatora stolika, jeśli dostępny
+		const printedForTable = printedItems[tableId] || [];
+
+		items
+			.filter((item) => !printedForTable.includes(item.id))
+			.forEach((item) => {
 				switch (item.category.toLowerCase()) {
 					case "pizza":
 					case "calzone":
@@ -202,12 +223,14 @@ const Print = ({
 					case "drinki":
 						categories.BAR.push(item);
 						break;
+					case "dostawa":
+						categories.DOSTAWA.push(item);
+						break;
 					default:
 						console.warn(`Nieznana kategoria: ${item.category}`);
 						break;
 				}
-			}
-		});
+			});
 
 		return categories;
 	};
@@ -252,12 +275,12 @@ const Print = ({
 						</p>
 					)}
 					{adjustments.subtractFromBill > 0 && (
-						<p style={{ color: "blue" }}>
-							Odejmowano {adjustments.subtractFromBill.toFixed(2)} zł od
-							rachunku (- {adjustments.subtractFromBill.toFixed(2)} zł)
+						<p style={{ color: "orange" }}>
+							Odjęto {adjustments.subtractFromBill.toFixed(2)} zł od rachunku (-{" "}
+							{adjustments.subtractFromBill.toFixed(2)} zł)
 						</p>
 					)}
-					<p>Łącznie do zapłaty: {totalPrice.toFixed(2)} zł</p>
+					<p>Suma po korektach: {totalPrice.toFixed(2)} zł</p>
 					<div className="arrow-row">
 						<div className="arrow-down"></div>
 						<div className="arrow-down"></div>
