@@ -227,11 +227,13 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		calculateTotalPrice();
 		setSearchResults([]);
 		setShowMenuItemsModal(false);
+		setSearchTerm("");
 	};
 
 	const handleItemSelectWithComment = (item) => {
 		const updatedItem = { ...item, comment: "" };
 		handleItemSelect(updatedItem);
+		setSearchTerm("");
 	};
 
 	const handleItemRemove = (itemId) => {
