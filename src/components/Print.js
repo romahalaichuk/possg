@@ -195,6 +195,8 @@ const Print = ({
 						break;
 					case "napoje":
 					case "soki":
+					case "kawa":
+					case "napój bezalkoholowy":
 					case "piwo":
 					case "wina":
 					case "drinki":

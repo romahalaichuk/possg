@@ -4,9 +4,9 @@ import { products } from "./Produkt";
 import PaymentManager from "./PaymentManager";
 import Dodatki from "./Dodatki";
 import Procent from "./Procent";
-import Print from "./Print"; // Importujemy komponent Print
+import Print from "./Print";
 
-import Dostawa from "./Dostawa"; // Importujemy komponent Dostawa
+import Dostawa from "./Dostawa";
 import {
 	getSelectedItems,
 	addSelectedItem,
@@ -15,7 +15,16 @@ import {
 	updateSelectedItems,
 } from "./LocalStorageManager";
 
-const categories = ["Pizza", "Makaron", "Wina", "Piwo", "Desery", "Drinki"];
+const categories = [
+	"Pizza",
+	"Makaron",
+	"Wina",
+	"Piwo",
+	"Desery",
+	"Drinki",
+	"Napój bezalkoholowy",
+	"Kawa",
+];
 
 const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const [minutesToPickup, setMinutesToPickup] = useState("");
