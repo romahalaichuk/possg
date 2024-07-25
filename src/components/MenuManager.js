@@ -684,6 +684,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								serviceCharge={serviceCharge}
 								adjustments={adjustments}
 								calculateAdjustedTotal={calculateAdjustedTotal}
+								addToBill={adjustments.addToBill} //
+								subtractFromBill={adjustments.subtractFromBill}
 							/>
 						</div>
 					)}

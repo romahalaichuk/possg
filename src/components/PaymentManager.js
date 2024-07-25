@@ -8,20 +8,22 @@ const PaymentManager = ({
 	adjustedTotalAmount,
 	onClose,
 	selectedItems,
-	discountAmount = 0, // Dodano discountAmount jako props
-	serviceCharge = 0, // Dodano serviceCharge jako props
-	adjustments = [], // Dodano adjustments jako props
+	discountAmount = 0,
+	serviceCharge = 0,
+	addToBill = 0,
+	subtractFromBill = 0,
+	adjustments = [],
 }) => {
 	const [amountGiven, setAmountGiven] = useState("");
 	const [changeAmount, setChangeAmount] = useState(0);
 	const [selectedPaymentType, setSelectedPaymentType] = useState(null);
 	const [modalVisible, setModalVisible] = useState(true);
 
-	// Oblicz finalną kwotę do zapłaty uwzględniając rabat i opłatę serwisową
 	useEffect(() => {
 		const amountGivenNumber = parseFloat(amountGiven);
 		const totalAmountWithDiscount = adjustedTotalAmount - discountAmount;
-		const finalAmount = totalAmountWithDiscount + serviceCharge;
+		const finalAmount =
+			totalAmountWithDiscount + serviceCharge + addToBill - subtractFromBill;
 
 		if (!isNaN(amountGivenNumber)) {
 			const change = amountGivenNumber - finalAmount;
@@ -29,23 +31,33 @@ const PaymentManager = ({
 		} else {
 			setChangeAmount(0);
 		}
-	}, [amountGiven, adjustedTotalAmount, discountAmount, serviceCharge]);
+	}, [
+		amountGiven,
+		adjustedTotalAmount,
+		discountAmount,
+		serviceCharge,
+		addToBill,
+		subtractFromBill,
+	]);
 
 	const handleFinalizePayment = () => {
 		const totalAmountWithDiscount = adjustedTotalAmount - discountAmount;
-		const finalAmount = totalAmountWithDiscount + serviceCharge;
+		const finalAmount =
+			totalAmountWithDiscount + serviceCharge + addToBill - subtractFromBill;
 
 		const paymentDetails = {
 			tableName,
-			totalAmount: adjustedTotalAmount,
-			discountAmount,
-			serviceCharge,
-			finalAmount, // Wyliczona kwota do zapłaty
+			totalAmount: adjustedTotalAmount.toFixed(2),
+			discountAmount: discountAmount.toFixed(2),
+			serviceCharge: serviceCharge.toFixed(2),
+			addToBill: addToBill.toFixed(2),
+			subtractFromBill: subtractFromBill.toFixed(2),
+			finalAmount: finalAmount.toFixed(2),
 			paymentType: selectedPaymentType,
-			amountGiven: parseFloat(amountGiven) || 0,
-			changeAmount,
+			amountGiven: parseFloat(amountGiven).toFixed(2) || 0,
+			changeAmount: changeAmount.toFixed(2),
 			selectedItems,
-			adjustments, // Dodano adjustments do szczegółów płatności
+			adjustments,
 		};
 
 		console.log("Płatność została zakończona:", paymentDetails);
@@ -90,15 +102,21 @@ const PaymentManager = ({
 								{selectedItems.map((item) => (
 									<li key={item.id}>
 										{item.name} - {item.quantity}x -{" "}
-										{item.price * item.quantity} zł
+										{(item.price * item.quantity).toFixed(2)} zł
 									</li>
 								))}
 							</ul>
 							{discountAmount > 0 && (
-								<p>Rabat: {discountAmount} zł</p> // Wyświetlenie rabatu
+								<p>Rabat: {discountAmount.toFixed(2)} zł</p>
 							)}
 							{serviceCharge > 0 && (
-								<p>Opłata serwisowa: {serviceCharge} zł</p> // Wyświetlenie opłaty serwisowej
+								<p>Opłata serwisowa: {serviceCharge.toFixed(2)} zł</p>
+							)}
+							{addToBill > 0 && (
+								<p>Dodano do rachunku: {addToBill.toFixed(2)} zł</p>
+							)}
+							{subtractFromBill > 0 && (
+								<p>Odjęto od rachunku: {subtractFromBill.toFixed(2)} zł</p>
 							)}
 							<button className="close-button" onClick={handleCancelPayment}>
 								<FontAwesomeIcon icon={faTimes} />
@@ -133,7 +151,14 @@ const PaymentManager = ({
 				{selectedPaymentType === "GOTÓWA" && (
 					<div className="cash-payment">
 						<h3>
-							Do zapłaty: {adjustedTotalAmount - discountAmount + serviceCharge}{" "}
+							Do zapłaty:{" "}
+							{(
+								adjustedTotalAmount -
+								discountAmount +
+								serviceCharge +
+								addToBill -
+								subtractFromBill
+							).toFixed(2)}{" "}
 							zł
 						</h3>
 						<input

@@ -59,12 +59,15 @@ const ManagerPanel = ({ onClose }) => {
 		doc.setFontSize(10);
 		doc.text(`SALA UTARG: ${totalSales} PLN`, 20, yOffset);
 		yOffset += 10;
-		doc.text(`Razem gotówki z sali: ${totalCash} PLN`, 20, yOffset);
+		doc.text(`Łączna kwota gotówki: ${totalCash} PLN`, 20, yOffset);
 		yOffset += 10;
-		doc.text(`Razem kart z sali: ${totalCard} PLN`, 20, yOffset);
-		yOffset += 15;
+		doc.text(`Łączna kwota kartą: ${totalCard} PLN`, 20, yOffset);
+		yOffset += 10;
 
-		// Grupowanie płatności według stolików
+		doc.setFontSize(10);
+		doc.text("Szczegóły płatności:", 20, yOffset);
+		yOffset += 10;
+
 		const tablesData = paymentDetails.reduce((acc, detail) => {
 			if (!acc[detail.tableName]) {
 				acc[detail.tableName] = [];
@@ -73,7 +76,6 @@ const ManagerPanel = ({ onClose }) => {
 			return acc;
 		}, {});
 
-		// Iterowanie przez stoliki i dodawanie ich do PDF
 		Object.keys(tablesData).forEach((tableName) => {
 			const details = tablesData[tableName];
 
@@ -82,7 +84,6 @@ const ManagerPanel = ({ onClose }) => {
 				yOffset = 10;
 			}
 
-			// Tabela dla każdego stolika
 			doc.autoTable({
 				startY: yOffset,
 				head: [
@@ -94,7 +95,9 @@ const ManagerPanel = ({ onClose }) => {
 						"Ilość",
 						"Cena",
 						"Zniżka",
-						"Serwis",
+						"Opłata serwisowa",
+						"Dodano do rachunku",
+						"Odejmij od rachunku",
 						"Finalna kwota",
 					],
 				],
@@ -106,12 +109,12 @@ const ManagerPanel = ({ onClose }) => {
 						item.name,
 						item.quantity,
 						formatCurrency(item.price * item.quantity),
-						detail.discountAmount
-							? formatCurrency(detail.discountAmount)
-							: "Brak",
-						detail.serviceCharge
-							? formatCurrency(detail.serviceCharge)
-							: "Brak",
+						detail.discountAmount ? formatCurrency(detail.discountAmount) : "-",
+						detail.serviceCharge ? formatCurrency(detail.serviceCharge) : "-",
+						detail.addToBill ? formatCurrency(detail.addToBill) : "-",
+						detail.subtractFromBill
+							? formatCurrency(detail.subtractFromBill)
+							: "-",
 						formatCurrency(detail.finalAmount),
 					])
 				),
@@ -123,15 +126,73 @@ const ManagerPanel = ({ onClose }) => {
 					overflow: "linebreak",
 				},
 				columnStyles: {
-					0: { cellWidth: "auto" },
-					1: { cellWidth: "auto" },
-					2: { cellWidth: "auto" },
-					3: { cellWidth: "auto", minCellWidth: 30 },
-					4: { cellWidth: "auto" },
-					5: { cellWidth: "auto" },
-					6: { cellWidth: "auto" },
-					7: { cellWidth: "auto" },
-					8: { cellWidth: "auto" },
+					0: {
+						cellWidth: "auto",
+						cellPadding: 2,
+						lineWidth: 0.75,
+						lineColor: [0, 0, 0],
+					},
+					1: {
+						cellWidth: "auto",
+						cellPadding: 2,
+						lineWidth: 0.75,
+						lineColor: [0, 0, 0],
+					},
+					2: {
+						cellWidth: "auto",
+						cellPadding: 2,
+						lineWidth: 0.75,
+						lineColor: [0, 0, 0],
+					},
+					3: {
+						cellWidth: "auto",
+						minCellWidth: 30,
+						cellPadding: 2,
+						lineWidth: 0.75,
+						lineColor: [0, 0, 0],
+					},
+					4: {
+						cellWidth: "auto",
+						cellPadding: 2,
+						lineWidth: 0.75,
+						lineColor: [0, 0, 0],
+					},
+					5: {
+						cellWidth: "auto",
+						cellPadding: 2,
+						lineWidth: 0.75,
+						lineColor: [0, 0, 0],
+					},
+					6: {
+						cellWidth: "auto",
+						cellPadding: 2,
+						lineWidth: 0.75,
+						lineColor: [0, 0, 0],
+					},
+					7: {
+						cellWidth: "auto",
+						cellPadding: 2,
+						lineWidth: 0.75,
+						lineColor: [0, 0, 0],
+					},
+					8: {
+						cellWidth: "auto",
+						cellPadding: 2,
+						lineWidth: 0.75,
+						lineColor: [0, 0, 0],
+					},
+					9: {
+						cellWidth: "auto",
+						cellPadding: 2,
+						lineWidth: 0.75,
+						lineColor: [0, 0, 0],
+					},
+					10: {
+						cellWidth: "auto",
+						cellPadding: 2,
+						lineWidth: 0.75,
+						lineColor: [0, 0, 0],
+					},
 				},
 				tableLineColor: [0, 0, 0],
 				tableLineWidth: 0.75,
@@ -139,13 +200,11 @@ const ManagerPanel = ({ onClose }) => {
 
 			yOffset = doc.lastAutoTable.finalY + 10;
 
-			// Dodanie linii oddzielającej sekcje
 			doc.line(20, yOffset - 5, 190, yOffset - 5);
 
-			yOffset += 15; // Przerwa między stolikami
+			yOffset += 15;
 		});
 
-		// Dodanie sekcji z podsumowaniem produktów
 		doc.setFontSize(10);
 		doc.text("Podsumowanie produktów:", 20, yOffset);
 		yOffset += 10;
@@ -202,6 +261,18 @@ const ManagerPanel = ({ onClose }) => {
 													<span>
 														, Opłata serwisowa:{" "}
 														{formatCurrency(detail.serviceCharge)} PLN
+													</span>
+												)}
+												{detail.addToBill > 0 && (
+													<span>
+														, Dodano do rachunku:{" "}
+														{formatCurrency(detail.addToBill)} PLN
+													</span>
+												)}
+												{detail.subtractFromBill > 0 && (
+													<span>
+														, Odejmij od rachunku:{" "}
+														{formatCurrency(detail.subtractFromBill)} PLN
 													</span>
 												)}
 												, Finalna kwota: {formatCurrency(detail.finalAmount)}{" "}
