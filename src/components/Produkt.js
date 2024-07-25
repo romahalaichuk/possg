@@ -762,7 +762,7 @@ export const products = [
 		category: "Napój bezalkoholowy",
 	},
 	{
-		id: 249,
+		id: 278,
 		name: "Mus czekoladowy, Krem czekoladowy",
 		price: 19.9,
 		category: "Desery",

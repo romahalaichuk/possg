@@ -33,17 +33,66 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	background-color: white;
+	background-color: #ffffff;
 	padding: 20px;
-	border: 1px solid #ccc;
+	border: 1px solid #dcdcdc;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 	z-index: 1000;
+	width: 90%;
+	max-width: 800px;
+	box-sizing: border-box;
+	overflow-y: auto;
+	max-height: 80vh; /* Ogranicza wysokość kontenera, aby był przewijalny */
+}
+.manager-panel-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+/* Przycisk zamykania */
+.manager-panel .close-button {
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: #888;
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	font-size: 1.5rem;
+	transition: color 0.3s ease;
+}
+
+.manager-panel .close-button:hover {
+	color: #000;
+}
+
+/* Przycisk eksportu PDF */
+.manager-panel .export-button {
+	margin-top: 20px;
+	padding: 10px 20px;
+	font-size: 16px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	cursor: pointer;
+	border-radius: 4px;
+	transition: background-color 0.3s ease;
 }
 
 .manager-panel h2 {
 	font-size: 1.5rem;
-	margin-bottom: 10px;
+	margin-bottom: 20px;
+	color: #333;
 }
-
 .manager-panel .close-button {
 	background: none;
 	border: none;
@@ -71,5 +120,45 @@
 }
 
 .manager-panel .info-item {
-	margin-bottom: 10px;
+	margin-bottom: 15px;
+	font-size: 1rem;
+	color: #333;
+}
+.manager-panel-button {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 100;
+	padding: 8px 15px;
+	font-size: 16px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	cursor: pointer;
+	border-radius: 4px;
+	transition: background-color 0.3s ease;
+}
+
+.manager-panel-button:hover {
+	background-color: #0056b3;
+}
+
+/* Ogólne style dla kontenera */
+.table-manager {
+	position: relative;
+}
+
+.table-manager .manager-panel-button {
+	padding: 8px 15px;
+	font-size: 16px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	cursor: pointer;
+	border-radius: 4px;
+	transition: background-color 0.3s ease;
+}
+
+.table-manager .manager-panel-button:hover {
+	background-color: #0056b3;
 }

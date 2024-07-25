@@ -13,6 +13,10 @@ const ManagerPanel = ({ onClose }) => {
 	}, []);
 
 	const formatCurrency = (amount) => {
+		if (typeof amount !== "number") {
+			console.error("Invalid amount for formatting:", amount);
+			return "0.00";
+		}
 		return amount.toFixed(2);
 	};
 
@@ -32,12 +36,12 @@ const ManagerPanel = ({ onClose }) => {
 	const totalCash = formatCurrency(
 		paymentDetails
 			.filter((p) => p.paymentType === "GOTÓWA")
-			.reduce((total, p) => total + p.finalAmount, 0)
+			.reduce((total, p) => total + parseFloat(p.finalAmount || 0), 0)
 	);
 	const totalCard = formatCurrency(
 		paymentDetails
 			.filter((p) => p.paymentType === "KARTA")
-			.reduce((total, p) => total + p.finalAmount, 0)
+			.reduce((total, p) => total + parseFloat(p.finalAmount || 0), 0)
 	);
 
 	const totalSales = formatCurrency(
@@ -104,90 +108,35 @@ const ManagerPanel = ({ onClose }) => {
 				body: details.flatMap((detail) =>
 					detail.selectedItems.map((item) => [
 						tableName,
-						formatCurrency(detail.totalAmount),
+						formatCurrency(parseFloat(detail.totalAmount || 0)),
 						detail.paymentType,
 						item.name,
 						item.quantity,
-						formatCurrency(item.price * item.quantity),
-						detail.discountAmount ? formatCurrency(detail.discountAmount) : "-",
-						detail.serviceCharge ? formatCurrency(detail.serviceCharge) : "-",
-						detail.addToBill ? formatCurrency(detail.addToBill) : "-",
-						detail.subtractFromBill
-							? formatCurrency(detail.subtractFromBill)
+						formatCurrency(parseFloat(item.price * item.quantity || 0)),
+						detail.discountAmount
+							? formatCurrency(parseFloat(detail.discountAmount || 0))
 							: "-",
-						formatCurrency(detail.finalAmount),
+						detail.serviceCharge
+							? formatCurrency(parseFloat(detail.serviceCharge || 0))
+							: "-",
+						detail.addToBill
+							? formatCurrency(parseFloat(detail.addToBill || 0))
+							: "-",
+						detail.subtractFromBill
+							? formatCurrency(parseFloat(detail.subtractFromBill || 0))
+							: "-",
+						formatCurrency(parseFloat(detail.finalAmount || 0)),
 					])
 				),
 				theme: "striped",
 				margin: { top: 10, bottom: 10 },
 				styles: {
-					fontSize: 6, // Mniejsza czcionka
+					fontSize: 6,
 					cellPadding: 2,
 					overflow: "linebreak",
 				},
 				columnStyles: {
 					0: {
-						cellWidth: "auto",
-						cellPadding: 2,
-						lineWidth: 0.75,
-						lineColor: [0, 0, 0],
-					},
-					1: {
-						cellWidth: "auto",
-						cellPadding: 2,
-						lineWidth: 0.75,
-						lineColor: [0, 0, 0],
-					},
-					2: {
-						cellWidth: "auto",
-						cellPadding: 2,
-						lineWidth: 0.75,
-						lineColor: [0, 0, 0],
-					},
-					3: {
-						cellWidth: "auto",
-						minCellWidth: 30,
-						cellPadding: 2,
-						lineWidth: 0.75,
-						lineColor: [0, 0, 0],
-					},
-					4: {
-						cellWidth: "auto",
-						cellPadding: 2,
-						lineWidth: 0.75,
-						lineColor: [0, 0, 0],
-					},
-					5: {
-						cellWidth: "auto",
-						cellPadding: 2,
-						lineWidth: 0.75,
-						lineColor: [0, 0, 0],
-					},
-					6: {
-						cellWidth: "auto",
-						cellPadding: 2,
-						lineWidth: 0.75,
-						lineColor: [0, 0, 0],
-					},
-					7: {
-						cellWidth: "auto",
-						cellPadding: 2,
-						lineWidth: 0.75,
-						lineColor: [0, 0, 0],
-					},
-					8: {
-						cellWidth: "auto",
-						cellPadding: 2,
-						lineWidth: 0.75,
-						lineColor: [0, 0, 0],
-					},
-					9: {
-						cellWidth: "auto",
-						cellPadding: 2,
-						lineWidth: 0.75,
-						lineColor: [0, 0, 0],
-					},
-					10: {
 						cellWidth: "auto",
 						cellPadding: 2,
 						lineWidth: 0.75,
@@ -243,39 +192,53 @@ const ManagerPanel = ({ onClose }) => {
 						{paymentDetails.map((detail) => (
 							<li key={detail.tableName + detail.paymentType}>
 								Stolik: {detail.tableName}, Kwota:{" "}
-								{formatCurrency(detail.totalAmount)} PLN, Płatność:{" "}
-								{detail.paymentType}
+								{formatCurrency(parseFloat(detail.totalAmount || 0))} PLN,
+								Płatność: {detail.paymentType}
 								{detail.selectedItems && detail.selectedItems.length > 0 && (
 									<ul>
 										{detail.selectedItems.map((item) => (
 											<li key={item.id}>
 												Produkt: {item.name}, Ilość: {item.quantity}, Cena:{" "}
-												{formatCurrency(item.price * item.quantity)} PLN
+												{formatCurrency(
+													parseFloat(item.price * item.quantity || 0)
+												)}{" "}
+												PLN
 												{detail.discountAmount && (
 													<span>
-														, Zniżka: {formatCurrency(detail.discountAmount)}{" "}
+														, Zniżka:{" "}
+														{formatCurrency(
+															parseFloat(detail.discountAmount || 0)
+														)}{" "}
 														PLN
 													</span>
 												)}
 												{detail.serviceCharge > 0 && (
 													<span>
 														, Opłata serwisowa:{" "}
-														{formatCurrency(detail.serviceCharge)} PLN
+														{formatCurrency(
+															parseFloat(detail.serviceCharge || 0)
+														)}{" "}
+														PLN
 													</span>
 												)}
 												{detail.addToBill > 0 && (
 													<span>
 														, Dodano do rachunku:{" "}
-														{formatCurrency(detail.addToBill)} PLN
+														{formatCurrency(parseFloat(detail.addToBill || 0))}{" "}
+														PLN
 													</span>
 												)}
 												{detail.subtractFromBill > 0 && (
 													<span>
 														, Odejmij od rachunku:{" "}
-														{formatCurrency(detail.subtractFromBill)} PLN
+														{formatCurrency(
+															parseFloat(detail.subtractFromBill || 0)
+														)}{" "}
+														PLN
 													</span>
 												)}
-												, Finalna kwota: {formatCurrency(detail.finalAmount)}{" "}
+												, Finalna kwota:{" "}
+												{formatCurrency(parseFloat(detail.finalAmount || 0))}{" "}
 												PLN
 											</li>
 										))}
