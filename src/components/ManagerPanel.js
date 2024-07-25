@@ -32,12 +32,12 @@ const ManagerPanel = ({ onClose }) => {
 	const totalCash = formatCurrency(
 		paymentDetails
 			.filter((p) => p.paymentType === "GOTÓWA")
-			.reduce((total, p) => total + p.totalAmount, 0)
+			.reduce((total, p) => total + p.finalAmount, 0)
 	);
 	const totalCard = formatCurrency(
 		paymentDetails
 			.filter((p) => p.paymentType === "KARTA")
-			.reduce((total, p) => total + p.totalAmount, 0)
+			.reduce((total, p) => total + p.finalAmount, 0)
 	);
 
 	const totalSales = formatCurrency(
@@ -86,7 +86,17 @@ const ManagerPanel = ({ onClose }) => {
 			doc.autoTable({
 				startY: yOffset,
 				head: [
-					["Stolik", "Kwota", "Płatność", "Produkt", "Ilość", "Cena", "Zniżka"],
+					[
+						"Stolik",
+						"Kwota",
+						"Płatność",
+						"Produkt",
+						"Ilość",
+						"Cena",
+						"Zniżka",
+						"Serwis",
+						"Finalna kwota",
+					],
 				],
 				body: details.flatMap((detail) =>
 					detail.selectedItems.map((item) => [
@@ -96,7 +106,13 @@ const ManagerPanel = ({ onClose }) => {
 						item.name,
 						item.quantity,
 						formatCurrency(item.price * item.quantity),
-						detail.discount ? formatCurrency(detail.discount) : "Brak",
+						detail.discountAmount
+							? formatCurrency(detail.discountAmount)
+							: "Brak",
+						detail.serviceCharge
+							? formatCurrency(detail.serviceCharge)
+							: "Brak",
+						formatCurrency(detail.finalAmount),
 					])
 				),
 				theme: "striped",
@@ -114,6 +130,8 @@ const ManagerPanel = ({ onClose }) => {
 					4: { cellWidth: "auto" },
 					5: { cellWidth: "auto" },
 					6: { cellWidth: "auto" },
+					7: { cellWidth: "auto" },
+					8: { cellWidth: "auto" },
 				},
 				tableLineColor: [0, 0, 0],
 				tableLineWidth: 0.75,
@@ -164,7 +182,7 @@ const ManagerPanel = ({ onClose }) => {
 					<strong>Szczegóły płatności:</strong>
 					<ul>
 						{paymentDetails.map((detail) => (
-							<li key={detail.id}>
+							<li key={detail.tableName + detail.paymentType}>
 								Stolik: {detail.tableName}, Kwota:{" "}
 								{formatCurrency(detail.totalAmount)} PLN, Płatność:{" "}
 								{detail.paymentType}
@@ -174,11 +192,20 @@ const ManagerPanel = ({ onClose }) => {
 											<li key={item.id}>
 												Produkt: {item.name}, Ilość: {item.quantity}, Cena:{" "}
 												{formatCurrency(item.price * item.quantity)} PLN
-												{detail.discount && (
+												{detail.discountAmount && (
 													<span>
-														, Zniżka: {formatCurrency(detail.discount)} PLN
+														, Zniżka: {formatCurrency(detail.discountAmount)}{" "}
+														PLN
 													</span>
 												)}
+												{detail.serviceCharge > 0 && (
+													<span>
+														, Opłata serwisowa:{" "}
+														{formatCurrency(detail.serviceCharge)} PLN
+													</span>
+												)}
+												, Finalna kwota: {formatCurrency(detail.finalAmount)}{" "}
+												PLN
 											</li>
 										))}
 									</ul>

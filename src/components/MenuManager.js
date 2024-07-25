@@ -383,6 +383,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 
 		return adjustedTotal;
 	};
+
 	const handleMinutesChange = (e) => {
 		const minutes = parseInt(e.target.value, 10);
 		setMinutesToPickup(minutes);
@@ -679,6 +680,10 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								adjustedTotalAmount={calculateAdjustedTotal()}
 								onClose={handlePaymentComplete}
 								tableName={currentTableName}
+								discountAmount={discountAmount}
+								serviceCharge={serviceCharge}
+								adjustments={adjustments}
+								calculateAdjustedTotal={calculateAdjustedTotal}
 							/>
 						</div>
 					)}

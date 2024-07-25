@@ -7,31 +7,45 @@ const PaymentManager = ({
 	tableName,
 	adjustedTotalAmount,
 	onClose,
-	selectedItems, // Upewnij się, że przekazujesz selectedItems do komponentu
+	selectedItems,
+	discountAmount = 0, // Dodano discountAmount jako props
+	serviceCharge = 0, // Dodano serviceCharge jako props
+	adjustments = [], // Dodano adjustments jako props
 }) => {
 	const [amountGiven, setAmountGiven] = useState("");
 	const [changeAmount, setChangeAmount] = useState(0);
 	const [selectedPaymentType, setSelectedPaymentType] = useState(null);
 	const [modalVisible, setModalVisible] = useState(true);
 
+	// Oblicz finalną kwotę do zapłaty uwzględniając rabat i opłatę serwisową
 	useEffect(() => {
 		const amountGivenNumber = parseFloat(amountGiven);
+		const totalAmountWithDiscount = adjustedTotalAmount - discountAmount;
+		const finalAmount = totalAmountWithDiscount + serviceCharge;
+
 		if (!isNaN(amountGivenNumber)) {
-			const change = amountGivenNumber - adjustedTotalAmount;
+			const change = amountGivenNumber - finalAmount;
 			setChangeAmount(change > 0 ? change : 0);
 		} else {
 			setChangeAmount(0);
 		}
-	}, [amountGiven, adjustedTotalAmount]);
+	}, [amountGiven, adjustedTotalAmount, discountAmount, serviceCharge]);
 
 	const handleFinalizePayment = () => {
+		const totalAmountWithDiscount = adjustedTotalAmount - discountAmount;
+		const finalAmount = totalAmountWithDiscount + serviceCharge;
+
 		const paymentDetails = {
 			tableName,
 			totalAmount: adjustedTotalAmount,
+			discountAmount,
+			serviceCharge,
+			finalAmount, // Wyliczona kwota do zapłaty
 			paymentType: selectedPaymentType,
 			amountGiven: parseFloat(amountGiven) || 0,
 			changeAmount,
-			selectedItems, // Dodaj selectedItems do płatności
+			selectedItems,
+			adjustments, // Dodano adjustments do szczegółów płatności
 		};
 
 		console.log("Płatność została zakończona:", paymentDetails);
@@ -80,7 +94,12 @@ const PaymentManager = ({
 									</li>
 								))}
 							</ul>
-							<h2>Metoda płatności</h2>
+							{discountAmount > 0 && (
+								<p>Rabat: {discountAmount} zł</p> // Wyświetlenie rabatu
+							)}
+							{serviceCharge > 0 && (
+								<p>Opłata serwisowa: {serviceCharge} zł</p> // Wyświetlenie opłaty serwisowej
+							)}
 							<button className="close-button" onClick={handleCancelPayment}>
 								<FontAwesomeIcon icon={faTimes} />
 							</button>
@@ -113,7 +132,10 @@ const PaymentManager = ({
 
 				{selectedPaymentType === "GOTÓWA" && (
 					<div className="cash-payment">
-						<h3>Do zapłaty: {adjustedTotalAmount} zł</h3>
+						<h3>
+							Do zapłaty: {adjustedTotalAmount - discountAmount + serviceCharge}{" "}
+							zł
+						</h3>
 						<input
 							type="number"
 							value={amountGiven}
