@@ -391,7 +391,7 @@ export const products = [
 
 	//PIZZA.........................................................................
 
-	{ id: 229, name: "FOCACCIA", price: 16.9, category: "Pizza" },
+	{ id: 300, name: "Foccacia", price: 16.9, category: "Pizza" },
 
 	{
 		id: 228,
