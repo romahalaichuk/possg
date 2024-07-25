@@ -579,7 +579,7 @@ export const products = [
 		category: "Kawa",
 	},
 	//Napoje bezalkoholowe...............................................................................
-	{ id: 214, name: "Puchar lodowy", price: 19.9, category: "Desery" },
+	{ id: 214, name: "Puchar lodowy", price: 20.9, category: "Desery" },
 	{ id: 215, name: "Frizante Casa Burti Flute", price: 65, category: "Wina" },
 	{
 		id: 216,
