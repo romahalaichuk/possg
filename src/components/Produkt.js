@@ -388,16 +388,24 @@ export const products = [
 		category: "Pizza",
 		cm: 42,
 	},
+	{
+		id: 302,
+		name: "Kompozycja własna 60 cm",
+		price: 86.9,
+		category: "Pizza",
+		cm: 42,
+	},
 
 	//PIZZA.........................................................................
 
 	{ id: 300, name: "Foccacia", price: 16.9, category: "Pizza", cm: 32 },
 
 	{
-		id: 228,
+		id: 301,
 		name: "WŁOSKIE PIECZYWO CZOSNKOWE",
 		price: 21.9,
 		category: "Pizza",
+		cm: 32,
 	},
 
 	{
