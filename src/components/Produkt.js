@@ -393,7 +393,7 @@ export const products = [
 		name: "Kompozycja własna 60 cm",
 		price: 86.9,
 		category: "Pizza",
-		cm: 42,
+		cm: 32,
 	},
 
 	//PIZZA.........................................................................
