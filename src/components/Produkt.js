@@ -388,13 +388,6 @@ export const products = [
 		category: "Pizza",
 		cm: 42,
 	},
-	{
-		id: 302,
-		name: "Kompozycja własna 32 cm",
-		price: 86.9,
-		category: "Pizza",
-		cm: 32,
-	},
 
 	//PIZZA.........................................................................
 
@@ -402,7 +395,7 @@ export const products = [
 
 	{
 		id: 301,
-		name: "WŁOSKIE PIECZYWO CZOSNKOWE",
+		name: "WŁOSKIE PIECZYWO CZOSNKOWE 32",
 		price: 21.9,
 		category: "Pizza",
 		cm: 32,
