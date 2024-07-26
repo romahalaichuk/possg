@@ -244,6 +244,10 @@ const Dodatki = ({
 		{ id: 106, name: "Krewetki ", price: 6.5, category: "Dod", cm: 32 },
 		{ id: 107, name: "Krewetki ", price: 7.5, category: "Dod", cm: 42 },
 		{ id: 108, name: "Krewetki ", price: 9.5, category: "Dod", cm: 60 },
+		{ id: 109, name: "Rukola ", price: 7.5, category: "Dod", cm: 23 },
+		{ id: 110, name: "Rukola ", price: 9.5, category: "Dod", cm: 32 },
+		{ id: 111, name: "Rukola ", price: 12.5, category: "Dod", cm: 42 },
+		{ id: 112, name: "Rukola ", price: 17.5, category: "Dod", cm: 60 },
 	];
 
 	const openModal = () => {
