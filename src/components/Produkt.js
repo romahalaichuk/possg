@@ -390,7 +390,7 @@ export const products = [
 	},
 	{
 		id: 302,
-		name: "Kompozycja własna 60 cm",
+		name: "Kompozycja własna 32 cm",
 		price: 86.9,
 		category: "Pizza",
 		cm: 32,
