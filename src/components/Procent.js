@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const Procent = ({ onClose, onSubmit, onAddComment }) => {
+const Procent = ({ onClose, onSubmit, onAddComment, option }) => {
 	const [service, setService] = useState("");
 	const [discount, setDiscount] = useState("");
 	const [addToBill, setAddToBill] = useState("");
@@ -9,8 +9,10 @@ const Procent = ({ onClose, onSubmit, onAddComment }) => {
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsCheeseDay(today === 3 || today === 4);
+		setIsCheeseDay(today === 3 || today === 0);
 	}, []);
+
+	useEffect(() => {}, [option, isCheeseDay]);
 
 	const handleSubmit = () => {
 		onSubmit({
@@ -25,6 +27,13 @@ const Procent = ({ onClose, onSubmit, onAddComment }) => {
 	const handleAddComment = () => {
 		onAddComment("Podwójny ser gratis");
 		onClose();
+	};
+
+	const renderCheeseButton = () => {
+		if ((option === "Wynos" || option === "Dostawa") && isCheeseDay) {
+			return <button onClick={handleAddComment}>Podwójny ser gratis</button>;
+		}
+		return null;
 	};
 
 	return (
@@ -66,9 +75,7 @@ const Procent = ({ onClose, onSubmit, onAddComment }) => {
 					onChange={(e) => setSubtractFromBill(e.target.value)}
 				/>
 			</div>
-			{isCheeseDay && (
-				<button onClick={handleAddComment}>Podwójny ser gratis</button>
-			)}
+			{renderCheeseButton()}
 			<div className="modal-buttons">
 				<button onClick={handleSubmit}>Zatwierdź</button>
 				<button onClick={onClose}>Zamknij</button>

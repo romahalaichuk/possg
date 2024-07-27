@@ -49,7 +49,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		addToBill: 0,
 		subtractFromBill: 0,
 	});
-
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [option, setOption] = useState("");
+	const [showCheeseButton, setShowCheeseButton] = useState(false);
 	const [printedItems, setPrintedItems] = useState([]);
 	const addToPrintedItems = (itemId) => {
 		setPrintedItems((prevItems) => [...prevItems, itemId]);
@@ -60,6 +62,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setShowWynosModal(true);
 			setShowDostawaModal(false);
 			setIsWynos(true);
+			setShowCheeseButton(true);
+			setOption("Wynos");
+			setIsModalOpen(true);
 		}
 	};
 
@@ -70,6 +75,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setShowWynosModal(false);
 			setShowDeliveryDetails(true);
 			setIsWynos(false);
+			setShowCheeseButton(true);
+			setOption("Dostawa");
+			setIsModalOpen(true);
 		}
 	};
 
@@ -344,6 +352,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 
 	const handleAdjustmentsSubmit = (adjustments) => {
 		setAdjustments(adjustments);
+		setShowProcentModal(false);
 
 		const updatedItems = selectedItems.map((item) =>
 			item.name === "Pizza" ? { ...item, comment: adjustments.comment } : item
@@ -715,6 +724,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 									onClose={() => setShowProcentModal(false)}
 									onSubmit={handleAdjustmentsSubmit}
 									onAddComment={handleAddComment}
+									showCheeseButton={showCheeseButton}
+									option={option}
 								/>
 							</div>
 						</div>
