@@ -21,9 +21,7 @@ const PaymentManager = ({
 
 	useEffect(() => {
 		const amountGivenNumber = parseFloat(amountGiven);
-		const totalAmountWithDiscount = adjustedTotalAmount - discountAmount;
-		const finalAmount =
-			totalAmountWithDiscount + serviceCharge + addToBill - subtractFromBill;
+		const finalAmount = adjustedTotalAmount;
 
 		if (!isNaN(amountGivenNumber)) {
 			const change = amountGivenNumber - finalAmount;
@@ -31,19 +29,10 @@ const PaymentManager = ({
 		} else {
 			setChangeAmount(0);
 		}
-	}, [
-		amountGiven,
-		adjustedTotalAmount,
-		discountAmount,
-		serviceCharge,
-		addToBill,
-		subtractFromBill,
-	]);
+	}, [amountGiven, adjustedTotalAmount]);
 
 	const handleFinalizePayment = () => {
-		const totalAmountWithDiscount = adjustedTotalAmount - discountAmount;
-		const finalAmount =
-			totalAmountWithDiscount + serviceCharge + addToBill - subtractFromBill;
+		const finalAmount = adjustedTotalAmount;
 
 		const paymentDetails = {
 			tableName,
@@ -58,6 +47,7 @@ const PaymentManager = ({
 			changeAmount: changeAmount.toFixed(2),
 			selectedItems,
 			adjustments,
+			adjustedTotalAmount: adjustedTotalAmount.toFixed(2),
 		};
 
 		console.log("Płatność została zakończona:", paymentDetails);
@@ -137,7 +127,7 @@ const PaymentManager = ({
 					<div className="payment-options">
 						<button
 							className="button-pay"
-							onClick={() => handlePaymentTypeClick("GOTÓWA")}>
+							onClick={() => handlePaymentTypeClick("GOTÓWKA")}>
 							Gotówka
 						</button>
 						<button
@@ -148,19 +138,9 @@ const PaymentManager = ({
 					</div>
 				) : null}
 
-				{selectedPaymentType === "GOTÓWA" && (
+				{selectedPaymentType === "GOTÓWKA" && (
 					<div className="cash-payment">
-						<h3>
-							Do zapłaty:{" "}
-							{(
-								adjustedTotalAmount -
-								discountAmount +
-								serviceCharge +
-								addToBill -
-								subtractFromBill
-							).toFixed(2)}{" "}
-							zł
-						</h3>
+						<h3>Do zapłaty: {adjustedTotalAmount.toFixed(2)} zł</h3>
 						<input
 							type="number"
 							value={amountGiven}

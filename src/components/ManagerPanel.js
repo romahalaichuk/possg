@@ -125,7 +125,7 @@ const ManagerPanel = ({ onClose }) => {
 						detail.subtractFromBill
 							? formatCurrency(parseFloat(detail.subtractFromBill || 0))
 							: "-",
-						formatCurrency(parseFloat(detail.finalAmount || 0)),
+						formatCurrency(parseFloat(detail.adjustedTotalAmount || 0)), // Change here
 					])
 				),
 				theme: "striped",
@@ -238,7 +238,9 @@ const ManagerPanel = ({ onClose }) => {
 													</span>
 												)}
 												, Finalna kwota:{" "}
-												{formatCurrency(parseFloat(detail.finalAmount || 0))}{" "}
+												{formatCurrency(
+													parseFloat(detail.adjustedTotalAmount || 0)
+												)}{" "}
 												PLN
 											</li>
 										))}

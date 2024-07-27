@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const Procent = ({ onClose, onSubmit }) => {
+const Procent = ({ onClose, onSubmit, onAddComment }) => {
 	const [service, setService] = useState("");
 	const [discount, setDiscount] = useState("");
 	const [addToBill, setAddToBill] = useState("");
 	const [subtractFromBill, setSubtractFromBill] = useState("");
+	const [isCheeseDay, setIsCheeseDay] = useState(false);
+
+	useEffect(() => {
+		const today = new Date().getDay();
+		setIsCheeseDay(today === 3 || today === 4);
+	}, []);
 
 	const handleSubmit = () => {
 		onSubmit({
@@ -13,6 +19,11 @@ const Procent = ({ onClose, onSubmit }) => {
 			addToBill: parseFloat(addToBill) || 0,
 			subtractFromBill: parseFloat(subtractFromBill) || 0,
 		});
+		onClose();
+	};
+
+	const handleAddComment = () => {
+		onAddComment("Podwójny ser gratis");
 		onClose();
 	};
 
@@ -37,7 +48,6 @@ const Procent = ({ onClose, onSubmit }) => {
 					onChange={(e) => setDiscount(e.target.value)}
 				/>
 			</div>
-
 			<div className="input-row">
 				<label>Dodaj do rachunku</label>
 				<input
@@ -56,6 +66,9 @@ const Procent = ({ onClose, onSubmit }) => {
 					onChange={(e) => setSubtractFromBill(e.target.value)}
 				/>
 			</div>
+			{isCheeseDay && (
+				<button onClick={handleAddComment}>Podwójny ser gratis</button>
+			)}
 			<div className="modal-buttons">
 				<button onClick={handleSubmit}>Zatwierdź</button>
 				<button onClick={onClose}>Zamknij</button>

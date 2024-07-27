@@ -49,6 +49,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		addToBill: 0,
 		subtractFromBill: 0,
 	});
+
 	const [printedItems, setPrintedItems] = useState([]);
 	const addToPrintedItems = (itemId) => {
 		setPrintedItems((prevItems) => [...prevItems, itemId]);
@@ -260,7 +261,15 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		updateSelectedItems(tableName, updatedItems);
 		calculateTotalPrice();
 	};
-
+	const handleAddComment = (comment) => {
+		if (selectedItems.length > 0) {
+			const updatedItems = selectedItems.map((item) =>
+				item.category === "Pizza" ? { ...item, comment } : item
+			);
+			setSelectedItems(updatedItems);
+			updateSelectedItems(tableName, updatedItems);
+		}
+	};
 	const handleRemoveExtra = (itemId, extraId) => {
 		const updatedItems = selectedItems.map((item) =>
 			item.id === itemId
@@ -335,6 +344,12 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 
 	const handleAdjustmentsSubmit = (adjustments) => {
 		setAdjustments(adjustments);
+
+		const updatedItems = selectedItems.map((item) =>
+			item.name === "Pizza" ? { ...item, comment: adjustments.comment } : item
+		);
+
+		setSelectedItems(updatedItems);
 		setShowProcentModal(false);
 	};
 
@@ -542,6 +557,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								</li>
 							))}
 						</ul>
+
 						{/* Dodane formularze Wynos i Dostawa */}
 						{showWynosModal && (
 							<div className="order-type-container">
@@ -653,6 +669,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					</div>
 					<div className="modal-buttons">
 						<button onClick={onClose}>Zamknij</button>
+
 						{selectedItems.length > 0 && (
 							<button onClick={handleRozliczClick}>Rozlicz</button>
 						)}
@@ -697,6 +714,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								<Procent
 									onClose={() => setShowProcentModal(false)}
 									onSubmit={handleAdjustmentsSubmit}
+									onAddComment={handleAddComment}
 								/>
 							</div>
 						</div>
