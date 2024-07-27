@@ -9,7 +9,7 @@ const Procent = ({ onClose, onSubmit, onAddComment, option }) => {
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsCheeseDay(today === 3 || today === 0);
+		setIsCheeseDay(today === 3 || today === 4);
 	}, []);
 
 	useEffect(() => {}, [option, isCheeseDay]);

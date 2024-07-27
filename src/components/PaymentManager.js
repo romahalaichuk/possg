@@ -50,8 +50,6 @@ const PaymentManager = ({
 			adjustedTotalAmount: adjustedTotalAmount.toFixed(2),
 		};
 
-		console.log("Płatność została zakończona:", paymentDetails);
-
 		const storedPaymentDetails =
 			JSON.parse(localStorage.getItem("paymentDetails")) || [];
 		storedPaymentDetails.push(paymentDetails);

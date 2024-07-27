@@ -49,7 +49,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		addToBill: 0,
 		subtractFromBill: 0,
 	});
-	const [isModalOpen, setIsModalOpen] = useState(false);
+	// eslint-disable-next-line no-unused-vars
+	const [isAnyModalOpen, setIsAnyModalOpen] = useState(false);
 	const [option, setOption] = useState("");
 	const [showCheeseButton, setShowCheeseButton] = useState(false);
 	const [printedItems, setPrintedItems] = useState([]);
@@ -64,7 +65,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setIsWynos(true);
 			setShowCheeseButton(true);
 			setOption("Wynos");
-			setIsModalOpen(true);
+			setIsAnyModalOpen(true);
 		}
 	};
 
@@ -77,7 +78,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setIsWynos(false);
 			setShowCheeseButton(true);
 			setOption("Dostawa");
-			setIsModalOpen(true);
+			setIsAnyModalOpen(true);
 		}
 	};
 
@@ -600,7 +601,10 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 											: `Odbiór do: ${pickupTime}`}
 									</p>
 								)}
-								<button onClick={() => setShowWynosModal(false)}>
+								<button
+									onClick={() => {
+										setShowWynosModal(false);
+									}}>
 									Zamknij
 								</button>
 							</div>
@@ -611,7 +615,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 									selectedItems={selectedItems}
 									tableName={tableName}
 									adjustedTotalAmount={calculateAdjustedTotal()}
-									onClose={() => setShowDostawaModal(false)}
+									onClose={() => {
+										setShowDostawaModal(false);
+									}}
 									setDeliveryDetails={setDeliveryDetails}
 								/>
 								<div className="order-type-container">
@@ -721,7 +727,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							onClick={handleOverlayClickk}>
 							<div className="procent-modal">
 								<Procent
-									onClose={() => setShowProcentModal(false)}
+									onClose={() => {
+										setShowProcentModal(false);
+									}}
 									onSubmit={handleAdjustmentsSubmit}
 									onAddComment={handleAddComment}
 									showCheeseButton={showCheeseButton}
