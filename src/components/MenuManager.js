@@ -110,6 +110,23 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 
 		return { totalItems, totalAmount, discountAmount };
 	};
+	const applyDiscountToSecondPizza = () => {
+		const pizzas = selectedItems.filter((item) => item.category === "Pizza");
+		if (pizzas.length >= 2) {
+			const sortedPizzas = [...pizzas].sort((a, b) => a.price - b.price);
+			const cheapestPizza = sortedPizzas[0];
+
+			const updatedItems = selectedItems.map((item) =>
+				item.id === cheapestPizza.id
+					? { ...item, price: item.price * 0.5 }
+					: item
+			);
+
+			setSelectedItems(updatedItems);
+			updateSelectedItems(tableName, updatedItems);
+			calculateTotalPrice();
+		}
+	};
 
 	useEffect(() => {
 		const storedSelectedItems = getSelectedItems(tableName);
@@ -312,7 +329,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const calculateTotalPrice = () => {
 		let totalPrice = 0;
 		selectedItems.forEach((item) => {
-			let itemPrice = item.price || 0;
+			let itemPrice = item.discountedPrice || item.price || 0;
 
 			if (item.extras && item.extras.length > 0) {
 				item.extras.forEach((extra) => {
@@ -727,12 +744,15 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							onClick={handleOverlayClickk}>
 							<div className="procent-modal">
 								<Procent
+									selectedItems={selectedItems}
+									setSelectedItems={setSelectedItems}
 									onClose={() => {
 										setShowProcentModal(false);
 									}}
 									onSubmit={handleAdjustmentsSubmit}
 									onAddComment={handleAddComment}
 									showCheeseButton={showCheeseButton}
+									applyDiscountToSecondPizza={applyDiscountToSecondPizza}
 									option={option}
 								/>
 							</div>

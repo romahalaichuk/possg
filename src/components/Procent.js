@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-const Procent = ({ onClose, onSubmit, onAddComment, option }) => {
+const Procent = ({
+	onClose,
+	onSubmit,
+	onAddComment,
+	option,
+	applyDiscountToSecondPizza,
+}) => {
 	const [service, setService] = useState("");
 	const [discount, setDiscount] = useState("");
 	const [addToBill, setAddToBill] = useState("");
@@ -9,7 +15,7 @@ const Procent = ({ onClose, onSubmit, onAddComment, option }) => {
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsCheeseDay(today === 3 || today === 4);
+		setIsCheeseDay(today === 3 || today === 0);
 	}, []);
 
 	useEffect(() => {}, [option, isCheeseDay]);
@@ -29,9 +35,25 @@ const Procent = ({ onClose, onSubmit, onAddComment, option }) => {
 		onClose();
 	};
 
+	const handleDiscountAndClose = () => {
+		applyDiscountToSecondPizza();
+		onClose();
+	};
+
 	const renderCheeseButton = () => {
 		if ((option === "Wynos" || option === "Dostawa") && isCheeseDay) {
 			return <button onClick={handleAddComment}>Podwójny ser gratis</button>;
+		}
+		return null;
+	};
+
+	const renderTaniejButton = () => {
+		if ((option === "Wynos" || option === "Dostawa") && isCheeseDay) {
+			return (
+				<button onClick={handleDiscountAndClose}>
+					Druga pizza(tańsza) – 50%
+				</button>
+			);
 		}
 		return null;
 	};
@@ -75,7 +97,9 @@ const Procent = ({ onClose, onSubmit, onAddComment, option }) => {
 					onChange={(e) => setSubtractFromBill(e.target.value)}
 				/>
 			</div>
+			<h3>Promocje</h3>
 			{renderCheeseButton()}
+			{renderTaniejButton()}
 			<div className="modal-buttons">
 				<button onClick={handleSubmit}>Zatwierdź</button>
 				<button onClick={onClose}>Zamknij</button>
