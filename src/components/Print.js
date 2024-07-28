@@ -40,7 +40,6 @@ const Print = ({
 
 	const handlePrint = () => {
 		const content = printContentRef.current.innerHTML;
-		console.log("Content to print:", content);
 
 		const iframe = document.createElement("iframe");
 		iframe.style.position = "absolute";
@@ -170,10 +169,9 @@ const Print = ({
 			document.body.removeChild(iframe);
 		}, 1000);
 
-		// Aktualizowanie printedItems przed zamknięciem okna drukowania
 		setPrintedItems((prevPrintedItems) => {
 			const printedItemIds = selectedItems.map((item) => item.id);
-			console.log("Items to add to printedItems:", printedItemIds);
+
 			return [...prevPrintedItems, ...printedItemIds];
 		});
 
@@ -206,9 +204,12 @@ const Print = ({
 		Object.values(itemMap).forEach((item) => {
 			if (showDeliveryDetails) {
 				categories.DOSTAWA.push(item);
-			} else if (item.category.toLowerCase().includes("wynos")) {
+			} else if (
+				item.category &&
+				item.category.toLowerCase().includes("wynos")
+			) {
 				categories.WYNOS.push(item);
-			} else {
+			} else if (item.category) {
 				switch (item.category.toLowerCase()) {
 					case "pizza":
 					case "calzone":
@@ -233,9 +234,9 @@ const Print = ({
 						categories.BAR.push(item);
 						break;
 					default:
-						console.warn(`Nieznana kategoria: ${item.category}`);
 						break;
 				}
+			} else {
 			}
 		});
 

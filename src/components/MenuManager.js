@@ -83,11 +83,17 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setIsAnyModalOpen(true);
 		}
 	};
-
+	const [showNapojList, setShowNapojList] = useState(false);
+	const [napoj, setNapoj] = useState(null);
 	const modalRef = useRef(null);
 	const overlayRef = useRef(null);
 	const searchBarRef = useRef(null);
 	const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
+	const handleNapojSelect = (napoj) => {
+		setNapoj(napoj);
+		handleAddProduct(napoj);
+		setShowNapojList(false);
+	};
 
 	const calculateTotalItemsAndAmount = () => {
 		let totalItems = 0;
@@ -315,7 +321,22 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		updateSelectedItems(tableName, updatedItems);
 		calculateTotalPrice();
 	};
+	const handleAddProduct = (product) => {
+		const existingItem = selectedItems.find((item) => item.id === product.id);
 
+		let updatedItems;
+		if (existingItem) {
+			updatedItems = selectedItems.map((i) =>
+				i.id === existingItem.id ? { ...i, quantity: i.quantity + 1 } : i
+			);
+		} else {
+			updatedItems = [...selectedItems, { ...product, quantity: 1 }];
+		}
+
+		setSelectedItems(updatedItems);
+		updateSelectedItems(tableName, updatedItems);
+		calculateTotalPrice();
+	};
 	const calculateBasePrice = (item, extraIdToRemove) => {
 		let basePrice = item.price || 0;
 
@@ -588,6 +609,11 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 									<button onClick={() => handleItemSelect(item)}>+</button>
 								</li>
 							))}
+							{napoj && (
+								<li>
+									{napoj.name} - {napoj.price} zł
+								</li>
+							)}
 						</ul>
 
 						{/* Dodane formularze Wynos i Dostawa */}
@@ -763,6 +789,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 									showCheeseButton={showCheeseButton}
 									applyDiscountToSecondPizza={applyDiscountToSecondPizza}
 									option={option}
+									onAddProduct={handleAddProduct}
+									showNapojList={showNapojList}
+									handleNapojSelect={handleNapojSelect}
 								/>
 							</div>
 						</div>

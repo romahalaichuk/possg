@@ -6,6 +6,8 @@ const Procent = ({
 	onAddComment,
 	option,
 	applyDiscountToSecondPizza,
+	selectedItems,
+	onAddProduct,
 }) => {
 	const [service, setService] = useState("");
 	const [discount, setDiscount] = useState("");
@@ -14,10 +16,19 @@ const Procent = ({
 	const [isCheeseDay, setIsCheeseDay] = useState(false);
 	const [isIsTanio, setIsTanio] = useState(false);
 	const [isNapoj, setIsNapoj] = useState(false);
+	const [showNapojList, setShowNapojList] = useState(false);
+
+	const napoje = [
+		{ id: 1, name: "Coca-Cola 0.85 L", price: 0 },
+		{ id: 2, name: "Sok JABŁKOWY 1 L", price: 0 },
+		{ id: 3, name: "Fanta 0.85 L", price: 0 },
+		{ id: 4, name: "Sprite 0.85 L", price: 0 },
+		{ id: 5, name: "Sok POMARAŃCZOWY 1 L", price: 0 },
+	];
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsNapoj(today === 1 || today === 2);
+		setIsNapoj(today === 1 || today === 0);
 	}, []);
 	useEffect(() => {
 		const today = new Date().getDay();
@@ -50,16 +61,37 @@ const Procent = ({
 		applyDiscountToSecondPizza();
 		onClose();
 	};
+
+	const handleNapojClick = () => {
+		const totalAmount = selectedItems.reduce(
+			(sum, item) => sum + item.price * item.quantity,
+			0
+		);
+		console.log(`Total amount: ${totalAmount}`);
+		if (totalAmount > 55) {
+			setShowNapojList(true);
+		} else {
+			alert("Proszę dobrać produkt.");
+		}
+	};
+
+	const handleNapojSelect = (napoj) => {
+		onAddProduct(napoj);
+		setShowNapojList(false);
+		onClose();
+	};
+
 	const renderNapoj = () => {
 		if ((option === "Wynos" || option === "Dostawa") && isNapoj) {
 			return (
-				<button onClick={handleAddComment}>
+				<button onClick={handleNapojClick}>
 					Do każdego zamówienia powyżej 55 zł – 0,85l napoju gratis
 				</button>
 			);
 		}
 		return null;
 	};
+
 	const renderCheeseButton = () => {
 		if ((option === "Wynos" || option === "Dostawa") && isCheeseDay) {
 			return <button onClick={handleAddComment}>Podwójny ser gratis</button>;
@@ -125,6 +157,18 @@ const Procent = ({
 				<button onClick={handleSubmit}>Zatwierdź</button>
 				<button onClick={onClose}>Zamknij</button>
 			</div>
+			{showNapojList && (
+				<div className="napoj-list-modal">
+					<h4>Wybierz napój</h4>
+					<ul>
+						{napoje.map((napoj) => (
+							<li key={napoj.id} onClick={() => handleNapojSelect(napoj)}>
+								{napoj.name}
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
 		</div>
 	);
 };
