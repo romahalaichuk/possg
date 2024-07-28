@@ -12,13 +12,24 @@ const Procent = ({
 	const [addToBill, setAddToBill] = useState("");
 	const [subtractFromBill, setSubtractFromBill] = useState("");
 	const [isCheeseDay, setIsCheeseDay] = useState(false);
+	const [isIsTanio, setIsTanio] = useState(false);
+	const [isNapoj, setIsNapoj] = useState(false);
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsCheeseDay(today === 3 || today === 0);
+		setIsNapoj(today === 1 || today === 2);
 	}, []);
-
+	useEffect(() => {
+		const today = new Date().getDay();
+		setIsCheeseDay(today === 3 || today === 4);
+	}, []);
+	useEffect(() => {
+		const today = new Date().getDay();
+		setIsTanio(today === 1 || today === 4);
+	}, []);
+	useEffect(() => {}, [option, isNapoj]);
 	useEffect(() => {}, [option, isCheeseDay]);
+	useEffect(() => {}, [option, isIsTanio]);
 
 	const handleSubmit = () => {
 		onSubmit({
@@ -39,7 +50,16 @@ const Procent = ({
 		applyDiscountToSecondPizza();
 		onClose();
 	};
-
+	const renderNapoj = () => {
+		if ((option === "Wynos" || option === "Dostawa") && isNapoj) {
+			return (
+				<button onClick={handleAddComment}>
+					Do każdego zamówienia powyżej 55 zł – 0,85l napoju gratis
+				</button>
+			);
+		}
+		return null;
+	};
 	const renderCheeseButton = () => {
 		if ((option === "Wynos" || option === "Dostawa") && isCheeseDay) {
 			return <button onClick={handleAddComment}>Podwójny ser gratis</button>;
@@ -48,7 +68,7 @@ const Procent = ({
 	};
 
 	const renderTaniejButton = () => {
-		if ((option === "Wynos" || option === "Dostawa") && isCheeseDay) {
+		if ((option === "Wynos" || option === "Dostawa") && isIsTanio) {
 			return (
 				<button onClick={handleDiscountAndClose}>
 					Druga pizza(tańsza) – 50%
@@ -98,6 +118,7 @@ const Procent = ({
 				/>
 			</div>
 			<h3>Promocje</h3>
+			{renderNapoj()}
 			{renderCheeseButton()}
 			{renderTaniejButton()}
 			<div className="modal-buttons">

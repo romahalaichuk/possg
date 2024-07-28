@@ -544,6 +544,42 @@ export const products = [
 		category: "Napój bezalkoholowy",
 	},
 	{
+		id: 302,
+		name: "(Cola-cola 0.85 L)",
+		price: 12.9,
+		category: "Napój bezalkoholowy",
+	},
+	{
+		id: 303,
+		name: "(Fanta 0.85 L)",
+		price: 12.9,
+		category: "Napój bezalkoholowy",
+	},
+	{
+		id: 304,
+		name: "(Sprite 0.85 L)",
+		price: 12.9,
+		category: "Napój bezalkoholowy",
+	},
+	{
+		id: 305,
+		name: "(Cola-cola 0% 0.85 L)",
+		price: 12.9,
+		category: "Napój bezalkoholowy",
+	},
+	{
+		id: 306,
+		name: "(Sok jabłkowy 1 L)",
+		price: 12.9,
+		category: "Napój bezalkoholowy",
+	},
+	{
+		id: 307,
+		name: "(Sok pomarańczowy 1 L)",
+		price: 12.9,
+		category: "Napój bezalkoholowy",
+	},
+	{
 		id: 203,
 		name: "Świeżo wyciskany sok",
 		price: 20.9,
