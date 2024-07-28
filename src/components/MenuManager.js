@@ -215,13 +215,11 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		} else {
 			const filteredItems = products.filter((item) => {
 				const isPizza32 = item.category === "Pizza" && item.name.includes("32");
-				const isDifferentSizePizza =
-					item.category === "Pizza" && !item.name.includes("32");
 
 				return (
 					item.name.toLowerCase().includes(term) &&
 					(deliveryMode === "Wynos" || deliveryMode === "Dostawa"
-						? item.category !== "Pizza" || isDifferentSizePizza
+						? item.category !== "Pizza" || true // wszystkie pizze
 						: item.category !== "Pizza" || isPizza32)
 				);
 			});
@@ -755,7 +753,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							calculateAdjustedTotal={calculateAdjustedTotal}
 							isWynos={isWynos}
 							discountMessage={discountMessage}
-							napoj={napoj}
 						/>
 					</div>
 					{showPaymentModal && (
