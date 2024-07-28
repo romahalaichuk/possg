@@ -13,6 +13,7 @@ const Print = ({
 	totalAmount,
 	discountAmount,
 	serviceCharge,
+	discountMessage,
 	adjustments,
 	calculateAdjustedTotal,
 	resetDeliveryDetails,
@@ -300,6 +301,7 @@ const Print = ({
 							{adjustments.subtractFromBill.toFixed(2)} zł)
 						</p>
 					)}
+					{discountMessage && <p style={{ color: "red" }}>{discountMessage}</p>}
 					<p>Łącznie: {totalPrice.toFixed(2)} zł</p>
 					<div className="arrow-row">
 						<div className="arrow-down"></div>
@@ -351,6 +353,7 @@ const Print = ({
 			<div className="table-name">Stolik: {tableName}</div>
 			<div className="print-time">{getCurrentDateTime()}</div>
 			{isWynos && <h3 className="wynosh">WYNOS</h3>}
+
 			{pickupTime && (
 				<div
 					className={

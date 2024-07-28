@@ -43,6 +43,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const [tableStatus, setTableStatus] = useState("free");
 	const [currentTableName, setCurrentTableName] = useState(tableName);
 	const [totalPrice, setTotalPrice] = useState(0);
+	const [discountMessage, setDiscountMessage] = useState("");
+
 	const [adjustments, setAdjustments] = useState({
 		service: 0,
 		discount: 0,
@@ -125,6 +127,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setSelectedItems(updatedItems);
 			updateSelectedItems(tableName, updatedItems);
 			calculateTotalPrice();
+
+			// Set the discount message
+			setDiscountMessage("Druga pizza (tańsza) – 50%");
 		}
 	};
 
@@ -698,6 +703,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								rachunku (- {adjustments.subtractFromBill.toFixed(2)} zł)
 							</p>
 						)}
+						{discountMessage && (
+							<p style={{ color: "red" }}>{discountMessage}</p>
+						)}
 					</div>
 					<div className="modal-buttons">
 						<button onClick={onClose}>Zamknij</button>
@@ -720,6 +728,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							adjustments={adjustments}
 							calculateAdjustedTotal={calculateAdjustedTotal}
 							isWynos={isWynos}
+							discountMessage={discountMessage}
 						/>
 					</div>
 					{showPaymentModal && (
