@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import useEnterKeyListener from "./useEnterKeyListener";
+import "./Dostawa.css";
 
 const Dostawa = ({
 	onClose,
 	setDeliveryDetails,
 	adjustedTotalAmount,
 	tableName,
+	resetTable, // Dodajemy resetTable jako prop
 }) => {
+	useEnterKeyListener();
+
 	const addressKey = `${tableName}_address`;
 	const apartmentKey = `${tableName}_apartment`;
 	const floorKey = `${tableName}_floor`;
@@ -24,111 +29,155 @@ const Dostawa = ({
 		localStorage.getItem(commentKey) || ""
 	);
 	const [paymentMethod, setPaymentMethod] = useState(
-		localStorage.getItem(paymentMethodKey) || ""
+		localStorage.getItem(paymentMethodKey) || "Dodaj płatność"
 	);
 	const [phone, setPhoneNumber] = useState(
 		localStorage.getItem(phoneKey) || ""
 	);
 
-	// Funkcje obsługujące zmiany wartości oraz zapisujące do localStorage
-	const handleAddressChange = (e) => {
-		const newAddress = e.target.value;
-		setAddress(newAddress);
-		localStorage.setItem(addressKey, newAddress);
+	const addressRef = useRef(null);
+	const apartmentRef = useRef(null);
+	const floorRef = useRef(null);
+	const commentRef = useRef(null);
+	const phoneRef = useRef(null);
+	const paymentMethodRef = useRef(null);
+
+	const formatPhoneNumber = (value) => {
+		const cleaned = value.replace(/\D/g, "");
+
+		const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,3})(\d{0,3})$/);
+		if (match) {
+			return [match[1], match[2], match[3], match[4]]
+				.filter(Boolean)
+				.join("  ")
+				.trim();
+		}
+		return value;
+	};
+
+	const handleInputChange = (setter, key) => (e) => {
+		const value = e.target.value;
+		setter(value);
+		localStorage.setItem(key, value);
 		setDeliveryDetails((prevDetails) => ({
 			...prevDetails,
-			address: newAddress,
+			[key.split("_")[1]]: value,
 		}));
 	};
 
-	const handleApartmentChange = (e) => {
-		const newApartment = e.target.value;
-		setApartment(newApartment);
-		localStorage.setItem(apartmentKey, newApartment);
-		setDeliveryDetails((prevDetails) => ({
-			...prevDetails,
-			apartment: newApartment,
-		}));
+	const focusNextInput = (e, nextRef) => {
+		if (e.key === "Enter" && nextRef.current) {
+			nextRef.current.focus();
+		}
 	};
 
 	const handlePhoneChange = (e) => {
-		const newPhone = e.target.value;
-		setPhoneNumber(newPhone);
-		localStorage.setItem(phoneKey, newPhone);
+		const rawValue = e.target.value;
+		const formattedValue = formatPhoneNumber(rawValue);
+		setPhoneNumber(formattedValue);
+		localStorage.setItem(phoneKey, formattedValue);
 		setDeliveryDetails((prevDetails) => ({
 			...prevDetails,
-			phone: newPhone,
+			phone: formattedValue,
 		}));
 	};
 
-	const handleFloorChange = (e) => {
-		const newFloor = e.target.value;
-		setFloor(newFloor);
-		localStorage.setItem(floorKey, newFloor);
-		setDeliveryDetails((prevDetails) => ({
-			...prevDetails,
-			floor: newFloor,
-		}));
-	};
+	const handlePrintDelivery = () => {
+		// Dodaj logikę drukowania dostawy
+		// ...
 
-	const handleCommentChange = (e) => {
-		const newComment = e.target.value;
-		setComment(newComment);
-		localStorage.setItem(commentKey, newComment);
-		setDeliveryDetails((prevDetails) => ({
-			...prevDetails,
-			comment: newComment,
-		}));
-	};
-
-	const handlePaymentMethodChange = (e) => {
-		const newPaymentMethod = e.target.value;
-		setPaymentMethod(newPaymentMethod);
-		localStorage.setItem(paymentMethodKey, newPaymentMethod);
-		setDeliveryDetails((prevDetails) => ({
-			...prevDetails,
-			paymentMethod: newPaymentMethod,
-		}));
+		// Resetowanie stolika
+		if (resetTable) {
+			resetTable();
+		}
 	};
 
 	return (
 		<div className="order-type-container">
 			<h3>Dane dostawy:</h3>
-			<input
-				type="text"
-				placeholder="Adres"
-				value={address}
-				onChange={handleAddressChange}
-				required
-			/>
+			<form>
+				<div className="form-group">
+					<label htmlFor="address">Adres</label>
+					<input
+						id="address"
+						type="text"
+						placeholder="Adres"
+						value={address}
+						onChange={handleInputChange(setAddress, addressKey)}
+						ref={addressRef}
+						onKeyDown={(e) => focusNextInput(e, apartmentRef)}
+						required
+					/>
+				</div>
 
-			<input
-				type="text"
-				placeholder="Mieszkanie"
-				value={apartment}
-				onChange={handleApartmentChange}
-			/>
-			<input
-				type="text"
-				placeholder="Piętro"
-				value={floor}
-				onChange={handleFloorChange}
-			/>
-			<textarea
-				placeholder="Komentarz"
-				value={comment}
-				onChange={handleCommentChange}></textarea>
-			<input
-				type="text"
-				placeholder="Phone"
-				value={phone}
-				onChange={handlePhoneChange}
-			/>
-			<select value={paymentMethod} onChange={handlePaymentMethodChange}>
-				<option value="Karta">Karta</option>
-				<option value="Gotówka">Gotówka</option>
-				<option value="Online">Online</option>
-			</select>
+				<div className="form-group">
+					<label htmlFor="apartment">Mieszkanie</label>
+					<input
+						id="apartment"
+						type="text"
+						placeholder="Mieszkanie"
+						value={apartment}
+						onChange={handleInputChange(setApartment, apartmentKey)}
+						ref={apartmentRef}
+						onKeyDown={(e) => focusNextInput(e, floorRef)}
+					/>
+				</div>
+
+				<div className="form-group">
+					<label htmlFor="floor">Piętro</label>
+					<input
+						id="floor"
+						type="text"
+						placeholder="Piętro"
+						value={floor}
+						onChange={handleInputChange(setFloor, floorKey)}
+						ref={floorRef}
+						onKeyDown={(e) => focusNextInput(e, commentRef)}
+					/>
+				</div>
+
+				<div className="form-group">
+					<label htmlFor="comment">Komentarz</label>
+					<textarea
+						id="comment"
+						placeholder="Komentarz"
+						value={comment}
+						onChange={handleInputChange(setComment, commentKey)}
+						ref={commentRef}
+						onKeyDown={(e) => focusNextInput(e, phoneRef)}></textarea>
+				</div>
+
+				<div className="form-group">
+					<label htmlFor="phone">Telefon</label>
+					<input
+						id="phone"
+						type="text"
+						placeholder="Phone"
+						value={phone}
+						onChange={handlePhoneChange}
+						ref={phoneRef}
+						onKeyDown={(e) => focusNextInput(e, paymentMethodRef)}
+					/>
+				</div>
+
+				<div className="form-group">
+					<label htmlFor="paymentMethod">Metoda płatności</label>
+					<select
+						id="paymentMethod"
+						value={paymentMethod}
+						onChange={handleInputChange(setPaymentMethod, paymentMethodKey)}
+						ref={paymentMethodRef}>
+						<option value="Dodaj płatność">Dodaj płatność</option>
+						<option value="Karta">Karta</option>
+						<option value="Gotówka">Gotówka</option>
+						<option value="Online">Online</option>
+					</select>
+				</div>
+
+				<button type="button" onClick={handlePrintDelivery}>
+					Drukuj dostawę
+				</button>
+			</form>
 		</div>
 	);
 };
