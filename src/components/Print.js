@@ -18,6 +18,7 @@ const Print = ({
 	calculateAdjustedTotal,
 	resetDeliveryDetails,
 	isWynos,
+	napoj,
 }) => {
 	const totalPrice = calculateAdjustedTotal();
 	const printContentRef = useRef(null);
@@ -331,7 +332,7 @@ const Print = ({
 				</div>
 			))}
 
-			{category === "WYNOS" && hasMakaron && (
+			{category === "PIZZA" && hasMakaron && (
 				<div
 					style={{
 						textAlign: "center",

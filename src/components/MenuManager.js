@@ -755,6 +755,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							calculateAdjustedTotal={calculateAdjustedTotal}
 							isWynos={isWynos}
 							discountMessage={discountMessage}
+							napoj={napoj}
 						/>
 					</div>
 					{showPaymentModal && (
