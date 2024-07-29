@@ -7,7 +7,7 @@ const Dostawa = ({
 	setDeliveryDetails,
 	adjustedTotalAmount,
 	tableName,
-	resetTable, // Dodajemy resetTable jako prop
+	resetTable,
 }) => {
 	useEnterKeyListener();
 
@@ -82,13 +82,32 @@ const Dostawa = ({
 		}));
 	};
 
-	const handlePrintDelivery = () => {
-		// Dodaj logikę drukowania dostawy
-		// ...
+	const handleEndDelivery = () => {
+		console.log("Ending delivery...");
 
-		// Resetowanie stolika
+		setAddress("");
+		setApartment("");
+		setFloor("");
+		setComment("");
+		setPaymentMethod("Dodaj płatność");
+		setPhoneNumber("");
+
+		localStorage.removeItem(addressKey);
+		localStorage.removeItem(apartmentKey);
+		localStorage.removeItem(floorKey);
+		localStorage.removeItem(commentKey);
+		localStorage.removeItem(paymentMethodKey);
+		localStorage.removeItem(phoneKey);
+
+		setDeliveryDetails({});
+
 		if (resetTable) {
-			resetTable();
+			console.log("Resetting table...");
+			resetTable(tableName);
+		}
+
+		if (onClose) {
+			onClose();
 		}
 	};
 
@@ -174,8 +193,8 @@ const Dostawa = ({
 					</select>
 				</div>
 
-				<button type="button" onClick={handlePrintDelivery}>
-					Drukuj dostawę
+				<button type="button" onClick={handleEndDelivery}>
+					Zakończ dostawę
 				</button>
 			</form>
 		</div>

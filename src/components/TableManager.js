@@ -5,7 +5,7 @@ import Modal from "./Modal";
 import MenuManager from "./MenuManager";
 import WynosListModal from "./WynosListModal";
 import ManagerPanel from "./ManagerPanel";
-import "./TableManager.css";
+import Dostawa from "./Dostawa";
 
 const TABLES_STORAGE_KEY = "tables";
 const WYNOS_TABLES_STORAGE_KEY = "wynosTables";
@@ -14,7 +14,7 @@ const MANAGER_PANEL_STATE_KEY = "managerPanelOpen";
 const initializeTables = () => {
 	const initialTables = [
 		{ id: 0, name: "Wynos/Dostawa", status: "special", products: [] },
-		...Array.from({ length: 45 }, (_, index) => ({
+		...Array.from({ length: 47 }, (_, index) => ({
 			id: index + 1,
 			name: `Table ${index + 1}`,
 			status: "free",
@@ -199,6 +199,8 @@ const TableManager = () => {
 	};
 
 	const resetTable = (tableId) => {
+		console.log("Resetting table with id:", tableId);
+
 		const updatedTables = isWynos
 			? wynosTables.map((table) =>
 					table.id === tableId
@@ -219,7 +221,9 @@ const TableManager = () => {
 			saveDataToLocalStorage(TABLES_STORAGE_KEY, updatedTables);
 		}
 	};
-
+	const handleCloseDelivery = () => {
+		// Logika po zamknięciu dostawy, jeśli jest potrzebna
+	};
 	const selectedTable = isWynos
 		? wynosTables.find((table) => table.id === selectedTableId)
 		: tables.find((table) => table.id === selectedTableId);
@@ -275,6 +279,16 @@ const TableManager = () => {
 					onAddProduct={handleAddProduct}
 					resetTable={() => resetTable(selectedTable.id)}
 					products={selectedTable.products}
+				/>
+			)}
+			{/* Dodajemy komponent Dostawa */}
+			{selectedTableId === 0 && (
+				<Dostawa
+					tableName="table1"
+					setDeliveryDetails={(details) => console.log(details)}
+					adjustedTotalAmount={100}
+					resetTable={resetTable} // Przekazujemy funkcję resetującą
+					onClose={handleCloseDelivery} // Opcjonalnie, jeśli potrzebujesz dodatkowej logiki
 				/>
 			)}
 		</div>
