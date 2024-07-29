@@ -19,6 +19,7 @@ const Print = ({
 	resetDeliveryDetails,
 	isWynos,
 	napoj,
+	resetTable,
 }) => {
 	const totalPrice = calculateAdjustedTotal();
 	const printContentRef = useRef(null);
@@ -178,6 +179,10 @@ const Print = ({
 
 		setHasContentToPrint(false);
 		onClose();
+		const groupedItems = groupItemsByCategory(selectedItems);
+		if (groupedItems.DOSTAWA.length > 0) {
+			resetTable();
+		}
 	};
 
 	const groupItemsByCategory = (items) => {

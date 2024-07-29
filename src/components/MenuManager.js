@@ -44,6 +44,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const [currentTableName, setCurrentTableName] = useState(tableName);
 	const [totalPrice, setTotalPrice] = useState(0);
 	const [discountMessage, setDiscountMessage] = useState("");
+	const [showRozliczButton, setShowRozliczButton] = useState(true);
 
 	const [adjustments, setAdjustments] = useState({
 		service: 0,
@@ -81,6 +82,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setShowCheeseButton(true);
 			setOption("Dostawa");
 			setIsAnyModalOpen(true);
+			setShowRozliczButton(false);
 		}
 	};
 	const [showNapojList, setShowNapojList] = useState(false);
@@ -148,14 +150,33 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	useEffect(() => {
 		const handleClickOutside = (e) => {
 			if (
-				modalRef.current &&
-				!modalRef.current.contains(e.target) &&
-				overlayRef.current &&
-				overlayRef.current.contains(e.target)
+				(showMenuItemsModal &&
+					modalRef.current &&
+					!modalRef.current.contains(e.target) &&
+					overlayRef.current &&
+					overlayRef.current.contains(e.target)) ||
+				(showProcentModal &&
+					modalRef.current &&
+					!modalRef.current.contains(e.target) &&
+					overlayRef.current &&
+					overlayRef.current.contains(e.target)) ||
+				(showWynosModal &&
+					modalRef.current &&
+					!modalRef.current.contains(e.target) &&
+					overlayRef.current &&
+					overlayRef.current.contains(e.target)) ||
+				(showDostawaModal &&
+					modalRef.current &&
+					!modalRef.current.contains(e.target) &&
+					overlayRef.current &&
+					overlayRef.current.contains(e.target))
 			) {
 				setShowMenuItemsModal(false);
 				setShowProcentModal(false);
+				setShowWynosModal(false);
+				setShowDostawaModal(false);
 			}
+
 			if (searchBarRef.current && !searchBarRef.current.contains(e.target)) {
 				setSearchResults([]);
 				setSearchTerm("");
@@ -177,6 +198,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, [showMenuItemsModal, showProcentModal, showWynosModal, showDostawaModal]);
+
 	const [deliveryMode, setDeliveryMode] = useState(null);
 
 	const handleCategoryClick = (category) => {
@@ -219,7 +241,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 				return (
 					item.name.toLowerCase().includes(term) &&
 					(deliveryMode === "Wynos" || deliveryMode === "Dostawa"
-						? item.category !== "Pizza" || true // wszystkie pizze
+						? item.category !== "Pizza" || true
 						: item.category !== "Pizza" || isPizza32)
 				);
 			});
@@ -391,7 +413,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		resetTable();
 		onClose(totalPrice, adjustments);
 	};
-
+	const handleCloseMenuItemsModal = () => {
+		setShowMenuItemsModal(false);
+	};
 	const handleAdjustmentsSubmit = (adjustments) => {
 		setAdjustments(adjustments);
 		setShowProcentModal(false);
@@ -509,7 +533,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		<>
 			<div className={`menu-manager-overlay ${tableStatus}`} ref={overlayRef}>
 				<div className="menu-manager" ref={modalRef}>
-					{/* Treść modalu */}
 					<div className="menu-header">
 						<h2>{currentTableName}</h2>
 					</div>
@@ -614,7 +637,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							)}
 						</ul>
 
-						{/* Dodane formularze Wynos i Dostawa */}
 						{showWynosModal && (
 							<div className="order-type-container">
 								<h3 style={{ margin: "3px 0" }}>Wynos:</h3>
@@ -655,7 +677,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								</button>
 							</div>
 						)}
-						{showDostawaModal && (
+
+						{/* {showDostawaModal && (
 							<div className="order-type-container">
 								<Dostawa
 									selectedItems={selectedItems}
@@ -698,8 +721,15 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 									)}
 								</div>
 							</div>
+						)} */}
+						{showDostawaModal && (
+							<Dostawa
+								onClose={handleCloseMenuItemsModal}
+								setDeliveryDetails={setDeliveryDetails}
+								tableName={tableName}
+								resetTable={resetTable}
+							/>
 						)}
-
 						<p>Liczba pozycji: {totalItems}</p>
 						<p>Suma: {calculateAdjustedTotal().toFixed(2)} zł</p>
 						{adjustments.service > 0 && (
@@ -734,9 +764,10 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					<div className="modal-buttons">
 						<button onClick={onClose}>Zamknij</button>
 
-						{selectedItems.length > 0 && (
+						{showRozliczButton && (
 							<button onClick={handleRozliczClick}>Rozlicz</button>
 						)}
+
 						<Print
 							selectedItems={selectedItems}
 							tableName={tableName}
@@ -753,6 +784,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							calculateAdjustedTotal={calculateAdjustedTotal}
 							isWynos={isWynos}
 							discountMessage={discountMessage}
+							resetTable={resetTable}
 						/>
 					</div>
 					{showPaymentModal && (
@@ -766,7 +798,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								serviceCharge={serviceCharge}
 								adjustments={adjustments}
 								calculateAdjustedTotal={calculateAdjustedTotal}
-								addToBill={adjustments.addToBill} //
+								addToBill={adjustments.addToBill}
 								subtractFromBill={adjustments.subtractFromBill}
 							/>
 						</div>

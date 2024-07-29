@@ -35,3 +35,6 @@ select {
 textarea {
 	resize: vertical;
 }
+.address-input {
+	margin-right: 0.5em;
+}

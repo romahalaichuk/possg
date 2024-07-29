@@ -27,7 +27,7 @@ const initializeTables = () => {
 
 const initializeWynosTables = () => {
 	const initialWynosTables = Array.from({ length: 20 }, (_, index) => ({
-		id: index + 40,
+		id: index + 50,
 		name: `Wynos/Dostawa ${index + 1}`,
 		status: "free",
 		products: [],
@@ -199,8 +199,6 @@ const TableManager = () => {
 	};
 
 	const resetTable = (tableId) => {
-		console.log("Resetting table with id:", tableId);
-
 		const updatedTables = isWynos
 			? wynosTables.map((table) =>
 					table.id === tableId
@@ -221,9 +219,7 @@ const TableManager = () => {
 			saveDataToLocalStorage(TABLES_STORAGE_KEY, updatedTables);
 		}
 	};
-	const handleCloseDelivery = () => {
-		// Logika po zamknięciu dostawy, jeśli jest potrzebna
-	};
+	const handleCloseDelivery = () => {};
 	const selectedTable = isWynos
 		? wynosTables.find((table) => table.id === selectedTableId)
 		: tables.find((table) => table.id === selectedTableId);
@@ -281,15 +277,28 @@ const TableManager = () => {
 					products={selectedTable.products}
 				/>
 			)}
-			{/* Dodajemy komponent Dostawa */}
 			{selectedTableId === 0 && (
-				<Dostawa
-					tableName="table1"
-					setDeliveryDetails={(details) => console.log(details)}
-					adjustedTotalAmount={100}
-					resetTable={resetTable} // Przekazujemy funkcję resetującą
-					onClose={handleCloseDelivery} // Opcjonalnie, jeśli potrzebujesz dodatkowej logiki
-				/>
+				<div>
+					<Dostawa
+						tableName="table1"
+						setDeliveryDetails={(details) =>
+							console.log("Delivery details:", details)
+						}
+						adjustedTotalAmount={100}
+						resetTable={resetTable}
+						onClose={() => {
+							handleCloseDelivery();
+						}}
+						onCloseMenuManager={handleMenuManagerClose}
+					/>
+					<div>
+						<h3>Stolik 1</h3>
+						<p>
+							Items:{" "}
+							{tables.find((table) => table.id === 1)?.products.length || 0}
+						</p>
+					</div>
+				</div>
 			)}
 		</div>
 	);
