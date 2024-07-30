@@ -10,6 +10,12 @@ const videoUrls = [
 	"https://www.youtube.com/embed/Btt_7wLpwxM?autoplay=1&mute=1",
 	"https://www.youtube.com/embed/oe5GPi_C7Go?autoplay=1&mute=1",
 	"https://www.youtube.com/embed/KY4Yd5QR570?autoplay=1&mute=1",
+	"https://www.youtube.com/embed/EE06S6rnTy4?autoplay=1&mute=1",
+	"https://www.youtube.com/embed/o1eTLR7Degs?autoplay=1&mute=1",
+	"https://www.youtube.com/embed/LIngigr4Lgc?autoplay=1&mute=1",
+	"https://www.youtube.com/embed/A8y1cXGPx7E?autoplay=1&mute=1",
+	"https://www.youtube.com/embed/bSrLBihXPwc?autoplay=1&mute=1",
+	"https://www.youtube.com/embed/3vEYpK3KUW4?autoplay=1&mute=1",
 ];
 
 function App() {
