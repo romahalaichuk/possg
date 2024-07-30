@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./ManagerPanel.css";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import SuccessAnimation from "./SuccessAnimation"; // Zmienione z ErrorSimulation na SuccessAnimation
 
 const ManagerPanel = ({ onClose }) => {
 	const [paymentDetails, setPaymentDetails] = useState([]);
+	const [expandedTables, setExpandedTables] = useState({});
+	const [expandedProductSummary, setExpandedProductSummary] = useState(false);
+	const [isClosing, setIsClosing] = useState(false);
+	const [showSuccess, setShowSuccess] = useState(false); // Zmienione na showSuccess
+	const modalRef = useRef(null);
 
 	useEffect(() => {
 		const storedPaymentDetails =
@@ -21,32 +27,31 @@ const ManagerPanel = ({ onClose }) => {
 	};
 
 	const getProductsSummary = () => {
-		const productSummary = {};
-		paymentDetails.forEach((detail) => {
+		return paymentDetails.reduce((summary, detail) => {
 			detail.selectedItems.forEach((item) => {
-				if (!productSummary[item.name]) {
-					productSummary[item.name] = 0;
-				}
-				productSummary[item.name] += item.quantity;
+				summary[item.name] = (summary[item.name] || 0) + item.quantity;
 			});
-		});
-		return productSummary;
+			return summary;
+		}, {});
 	};
 
-	const totalCash = formatCurrency(
-		paymentDetails
+	const calculateTotals = () => {
+		const totalCash = paymentDetails
 			.filter((p) => p.paymentType === "GOTÓWA")
-			.reduce((total, p) => total + parseFloat(p.finalAmount || 0), 0)
-	);
-	const totalCard = formatCurrency(
-		paymentDetails
-			.filter((p) => p.paymentType === "KARTA")
-			.reduce((total, p) => total + parseFloat(p.finalAmount || 0), 0)
-	);
+			.reduce((total, p) => total + parseFloat(p.finalAmount || 0), 0);
 
-	const totalSales = formatCurrency(
-		parseFloat(totalCash) + parseFloat(totalCard)
-	);
+		const totalCard = paymentDetails
+			.filter((p) => p.paymentType === "KARTA")
+			.reduce((total, p) => total + parseFloat(p.finalAmount || 0), 0);
+
+		const totalSales = totalCash + totalCard;
+
+		return {
+			totalCash: formatCurrency(totalCash),
+			totalCard: formatCurrency(totalCard),
+			totalSales: formatCurrency(totalSales),
+		};
+	};
 
 	const handleExportToPDF = () => {
 		const doc = new jsPDF();
@@ -55,6 +60,7 @@ const ManagerPanel = ({ onClose }) => {
 			currentDate.getMonth() + 1
 		}-${currentDate.getFullYear()}`;
 		let yOffset = 10;
+		const { totalCash, totalCard, totalSales } = calculateTotals();
 
 		doc.setFontSize(12);
 		doc.text("Panel Managera", 20, yOffset);
@@ -73,9 +79,7 @@ const ManagerPanel = ({ onClose }) => {
 		yOffset += 10;
 
 		const tablesData = paymentDetails.reduce((acc, detail) => {
-			if (!acc[detail.tableName]) {
-				acc[detail.tableName] = [];
-			}
+			acc[detail.tableName] = acc[detail.tableName] || [];
 			acc[detail.tableName].push(detail);
 			return acc;
 		}, {});
@@ -125,7 +129,7 @@ const ManagerPanel = ({ onClose }) => {
 						detail.subtractFromBill
 							? formatCurrency(parseFloat(detail.subtractFromBill || 0))
 							: "-",
-						formatCurrency(parseFloat(detail.adjustedTotalAmount || 0)), // Change here
+						formatCurrency(parseFloat(detail.adjustedTotalAmount || 0)),
 					])
 				),
 				theme: "striped",
@@ -148,9 +152,7 @@ const ManagerPanel = ({ onClose }) => {
 			});
 
 			yOffset = doc.lastAutoTable.finalY + 10;
-
 			doc.line(20, yOffset - 5, 190, yOffset - 5);
-
 			yOffset += 15;
 		});
 
@@ -166,106 +168,199 @@ const ManagerPanel = ({ onClose }) => {
 
 		doc.save(`panel_managera_${dateString}.pdf`);
 
-		localStorage.clear();
-		setPaymentDetails([]);
+		setShowSuccess(true);
+		setTimeout(() => {
+			setIsClosing(true);
+			setTimeout(() => {
+				localStorage.clear();
+				setPaymentDetails([]);
+				window.location.reload();
+			}, 3000);
+		}, 3000);
+	};
+
+	const toggleTableDetails = (tableName) => {
+		setExpandedTables((prev) => ({
+			...prev,
+			[tableName]: !prev[tableName],
+		}));
+	};
+
+	const toggleProductSummary = () => {
+		setExpandedProductSummary((prev) => !prev);
+	};
+
+	const handleOverlayClick = (e) => {
+		if (modalRef.current && !modalRef.current.contains(e.target)) {
+			onClose();
+		}
+	};
+
+	const handleModalClick = (e) => {
+		e.stopPropagation();
 	};
 
 	return (
-		<div className="manager-panel">
-			<button className="close-button" onClick={onClose}>
-				X
-			</button>
-			<h2>Panel Managera</h2>
-			<div className="manager-info">
-				<div className="info-item">
-					<strong>SALA UTARG:</strong> {totalSales} PLN
-				</div>
-				<div className="info-item">
-					<strong>Łączna kwota gotówki:</strong> {totalCash} PLN
-				</div>
-				<div className="info-item">
-					<strong>Łączna kwota kartą:</strong> {totalCard} PLN
-				</div>
-				<div className="info-item">
-					<strong>Szczegóły płatności:</strong>
-					<ul>
-						{paymentDetails.map((detail) => (
-							<li key={detail.tableName + detail.paymentType}>
-								Stolik: {detail.tableName}, Kwota:{" "}
-								{formatCurrency(parseFloat(detail.totalAmount || 0))} PLN,
-								Płatność: {detail.paymentType}
-								{detail.selectedItems && detail.selectedItems.length > 0 && (
-									<ul>
-										{detail.selectedItems.map((item) => (
-											<li key={item.id}>
-												Produkt: {item.name}, Ilość: {item.quantity}, Cena:{" "}
-												{formatCurrency(
-													parseFloat(item.price * item.quantity || 0)
-												)}{" "}
-												PLN
-												{detail.discountAmount && (
-													<span>
-														, Zniżka:{" "}
-														{formatCurrency(
-															parseFloat(detail.discountAmount || 0)
-														)}{" "}
-														PLN
-													</span>
-												)}
-												{detail.serviceCharge > 0 && (
-													<span>
-														, Opłata serwisowa:{" "}
-														{formatCurrency(
-															parseFloat(detail.serviceCharge || 0)
-														)}{" "}
-														PLN
-													</span>
-												)}
-												{detail.addToBill > 0 && (
-													<span>
-														, Dodano do rachunku:{" "}
-														{formatCurrency(parseFloat(detail.addToBill || 0))}{" "}
-														PLN
-													</span>
-												)}
-												{detail.subtractFromBill > 0 && (
-													<span>
-														, Odejmij od rachunku:{" "}
-														{formatCurrency(
-															parseFloat(detail.subtractFromBill || 0)
-														)}{" "}
-														PLN
-													</span>
-												)}
-												, Finalna kwota:{" "}
-												{formatCurrency(
-													parseFloat(detail.adjustedTotalAmount || 0)
-												)}{" "}
-												PLN
-											</li>
-										))}
-									</ul>
+		<>
+			{showSuccess && (
+				<SuccessAnimation onClose={() => setShowSuccess(false)} />
+			)}
+			<div
+				className={`manager-panel-overlay ${isClosing ? "closing" : ""}`}
+				onClick={handleOverlayClick}>
+				<div
+					className={`manager-panel ${isClosing ? "fade-out" : ""}`}
+					ref={modalRef}
+					onClick={handleModalClick}>
+					<button className="close-button" onClick={onClose}>
+						X
+					</button>
+					<h2>Panel Managera</h2>
+					<div className="manager-info">
+						<div className="info-item">
+							<strong>SALA UTARG:</strong> {calculateTotals().totalSales} PLN
+						</div>
+						<div className="info-item">
+							<strong>Łączna kwota gotówki:</strong>{" "}
+							{calculateTotals().totalCash} PLN
+						</div>
+						<div className="info-item">
+							<strong>Łączna kwota kartą:</strong> {calculateTotals().totalCard}{" "}
+							PLN
+						</div>
+						<div className="info-item">
+							<strong>Szczegóły płatności:</strong>
+							<ul>
+								{paymentDetails.length > 0 ? (
+									Object.keys(
+										paymentDetails.reduce((acc, detail) => {
+											acc[detail.tableName] = true;
+											return acc;
+										}, {})
+									).map((tableName) => (
+										<li key={tableName}>
+											<button
+												className="table-toggle"
+												onClick={() => toggleTableDetails(tableName)}>
+												{expandedTables[tableName] ? "−" : "+"} {tableName}
+											</button>
+											{expandedTables[tableName] && (
+												<ul>
+													{paymentDetails
+														.filter((detail) => detail.tableName === tableName)
+														.map((detail) => (
+															<li key={detail.tableName + detail.paymentType}>
+																<strong>Stolik: {detail.tableName}</strong>
+																<div>
+																	Kwota:{" "}
+																	{formatCurrency(
+																		parseFloat(detail.totalAmount || 0)
+																	)}{" "}
+																	PLN
+																</div>
+																<div>Płatność: {detail.paymentType}</div>
+																{detail.selectedItems &&
+																	detail.selectedItems.length > 0 && (
+																		<ul>
+																			{detail.selectedItems.map((item) => (
+																				<li key={item.id}>
+																					Produkt: {item.name}, Ilość:{" "}
+																					{item.quantity}, Cena:{" "}
+																					{formatCurrency(
+																						parseFloat(
+																							item.price * item.quantity || 0
+																						)
+																					)}{" "}
+																					PLN
+																					{detail.discountAmount && (
+																						<span>
+																							, Zniżka:{" "}
+																							{formatCurrency(
+																								parseFloat(
+																									detail.discountAmount || 0
+																								)
+																							)}{" "}
+																							PLN
+																						</span>
+																					)}
+																					{detail.serviceCharge > 0 && (
+																						<span>
+																							, Opłata serwisowa:{" "}
+																							{formatCurrency(
+																								parseFloat(
+																									detail.serviceCharge || 0
+																								)
+																							)}{" "}
+																							PLN
+																						</span>
+																					)}
+																					{detail.addToBill > 0 && (
+																						<span>
+																							, Dodano do rachunku:{" "}
+																							{formatCurrency(
+																								parseFloat(
+																									detail.addToBill || 0
+																								)
+																							)}{" "}
+																							PLN
+																						</span>
+																					)}
+																					{detail.subtractFromBill > 0 && (
+																						<span>
+																							, Odejmij od rachunku:{" "}
+																							{formatCurrency(
+																								parseFloat(
+																									detail.subtractFromBill || 0
+																								)
+																							)}{" "}
+																							PLN
+																						</span>
+																					)}
+																					, Finalna kwota:{" "}
+																					{formatCurrency(
+																						parseFloat(
+																							detail.adjustedTotalAmount || 0
+																						)
+																					)}{" "}
+																					PLN
+																				</li>
+																			))}
+																		</ul>
+																	)}
+															</li>
+														))}
+												</ul>
+											)}
+										</li>
+									))
+								) : (
+									<li>Brak szczegółów płatności</li>
 								)}
-							</li>
-						))}
-					</ul>
-					<strong>Podsumowanie produktów:</strong>
-					<ul>
-						{Object.entries(getProductsSummary()).map(
-							([productName, quantity]) => (
-								<li key={productName}>
-									{productName}: {quantity} szt.
-								</li>
-							)
+							</ul>
+						</div>
+						<button className="toggle-summary" onClick={toggleProductSummary}>
+							{expandedProductSummary ? "−" : "+"} Podsumowanie produktów
+						</button>
+						{expandedProductSummary && (
+							<div className="info-item">
+								<ul>
+									{Object.entries(getProductsSummary()).map(
+										([productName, quantity]) => (
+											<li key={productName}>
+												{productName}: {quantity} szt.
+											</li>
+										)
+									)}
+								</ul>
+							</div>
 						)}
-					</ul>
+					</div>
+					<button className="export-button" onClick={handleExportToPDF}>
+						Zamknij dzień i pobierz PDF
+					</button>
 				</div>
 			</div>
-
-			<button className="export-button" onClick={handleExportToPDF}>
-				Zamknij dzień i pobierz PDF
-			</button>
-		</div>
+		</>
 	);
 };
 

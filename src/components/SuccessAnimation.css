@@ -1,0 +1,138 @@
+.success-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.7);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 2000;
+	overflow: hidden;
+}
+
+.success-content {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.initial-container,
+.final-container {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.initial-image {
+	width: 300px;
+	height: 300px;
+	background: url("./img/smiley-150836.svg") no-repeat center center;
+	background-size: contain;
+	animation: shrinkAndDisappear 3s forwards;
+}
+
+.paa-text {
+	font-size: 2rem;
+	color: #fff;
+	margin-top: 20px;
+	animation: shrinkAndDisappearText 3s forwards;
+}
+
+@keyframes shrinkAndDisappear {
+	0% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0);
+		opacity: 0;
+	}
+}
+
+@keyframes shrinkAndDisappearText {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.final-image-container {
+	position: absolute;
+	width: 400px;
+	height: 400px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	animation: finalImageContainer 4s forwards 4s;
+}
+
+.final-image {
+	width: 400px;
+	height: 400px;
+	background: url("./img/smiley-25512.svg") no-repeat center center;
+	background-size: contain;
+}
+
+.thanks-text {
+	font-size: 2rem;
+	color: #fff;
+	margin-top: 20px;
+	opacity: 0;
+	animation: finalImageText 4s forwards 4s;
+}
+
+.small-image {
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	background: url("./img/smiley-25512.svg") no-repeat center center;
+	background-size: contain;
+	opacity: 0;
+	animation: explodeAndGather 3s forwards;
+}
+
+@keyframes explodeAndGather {
+	0% {
+		opacity: 1;
+		transform: translate(0, 0) scale(1);
+	}
+	50% {
+		opacity: 1;
+		transform: translate(var(--random-x), var(--random-y)) scale(0.5);
+	}
+	100% {
+		opacity: 1;
+		transform: translate(0, 0) scale(1);
+	}
+}
+
+@keyframes finalImageContainer {
+	0% {
+		opacity: 0;
+		transform: scale(0.5);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes finalImageText {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
