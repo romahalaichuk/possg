@@ -25,7 +25,7 @@ function App() {
 				const nextIndex = (currentIndex + 1) % videoUrls.length;
 				return videoUrls[nextIndex];
 			});
-		}, 0.7 * 60 * 1000); // 0.7 minuty
+		}, 30 * 60 * 1000);
 
 		return () => clearInterval(intervalId);
 	}, []);

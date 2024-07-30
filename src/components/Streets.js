@@ -19004,5 +19004,10 @@ const streets = [
 		ulica: "Żyzna",
 		dzielnica: "Wawer",
 	},
+	{
+		id: 3802,
+		ulica: "Zygmunta Hubnera",
+		dzielnica: "Zoliborz Artystyczny",
+	},
 ];
 export default streets;
