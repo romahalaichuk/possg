@@ -48,9 +48,7 @@ function App() {
 		<div className={`App ${isFullscreen ? "fullscreen" : ""}`}>
 			{isFullscreen && (
 				<div className="buttons">
-					<button className="button" onClick={exitFullscreen}>
-						Exit Fullscreen
-					</button>
+					<button onClick={exitFullscreen}>Exit Fullscreen</button>
 				</div>
 			)}
 			{!isFullscreen && (

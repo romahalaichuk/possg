@@ -2,14 +2,14 @@ import React, { useEffect, useState, useRef } from "react";
 import "./ManagerPanel.css";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import SuccessAnimation from "./SuccessAnimation"; // Zmienione z ErrorSimulation na SuccessAnimation
+import SuccessAnimation from "./SuccessAnimation";
 
 const ManagerPanel = ({ onClose }) => {
 	const [paymentDetails, setPaymentDetails] = useState([]);
 	const [expandedTables, setExpandedTables] = useState({});
 	const [expandedProductSummary, setExpandedProductSummary] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
-	const [showSuccess, setShowSuccess] = useState(false); // Zmienione na showSuccess
+	const [showSuccess, setShowSuccess] = useState(false);
 	const modalRef = useRef(null);
 
 	useEffect(() => {
@@ -174,7 +174,6 @@ const ManagerPanel = ({ onClose }) => {
 			setTimeout(() => {
 				localStorage.clear();
 				setPaymentDetails([]);
-				window.location.reload();
 			}, 3000);
 		}, 3000);
 	};
@@ -200,11 +199,13 @@ const ManagerPanel = ({ onClose }) => {
 		e.stopPropagation();
 	};
 
+	const handleAnimationClose = () => {
+		window.location.reload();
+	};
+
 	return (
 		<>
-			{showSuccess && (
-				<SuccessAnimation onClose={() => setShowSuccess(false)} />
-			)}
+			{showSuccess && <SuccessAnimation onClose={handleAnimationClose} />}
 			<div
 				className={`manager-panel-overlay ${isClosing ? "closing" : ""}`}
 				onClick={handleOverlayClick}>
