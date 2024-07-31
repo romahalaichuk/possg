@@ -228,8 +228,17 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		setSearchTerm("");
 	};
 
+	const normalizeString = (str) => {
+		return str
+			.normalize("NFD")
+			.replace(/[\u0300-\u036f]/g, "")
+			.replace(/ł/g, "l")
+			.replace(/Ł/g, "L")
+			.toLowerCase();
+	};
+
 	const handleSearchChange = (e) => {
-		const term = e.target.value.trim().toLowerCase();
+		const term = normalizeString(e.target.value.trim());
 		setSearchTerm(e.target.value);
 
 		if (term === "") {
@@ -237,9 +246,10 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		} else {
 			const filteredItems = products.filter((item) => {
 				const isPizza32 = item.category === "Pizza" && item.name.includes("32");
+				const normalizedItemName = normalizeString(item.name);
 
 				return (
-					item.name.toLowerCase().includes(term) &&
+					normalizedItemName.includes(term) &&
 					(deliveryMode === "Wynos" || deliveryMode === "Dostawa"
 						? item.category !== "Pizza" || true
 						: item.category !== "Pizza" || isPizza32)

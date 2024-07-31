@@ -3,9 +3,8 @@ import useEnterKeyListener from "./useEnterKeyListener";
 import "./Dostawa.css";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import streets from "./Streets"; // Plik zawierający listę adresów
+import streets from "./Streets";
 
-// Funkcja do normalizacji tekstu
 const normalizeText = (text) => {
 	const polishToBasic = {
 		ą: "a",
@@ -37,7 +36,6 @@ const normalizeText = (text) => {
 		.toLowerCase();
 };
 
-// Funkcja do filtrowania opcji
 const filterOptions = (options, { inputValue }) => {
 	const normalizedInput = normalizeText(inputValue);
 	return options.filter((option) => {
@@ -125,7 +123,6 @@ const Dostawa = ({
 		}));
 	};
 
-	// Obsługuje zmiany w polu adresu
 	const handleAddressChange = (event, newInputValue) => {
 		setAddress(newInputValue);
 		localStorage.setItem(addressKey, newInputValue);
@@ -135,10 +132,9 @@ const Dostawa = ({
 		}));
 	};
 
-	// Obsługuje wybór z listy adresów
 	const handleAddressSelect = (event, value) => {
 		if (value) {
-			setAddress(value.ulica + "\u00A0"); // Dodaj niełamliwą spację po adresie
+			setAddress(value.ulica + "\u00A0");
 			localStorage.setItem(addressKey, value.ulica + "\u00A0");
 			setDeliveryDetails((prevDetails) => ({
 				...prevDetails,
