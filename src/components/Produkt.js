@@ -430,9 +430,9 @@ export const products = [
 	},
 	//Sosy...............................................................................
 	{ id: 170, name: "Caldzone Capri:", price: 42.9, category: "pizza" },
-	{ id: 171, name: "Caldzone Spinachi:", price: 45.9, category: "pizza" },
+	{ id: 171, name: "Caldzone Spinachi:", price: 47.9, category: "pizza" },
 	{ id: 172, name: "Caldzone Extra:", price: 47.9, category: "pizza" },
-	{ id: 173, name: "Caldzone Gyros:", price: 45.9, category: "pizza" },
+	{ id: 173, name: "Caldzone Gyros:", price: 47.9, category: "pizza" },
 	//Caldzone.........................................................................
 	{ id: 174, name: "AGLIO OLIO", price: 34.9, category: "Makaron" },
 	{ id: 175, name: "BOLOGNESE", price: 36.9, category: "Makaron" },
@@ -785,6 +785,24 @@ export const products = [
 		price: 1.0,
 		category: "Piwo",
 	},
+	{
+		id: 310,
+		name: "Książęce Cherry Ale",
+		price: 15.9,
+		category: "Piwo",
+	},
+	{
+		id: 311,
+		name: "Książęce Czerwony Lager",
+		price: 15.9,
+		category: "Piwo",
+	},
+	{
+		id: 312,
+		name: "Książęce Porter",
+		price: 15.9,
+		category: "Piwo",
+	},
 	// BAR>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	{ id: 242, name: "Sałatka z Kozim serem", price: 41.9, category: "sałatki" },
 	{ id: 243, name: "Sałatka Caprese", price: 34.9, category: "sałatki" },
@@ -839,5 +857,5 @@ export const products = [
 		category: "Desery",
 	},
 ];
-// id 278 start
+// id 313 start
 // { id: 242, name: "Sałatka Letnia", price: 18, category: "Menu sezonowe" },
