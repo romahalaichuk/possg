@@ -412,21 +412,21 @@ export const products = [
 
 	{ id: 160, name: "TALERZ KEBAB", price: 41.9, category: "Makaron" },
 
-	{ id: 161, name: "Sos czosnkowy:", price: 0, category: "pizza" },
-	{ id: 162, name: "Sos Pomidorowy:", price: 0, category: "pizza" },
+	{ id: 161, name: "Sos czosnkowy:", price: 0, category: "sos" },
+	{ id: 162, name: "Sos Pomidorowy:", price: 0, category: "sos" },
 	{
 		id: 227,
 		name: "Sos Meksykanski (ostry):",
 		price: 0,
-		category: "pizza",
+		category: "sos",
 	},
-	{ id: 163, name: "Sos czosnkowy:", price: 3.9, category: "pizza" },
-	{ id: 164, name: "Sos Pomidorowy:", price: 3.9, category: "pizza" },
+	{ id: 163, name: "Sos czosnkowy:", price: 3.9, category: "sos" },
+	{ id: 164, name: "Sos Pomidorowy:", price: 3.9, category: "sos" },
 	{
 		id: 228,
 		name: "Sos Meksykanski (ostry):",
 		price: 3.9,
-		category: "pizza",
+		category: "sos",
 	},
 	//Sosy...............................................................................
 	{ id: 170, name: "Caldzone Capri:", price: 42.9, category: "pizza" },

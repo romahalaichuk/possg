@@ -60,6 +60,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const addToPrintedItems = (itemId) => {
 		setPrintedItems((prevItems) => [...prevItems, itemId]);
 	};
+	const generateUniqueId = () => `item-${Date.now()}`;
+
 	const handleOpenWynosModal = () => {
 		if (!showWynosModal) {
 			setDeliveryMode("Wynos");
@@ -136,7 +138,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			updateSelectedItems(tableName, updatedItems);
 			calculateTotalPrice();
 
-			// Set the discount message
+			
 			setDiscountMessage("Druga pizza (tańsza) – 50%");
 		}
 	};
@@ -260,7 +262,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	};
 
 	const handleItemSelect = (item) => {
-		const existingItem = selectedItems.find((i) => i.id === item.id);
+		const existingItem = selectedItems.find(
+			(i) => i.originalId === item.id && i.id === item.uniqueId
+		);
 
 		let updatedItems;
 		if (existingItem) {
@@ -268,7 +272,15 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 				i.id === existingItem.id ? { ...i, quantity: i.quantity + 1 } : i
 			);
 		} else {
-			updatedItems = [...selectedItems, { ...item, quantity: 1 }];
+			updatedItems = [
+				...selectedItems,
+				{
+					...item,
+					uniqueId: generateUniqueId(),
+					quantity: 1,
+					originalId: item.id,
+				},
+			];
 		}
 
 		setSelectedItems(updatedItems);
@@ -352,7 +364,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		calculateTotalPrice();
 	};
 	const handleAddProduct = (product) => {
-		const existingItem = selectedItems.find((item) => item.id === product.id);
+		const existingItem = selectedItems.find(
+			(item) => item.originalId === product.id && item.id === product.uniqueId
+		);
 
 		let updatedItems;
 		if (existingItem) {
@@ -360,13 +374,22 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 				i.id === existingItem.id ? { ...i, quantity: i.quantity + 1 } : i
 			);
 		} else {
-			updatedItems = [...selectedItems, { ...product, quantity: 1 }];
+			updatedItems = [
+				...selectedItems,
+				{
+					...product,
+					uniqueId: generateUniqueId(),
+					quantity: 1,
+					originalId: product.id,
+				},
+			];
 		}
 
 		setSelectedItems(updatedItems);
 		updateSelectedItems(tableName, updatedItems);
 		calculateTotalPrice();
 	};
+
 	const calculateBasePrice = (item, extraIdToRemove) => {
 		let basePrice = item.price || 0;
 
@@ -603,11 +626,11 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					<div className="selected-items">
 						<ul>
 							{selectedItems.map((item, index) => (
-								<li key={`${item.id}-${index}`}>
+								<li key={item.uniqueId}>
 									{item.name} - {item.price ? item.price : 0} zł x{" "}
-									{item.quantity} ={" "}
+									{item.quantity} =
 									{(
-										(item.price +
+										((item.price || 0) +
 											(item.extras
 												? item.extras.reduce(
 														(sum, extra) =>
@@ -766,6 +789,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								Odejmowano {adjustments.subtractFromBill.toFixed(2)} zł od
 								rachunku (- {adjustments.subtractFromBill.toFixed(2)} zł)
 							</p>
+						)}
+						{discountMessage && (
+							<p style={{ color: "red" }}>{discountMessage}</p>
 						)}
 						{discountMessage && (
 							<p style={{ color: "red" }}>{discountMessage}</p>
