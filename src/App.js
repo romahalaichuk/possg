@@ -6,6 +6,8 @@ const videoUrls = [
 	"https://www.youtube.com/embed/cvjaa2D41Io?autoplay=1&mute=1",
 	"https://www.youtube.com/embed/v9BbaNz0s9M?autoplay=1&mute=1",
 	"https://www.youtube.com/embed/Dj3PZCPxkwo?autoplay=1&mute=1",
+	"https://www.youtube.com/embed/ZGnLVjkBEls?autoplay=1&mute=1",
+	"https://www.youtube.com/embed/czV_hXEMk8M?autoplay=1&mute=1",
 	"https://www.youtube.com/embed/czV_hXEMk8M?autoplay=1&mute=1",
 	"https://www.youtube.com/embed/Btt_7wLpwxM?autoplay=1&mute=1",
 	"https://www.youtube.com/embed/oe5GPi_C7Go?autoplay=1&mute=1",
@@ -16,6 +18,9 @@ const videoUrls = [
 	"https://www.youtube.com/embed/A8y1cXGPx7E?autoplay=1&mute=1",
 	"https://www.youtube.com/embed/bSrLBihXPwc?autoplay=1&mute=1",
 	"https://www.youtube.com/embed/3vEYpK3KUW4?autoplay=1&mute=1",
+	"https://www.youtube.com/embed/ekE4Bm6gD7s?autoplay=1&mute=1",
+	"https://www.youtube.com/embed/2wqpy036z24?autoplay=1&mute=1",
+	"https://www.youtube.com/embed/VR-x3HdhKLQ?autoplay=1&mute=1",
 ];
 
 function App() {
