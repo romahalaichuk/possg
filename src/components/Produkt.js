@@ -472,6 +472,7 @@ export const products = [
 	{ id: 264, name: "Sałatka  z Kurczakiem", price: 39.9, category: "sałatki" },
 	{ id: 265, name: "Sałatka  z Tuńczykiem", price: 39.9, category: "sałatki" },
 	{ id: 266, name: "Sałatka  Parmeńska", price: 42.9, category: "sałatki" },
+	{ id: 308, name: "Krem zupa z pomidorów", price: 21.9, category: "sałatki" },
 	//SAŁATKI>>>>>>>>>>>........................................
 	{ id: 188, name: "Coca-Cola", price: 9.9, category: "Napój bezalkoholowy" },
 	{
@@ -856,6 +857,7 @@ export const products = [
 		price: 19.9,
 		category: "Desery",
 	},
+	{ id: 309, name: "Krem zupa sezonowa", price: 23.9, category: "sałatki" },
 ];
 // id 313 start
 // { id: 242, name: "Sałatka Letnia", price: 18, category: "Menu sezonowe" },
