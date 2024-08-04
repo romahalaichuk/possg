@@ -21,31 +21,56 @@ const Procent = ({
 	const [showNapojList, setShowNapojList] = useState(false);
 
 	const napoje = [
-		{ id: 1, name: "Coca-Cola 0.85 L", category: "Napój bezalkoholowy pro", price: 0 },
-		{ id: 2, name: "Sok JABŁKOWY 1 L", category: "Napój bezalkoholowy pro", price: 0 },
-		{ id: 3, name: "Fanta 0.85 L", category: "Napój bezalkoholowy pro", price: 0 },
-		{ id: 4, name: "Sprite 0.85 L", category: "Napój bezalkoholowy pro", price: 0 },
-		{ id: 5, name: "Sok POMARAŃCZOWY 1 L", category: "Napój bezalkoholowy pro", price: 0 },
+		{
+			id: 1,
+			name: "Coca-Cola 0.85 L",
+			category: "Napój bezalkoholowy pro",
+			price: 0,
+		},
+		{
+			id: 2,
+			name: "Sok JABŁKOWY 1 L",
+			category: "Napój bezalkoholowy pro",
+			price: 0,
+		},
+		{
+			id: 3,
+			name: "Fanta 0.85 L",
+			category: "Napój bezalkoholowy pro",
+			price: 0,
+		},
+		{
+			id: 4,
+			name: "Sprite 0.85 L",
+			category: "Napój bezalkoholowy pro",
+			price: 0,
+		},
+		{
+			id: 5,
+			name: "Sok POMARAŃCZOWY 1 L",
+			category: "Napój bezalkoholowy pro",
+			price: 0,
+		},
 	];
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsTrzecia(today === 5 || today === 0);
+		setIsTrzecia(today === 5 || today === 6);
 	}, []);
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsNapoj(today === 1 || today === 0);
+		setIsNapoj(today === 1 || today === 2);
 	}, []);
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsCheeseDay(today === 3 || today === 0);
+		setIsCheeseDay(today === 3 || today === 4);
 	}, []);
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsTanio(today === 1 || today === 0);
+		setIsTanio(today === 1 || today === 4);
 	}, []);
 
 	useEffect(() => {}, [option, isTrzecia]);
@@ -92,14 +117,15 @@ const Procent = ({
 	};
 
 	const applyDiscountToThirdPizza = () => {
-		const pizzas = selectedItems
-			.filter(item => item.category.toLowerCase() === "pizza" && item.cm !== 60);
+		const pizzas = selectedItems.filter(
+			(item) => item.category.toLowerCase() === "pizza" && item.cm !== 60
+		);
 
 		if (pizzas.length >= 3) {
 			const cheapestPizza = pizzas.reduce((cheapest, item) => {
 				return item.price < cheapest.price ? item : cheapest;
 			});
-			const updatedItems = selectedItems.map(item =>
+			const updatedItems = selectedItems.map((item) =>
 				item === cheapestPizza ? { ...item, price: 10 } : item
 			);
 			setSelectedItems(updatedItems);
@@ -108,7 +134,6 @@ const Procent = ({
 		}
 		onClose();
 	};
-
 
 	const renderNapoj = () => {
 		if ((option === "Wynos" || option === "Dostawa") && isNapoj) {
@@ -125,7 +150,8 @@ const Procent = ({
 		if ((option === "Wynos" || option === "Dostawa") && isTrzecia) {
 			return (
 				<button onClick={applyDiscountToThirdPizza}>
-					3-cia tańsza pizza w tym samym lub mniejszym rozmiarze za 10zł (nie dotyczy pizzy 60 cm)
+					3-cia tańsza pizza w tym samym lub mniejszym rozmiarze za 10zł (nie
+					dotyczy pizzy 60 cm)
 				</button>
 			);
 		}
@@ -203,7 +229,10 @@ const Procent = ({
 					<h4>Wybierz napój</h4>
 					<ul style={styles.napojList}>
 						{napoje.map((napoj) => (
-							<li key={napoj.id} onClick={() => handleNapojSelect(napoj)} style={styles.napojItem}>
+							<li
+								key={napoj.id}
+								onClick={() => handleNapojSelect(napoj)}
+								style={styles.napojItem}>
 								{napoj.name}
 							</li>
 						))}
@@ -273,24 +302,23 @@ const styles = {
 	},
 };
 
-
 export default Procent;
 
-	// const applyDiscountToThirdPizza = () => {
-	// 	const pizzas = selectedItems
-	// 		.filter(item => item.category.toLowerCase() === "pizza" && item.cm !== 60)
-	// 		.sort((a, b) => a.price - b.price || a.cm - b.cm);
+// const applyDiscountToThirdPizza = () => {
+// 	const pizzas = selectedItems
+// 		.filter(item => item.category.toLowerCase() === "pizza" && item.cm !== 60)
+// 		.sort((a, b) => a.price - b.price || a.cm - b.cm);
 
-	// 	if (pizzas.length >= 3) {
-	// 		const thirdPizza = pizzas[2];
-	// 		const firstPizza = pizzas[0];
-	// 		const secondPizza = pizzas[1];
+// 	if (pizzas.length >= 3) {
+// 		const thirdPizza = pizzas[2];
+// 		const firstPizza = pizzas[0];
+// 		const secondPizza = pizzas[1];
 
-	// 		if (thirdPizza.price <= secondPizza.price && thirdPizza.cm <= secondPizza.cm) {
-	// 			thirdPizza.price = 10;
-	// 		}
-	// 	}else {
-	// 		alert("Proszę dodać trzecią pizzę 23 cm, 32 cm lub 42 cm");
-	// 	}
-	// 	onClose();
-	// };
+// 		if (thirdPizza.price <= secondPizza.price && thirdPizza.cm <= secondPizza.cm) {
+// 			thirdPizza.price = 10;
+// 		}
+// 	}else {
+// 		alert("Proszę dodać trzecią pizzę 23 cm, 32 cm lub 42 cm");
+// 	}
+// 	onClose();
+// };
