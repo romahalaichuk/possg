@@ -51,6 +51,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		discount: 0,
 		addToBill: 0,
 		subtractFromBill: 0,
+		napojPromotion: null,
+		trzeciaPizzaPromotion: null,
 	});
 	// eslint-disable-next-line no-unused-vars
 	const [isAnyModalOpen, setIsAnyModalOpen] = useState(false);
@@ -793,9 +795,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 						{discountMessage && (
 							<p style={{ color: "red" }}>{discountMessage}</p>
 						)}
-						{discountMessage && (
-							<p style={{ color: "red" }}>{discountMessage}</p>
-						)}
+						
 					</div>
 					<div className="modal-buttons">
 						<button onClick={onClose}>Zamknij</button>

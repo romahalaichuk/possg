@@ -30,22 +30,22 @@ const Procent = ({
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsTrzecia(today === 5 || today === 6);
+		setIsTrzecia(today === 5 || today === 0);
 	}, []);
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsNapoj(today === 1 || today === 6);
+		setIsNapoj(today === 1 || today === 0);
 	}, []);
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsCheeseDay(today === 3 || today === 6);
+		setIsCheeseDay(today === 3 || today === 0);
 	}, []);
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		setIsTanio(today === 1 || today === 6);
+		setIsTanio(today === 1 || today === 0);
 	}, []);
 
 	useEffect(() => {}, [option, isTrzecia]);
