@@ -14,7 +14,7 @@ const MANAGER_PANEL_STATE_KEY = "managerPanelOpen";
 const initializeTables = () => {
 	const initialTables = [
 		{ id: 0, name: "Wynos/Dostawa", status: "special", products: [] },
-		...Array.from({ length: 50 }, (_, index) => ({
+		...Array.from({ length: 47 }, (_, index) => ({
 			id: index + 1,
 			name: `Table ${index + 1}`,
 			status: "free",
@@ -27,7 +27,7 @@ const initializeTables = () => {
 
 const initializeWynosTables = () => {
 	const initialWynosTables = Array.from({ length: 20 }, (_, index) => ({
-		id: index + 40,
+		id: index + 30,
 		name: `Wynos/Dostawa ${index + 1}`,
 		status: "free",
 		products: [],
