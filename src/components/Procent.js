@@ -18,6 +18,7 @@ const Procent = ({
 	const [isIsTanio, setIsTanio] = useState(false);
 	const [isNapoj, setIsNapoj] = useState(false);
 	const [isTrzecia, setIsTrzecia] = useState(false);
+	const [showPizzaTrad, setShowPizzaTrad] = useState(true);
 	const [showNapojList, setShowNapojList] = useState(false);
 
 	const napoje = [
@@ -52,6 +53,17 @@ const Procent = ({
 			price: 0,
 		},
 	];
+
+	useEffect(() => {
+		const today = new Date().getDay();
+		const isPizzaTradDay = today === 1 || today === 2;
+
+		if (option === "Wynos" || option === "Dostawa" || !isPizzaTradDay) {
+			setShowPizzaTrad(false);
+		} else {
+			setShowPizzaTrad(true);
+		}
+	}, [option]);
 
 	useEffect(() => {
 		const today = new Date().getDay();
@@ -145,7 +157,14 @@ const Procent = ({
 		}
 		return null;
 	};
-
+	const renderPizzaTrad = () => {
+		if (showPizzaTrad) {
+			return (
+				<button>Pizza tradycyjna 29,90zł lub napój gratis do makaronu</button>
+			);
+		}
+		return null;
+	};
 	const renderTrzecia = () => {
 		if ((option === "Wynos" || option === "Dostawa") && isTrzecia) {
 			return (
@@ -217,6 +236,7 @@ const Procent = ({
 			</div>
 			<h3>Promocje</h3>
 			{renderNapoj()}
+			{renderPizzaTrad()}
 			{renderCheeseButton()}
 			{renderTaniejButton()}
 			{renderTrzecia()}
