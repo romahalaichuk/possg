@@ -618,18 +618,18 @@ export const products = [
 	},
 	//Napoje bezalkoholowe...............................................................................
 	{ id: 214, name: "Puchar lodowy", price: 20.9, category: "Desery" },
-	{ id: 215, name: "Frizante Casa Burti Flute", price: 65, category: "Wina" },
+	{ id: 215, name: "Frizante Casa Burti Flute", price: 75, category: "Wina" },
 	{
 		id: 216,
 		name: "Frizante Casa Burti Flute (Kieliszek)",
-		price: 16,
+		price: 21,
 		category: "Wina",
 	},
 	{ id: 217, name: "Feudo Arancio Chardonnay", price: 90, category: "Wina" },
 	{
 		id: 218,
 		name: "Feudo Arancio Chardonnay (Kieliszek)",
-		price: 18,
+		price: 23,
 		category: "Wina",
 	},
 	{ id: 219, name: "Soave Domini Veneti", price: 110, category: "Wina" },
@@ -639,25 +639,37 @@ export const products = [
 		price: 21,
 		category: "Wina",
 	},
-	{ id: 221, name: "Torre Cerere Montepulciano", price: 75, category: "Wina" },
+	{ id: 221, name: "Terre Cerere Montepulciano", price: 76, category: "Wina" },
 	{
 		id: 222,
-		name: "Torre Cerere Montepulciano (Kieliszek)",
-		price: 17,
+		name: "Terre Cerere Montepulciano (Kieliszek)",
+		price: 21,
 		category: "Wina",
 	},
 	{ id: 223, name: "Primitivo La Casada", price: 85, category: "Wina" },
 	{
 		id: 224,
 		name: "Primitivo La Casada (Kieliszek)",
-		price: 18,
+		price: 23,
 		category: "Wina",
 	},
 	{ id: 225, name: "Feudo Arancio Nero D`avola", price: 100, category: "Wina" },
 	{
 		id: 226,
 		name: "Feudo Arancio Nero D`avola (Kieliszek)",
-		price: 20,
+		price: 25,
+		category: "Wina",
+	},
+	{
+		id: 316,
+		name: "Lepiga SoaveTenuta Santa Maria",
+		price: 110,
+		category: "Wina",
+	},
+	{
+		id: 315,
+		name: "Lepiga SoaveTenuta Santa Maria (Kieliszek)",
+		price: 26,
 		category: "Wina",
 	},
 	{
@@ -815,6 +827,12 @@ export const products = [
 		category: "makaron",
 	},
 	{ id: 246, name: "Pizza Pesto", price: 44.9, category: "pizza" },
+	{
+		id: 314,
+		name: "Deska Antipasti dla 1 osoby",
+		price: 34.9,
+		category: "makaron",
+	},
 	{ id: 247, name: "Pizza Mortadella", price: 45.9, category: "pizza" },
 	{ id: 248, name: "Pizza Pollo e spinaci", price: 46.9, category: "pizza" },
 	{
@@ -859,5 +877,5 @@ export const products = [
 	},
 	{ id: 309, name: "Krem zupa sezonowa", price: 23.9, category: "sałatki" },
 ];
-// id 313 start
+// id 317 start
 // { id: 242, name: "Sałatka Letnia", price: 18, category: "Menu sezonowe" },
