@@ -6,11 +6,11 @@
 	background-color: #007bff;
 	color: white;
 	border: none;
-	padding: 6px 12px; /* Zmniejszono padding */
+	padding: 6px 12px;
 	border-radius: 4px;
 	cursor: pointer;
 	margin-bottom: 10px;
-	font-size: 10px; /* Zmniejszono rozmiar czcionki */
+	font-size: 10px;
 }
 
 .dodatki button:hover {
@@ -28,6 +28,7 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 8px;
+	border-top: 1px solid;
 	border-bottom: 1px solid #eee;
 }
 
@@ -35,7 +36,7 @@
 	background-color: #dc3545;
 	color: white;
 	border: none;
-	padding: 3px 6px; /* Zmniejszono padding */
+	padding: 3px 6px;
 	border-radius: 4px;
 	cursor: pointer;
 	font-size: 10px; /* Zmniejszono rozmiar czcionki */

@@ -56,7 +56,7 @@ const Procent = ({
 
 	useEffect(() => {
 		const today = new Date().getDay();
-		const isPizzaTradDay = today === 1 || today === 2;
+		const isPizzaTradDay = today === 1 || today === 5;
 
 		if (option === "Wynos" || option === "Dostawa" || !isPizzaTradDay) {
 			setShowPizzaTrad(false);

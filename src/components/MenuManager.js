@@ -140,7 +140,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			updateSelectedItems(tableName, updatedItems);
 			calculateTotalPrice();
 
-			
 			setDiscountMessage("Druga pizza (tańsza) – 50%");
 		}
 	};
@@ -303,10 +302,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		handleItemSelect(updatedItem);
 		setSearchTerm("");
 	};
-
-	const handleItemRemove = (itemId) => {
+	const handleItemRemove = (uniqueId) => {
 		const updatedItems = selectedItems.reduce((acc, item) => {
-			if (item.id === itemId) {
+			if (item.uniqueId === uniqueId) {
 				if (item.quantity > 1) {
 					acc.push({ ...item, quantity: item.quantity - 1 });
 				}
@@ -320,9 +318,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		updateSelectedItems(tableName, updatedItems);
 	};
 
-	const handleCommentChange = (comment, itemId) => {
+	const handleCommentChange = (comment, uniqueId) => {
 		const updatedItems = selectedItems.map((item) =>
-			item.id === itemId ? { ...item, comment } : item
+			item.uniqueId === uniqueId ? { ...item, comment } : item
 		);
 		setSelectedItems(updatedItems);
 		updateSelectedItems(tableName, updatedItems);
@@ -657,11 +655,13 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 										value={item.comment || ""}
 										placeholder="Komentarz"
 										onChange={(e) =>
-											handleCommentChange(e.target.value, item.id)
+											handleCommentChange(e.target.value, item.uniqueId)
 										}
 										className="comment-input"
 									/>
-									<button onClick={() => handleItemRemove(item.id)}>-</button>
+									<button onClick={() => handleItemRemove(item.uniqueId)}>
+										-
+									</button>
 									<button onClick={() => handleItemSelect(item)}>+</button>
 								</li>
 							))}
@@ -795,7 +795,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 						{discountMessage && (
 							<p style={{ color: "red" }}>{discountMessage}</p>
 						)}
-						
 					</div>
 					<div className="modal-buttons">
 						<button onClick={onClose}>Zamknij</button>
