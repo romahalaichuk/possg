@@ -713,50 +713,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							</div>
 						)}
 
-						{/* {showDostawaModal && (
-							<div className="order-type-container">
-								<Dostawa
-									selectedItems={selectedItems}
-									tableName={tableName}
-									adjustedTotalAmount={calculateAdjustedTotal()}
-									onClose={() => {
-										setShowDostawaModal(false);
-									}}
-									setDeliveryDetails={setDeliveryDetails}
-								/>
-								<div className="order-type-container">
-									<h3>Dostawa DO</h3>
-									<input
-										type="number"
-										value={minutesToPickup}
-										onChange={handleMinutesChange}
-										min="1"
-										required
-										className="time-input"
-									/>
-									<h3>Dostawa NA</h3>
-									<input
-										type="text"
-										value={customPickupTime}
-										onChange={handleCustomTimeChange}
-										placeholder="np. 21:40"
-										className="time-input"
-									/>
-									{pickupTime && (
-										<p
-											className={`pickup-time ${
-												customPickupTime.includes(":") ? "pickup-time-na" : ""
-											}`}>
-											{pickupTime === "Invalid Date"
-												? "Dostawa na: Invalid Date"
-												: customPickupTime.includes(":")
-												? `Dostawa DO: ${pickupTime}`
-												: `Dostawa NA: ${pickupTime}`}
-										</p>
-									)}
-								</div>
-							</div>
-						)} */}
 						{showDostawaModal && (
 							<Dostawa
 								onClose={handleCloseMenuItemsModal}
