@@ -19009,5 +19009,100 @@ const streets = [
 		ulica: "Zygmunta Hubnera",
 		dzielnica: "Zoliborz Artystyczny",
 	},
+	{
+		id: 3803,
+		ulica: "Kaliny Jędrusik",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3804,
+		ulica: "Kaliny Jędrusik 1",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3805,
+		ulica: "Kaliny Jędrusik 3",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3806,
+		ulica: "Kaliny Jędrusik 4",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3807,
+		ulica: "Kaliny Jędrusik 4 A",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3808,
+		ulica: "Kaliny Jędrusik 4 B",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3809,
+		ulica: "Kaliny Jędrusik 5",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3810,
+		ulica: "Kaliny Jędrusik 6",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3811,
+		ulica: "Kaliny Jędrusik 7",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3812,
+		ulica: "Kaliny Jędrusik 9",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3813,
+		ulica: "Dygata",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3814,
+		ulica: "Dygata 2",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3815,
+		ulica: "Dygata 3",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3816,
+		ulica: "Dygata 4",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3817,
+		ulica: "Dygata 6",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3818,
+		ulica: "Dygata 8",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3819,
+		ulica: "Ficowskiego",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3820,
+		ulica: "Ficowskiego 5",
+		dzielnica: "Zoliborz Artystyczny",
+	},
+	{
+		id: 3821,
+		ulica: "Ficowskiego 8",
+		dzielnica: "Zoliborz Artystyczny",
+	},
 ];
 export default streets;
