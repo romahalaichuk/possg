@@ -63,6 +63,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		setPrintedItems((prevItems) => [...prevItems, itemId]);
 	};
 	const generateUniqueId = () => `item-${Date.now()}`;
+	const [removedItems, setRemovedItems] = useState([]);
 
 	const handleOpenWynosModal = () => {
 		if (!showWynosModal) {
@@ -302,20 +303,59 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		handleItemSelect(updatedItem);
 		setSearchTerm("");
 	};
-	const handleItemRemove = (uniqueId) => {
-		const updatedItems = selectedItems.reduce((acc, item) => {
-			if (item.uniqueId === uniqueId) {
-				if (item.quantity > 1) {
-					acc.push({ ...item, quantity: item.quantity - 1 });
-				}
-			} else {
-				acc.push(item);
-			}
-			return acc;
-		}, []);
+	useEffect(() => {
+		const savedRemovedItems = localStorage.getItem(`removedItems_${tableName}`);
+		if (savedRemovedItems) {
+			setRemovedItems(JSON.parse(savedRemovedItems));
+		}
+	}, [tableName]);
 
-		setSelectedItems(updatedItems);
-		updateSelectedItems(tableName, updatedItems);
+	// const handleItemRemove = (uniqueId) => {
+	// 	const itemToRemove = selectedItems.find(
+	// 		(item) => item.uniqueId === uniqueId
+	// 	);
+
+	// 	const updatedItems = selectedItems.filter(
+	// 		(item) => item.uniqueId !== uniqueId
+	// 	);
+
+	// 	const updatedRemovedItems = [
+	// 		...removedItems,
+	// 		{ ...itemToRemove, isRemoved: true, comment: "" },
+	// 	];
+
+	// 	setSelectedItems(updatedItems);
+	// 	setRemovedItems(updatedRemovedItems);
+	// 	updateSelectedItems(tableName, updatedItems);
+	// };
+	// Funkcja do obsługi dodawania komentarza przed usunięciem
+	const handleAddCommentBeforeRemove = (uniqueId) => {
+		const comment = prompt("Podaj powód usunięcia produktu:");
+		if (comment) {
+			const itemToRemove = selectedItems.find(
+				(item) => item.uniqueId === uniqueId
+			);
+			const updatedRemovedItems = [
+				...removedItems,
+				{ ...itemToRemove, isRemoved: true, comment: comment },
+			];
+
+			const updatedItems = selectedItems.filter(
+				(item) => item.uniqueId !== uniqueId
+			);
+
+			setSelectedItems(updatedItems);
+			setRemovedItems(updatedRemovedItems);
+
+			// Zapisz usunięte produkty w localStorage
+			localStorage.setItem(
+				`removedItems_${tableName}`,
+				JSON.stringify(updatedRemovedItems)
+			);
+
+			// Aktualizuj wybrane produkty dla stolika
+			updateSelectedItems(tableName, updatedItems);
+		}
 	};
 
 	const handleCommentChange = (comment, uniqueId) => {
@@ -601,6 +641,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 							</div>
 						)}
 					</div>
+
 					{showMenuItemsModal && (
 						<div className="extras-modal-overlay" onClick={handleOverlayClick}>
 							<div className="menu-items-modal">
@@ -659,7 +700,8 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 										}
 										className="comment-input"
 									/>
-									<button onClick={() => handleItemRemove(item.uniqueId)}>
+									<button
+										onClick={() => handleAddCommentBeforeRemove(item.uniqueId)}>
 										-
 									</button>
 									<button onClick={() => handleItemSelect(item)}>+</button>
@@ -751,6 +793,18 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 						{discountMessage && (
 							<p style={{ color: "red" }}>{discountMessage}</p>
 						)}
+						<div className="removed-items">
+							<h3>Usunięte produkty</h3>
+							<ul>
+								{removedItems.map((item, index) => (
+									<li
+										key={item.uniqueId}
+										style={{ textDecoration: "line-through" }}>
+										{item.name} - {item.price} zł (Powód: {item.comment})
+									</li>
+								))}
+							</ul>
+						</div>
 					</div>
 					<div className="modal-buttons">
 						<button onClick={onClose}>Zamknij</button>
