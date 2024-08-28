@@ -836,13 +836,13 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 						<div className="payment-modal">
 							<PaymentManager
 								selectedItems={selectedItems}
+								removedItems={removedItems} // Nowa linia, dodająca usunięte produkty
 								adjustedTotalAmount={calculateAdjustedTotal()}
 								onClose={handlePaymentComplete}
 								tableName={currentTableName}
 								discountAmount={discountAmount}
 								serviceCharge={serviceCharge}
 								adjustments={adjustments}
-								calculateAdjustedTotal={calculateAdjustedTotal}
 								addToBill={adjustments.addToBill}
 								subtractFromBill={adjustments.subtractFromBill}
 							/>

@@ -7,6 +7,7 @@ const PaymentManager = ({
 	tableName,
 	adjustedTotalAmount,
 	onClose,
+	removedItems = [],
 	selectedItems,
 	discountAmount = 0,
 	serviceCharge = 0,
@@ -46,6 +47,7 @@ const PaymentManager = ({
 			amountGiven: parseFloat(amountGiven).toFixed(2) || 0,
 			changeAmount: changeAmount.toFixed(2),
 			selectedItems,
+			removedItems,
 			adjustments,
 			adjustedTotalAmount: adjustedTotalAmount.toFixed(2),
 		};

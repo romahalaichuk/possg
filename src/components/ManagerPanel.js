@@ -31,6 +31,12 @@ const ManagerPanel = ({ onClose }) => {
 			detail.selectedItems.forEach((item) => {
 				summary[item.name] = (summary[item.name] || 0) + item.quantity;
 			});
+			// Dodaj usunięte produkty do podsumowania
+			if (detail.removedItems && detail.removedItems.length > 0) {
+				detail.removedItems.forEach((item) => {
+					summary[item.name] = (summary[item.name] || 0) - item.quantity;
+				});
+			}
 			return summary;
 		}, {});
 	};
@@ -107,30 +113,51 @@ const ManagerPanel = ({ onClose }) => {
 						"Dodano do rachunku",
 						"Odejmij od rachunku",
 						"Finalna kwota",
+						"Powód usunięcia", // Dodano kolumnę na powód usunięcia
 					],
 				],
 				body: details.flatMap((detail) =>
-					detail.selectedItems.map((item) => [
-						tableName,
-						formatCurrency(parseFloat(detail.totalAmount || 0)),
-						detail.paymentType,
-						item.name,
-						item.quantity,
-						formatCurrency(parseFloat(item.price * item.quantity || 0)),
-						detail.discountAmount
-							? formatCurrency(parseFloat(detail.discountAmount || 0))
-							: "-",
-						detail.serviceCharge
-							? formatCurrency(parseFloat(detail.serviceCharge || 0))
-							: "-",
-						detail.addToBill
-							? formatCurrency(parseFloat(detail.addToBill || 0))
-							: "-",
-						detail.subtractFromBill
-							? formatCurrency(parseFloat(detail.subtractFromBill || 0))
-							: "-",
-						formatCurrency(parseFloat(detail.adjustedTotalAmount || 0)),
-					])
+					detail.selectedItems
+						.map((item) => [
+							tableName,
+							formatCurrency(parseFloat(detail.totalAmount || 0)),
+							detail.paymentType,
+							item.name,
+							item.quantity,
+							formatCurrency(parseFloat(item.price * item.quantity || 0)),
+							detail.discountAmount
+								? formatCurrency(parseFloat(detail.discountAmount || 0))
+								: "-",
+							detail.serviceCharge
+								? formatCurrency(parseFloat(detail.serviceCharge || 0))
+								: "-",
+							detail.addToBill
+								? formatCurrency(parseFloat(detail.addToBill || 0))
+								: "-",
+							detail.subtractFromBill
+								? formatCurrency(parseFloat(detail.subtractFromBill || 0))
+								: "-",
+							formatCurrency(parseFloat(detail.adjustedTotalAmount || 0)),
+							"", // Puste pole, bo ten wiersz nie dotyczy usuniętych produktów
+						])
+						.concat(
+							detail.removedItems?.map((item) => [
+								tableName,
+								"", // Brak kwoty dla usuniętych produktów
+								"",
+								item.name,
+								`-${item.quantity}`,
+								`-${formatCurrency(
+									parseFloat(item.price * item.quantity || 0)
+								)}`,
+								"-",
+								"-",
+								"-",
+								"-",
+								"-",
+								item.comment, // Dodano powód usunięcia
+							]) || []
+						)
 				),
 				theme: "striped",
 				margin: { top: 10, bottom: 10 },
@@ -273,60 +300,34 @@ const ManagerPanel = ({ onClose }) => {
 																						)
 																					)}{" "}
 																					PLN
-																					{detail.discountAmount && (
-																						<span>
-																							, Zniżka:{" "}
-																							{formatCurrency(
-																								parseFloat(
-																									detail.discountAmount || 0
-																								)
-																							)}{" "}
-																							PLN
-																						</span>
-																					)}
-																					{detail.serviceCharge > 0 && (
-																						<span>
-																							, Opłata serwisowa:{" "}
-																							{formatCurrency(
-																								parseFloat(
-																									detail.serviceCharge || 0
-																								)
-																							)}{" "}
-																							PLN
-																						</span>
-																					)}
-																					{detail.addToBill > 0 && (
-																						<span>
-																							, Dodano do rachunku:{" "}
-																							{formatCurrency(
-																								parseFloat(
-																									detail.addToBill || 0
-																								)
-																							)}{" "}
-																							PLN
-																						</span>
-																					)}
-																					{detail.subtractFromBill > 0 && (
-																						<span>
-																							, Odejmij od rachunku:{" "}
-																							{formatCurrency(
-																								parseFloat(
-																									detail.subtractFromBill || 0
-																								)
-																							)}{" "}
-																							PLN
-																						</span>
-																					)}
-																					, Finalna kwota:{" "}
-																					{formatCurrency(
-																						parseFloat(
-																							detail.adjustedTotalAmount || 0
-																						)
-																					)}{" "}
-																					PLN
 																				</li>
 																			))}
 																		</ul>
+																	)}
+																{detail.removedItems &&
+																	detail.removedItems.length > 0 && (
+																		<>
+																			<h4>Usunięte produkty:</h4>
+																			<ul>
+																				{detail.removedItems.map((item) => (
+																					<li
+																						key={item.uniqueId}
+																						style={{
+																							color: "red",
+																							textDecoration: "line-through",
+																						}}>
+																						{item.name} -{" "}
+																						{formatCurrency(
+																							parseFloat(
+																								item.price * item.quantity || 0
+																							)
+																						)}{" "}
+																						PLN (Ilość: {item.quantity}) (
+																						Powód: {item.comment})
+																					</li>
+																				))}
+																			</ul>
+																		</>
 																	)}
 															</li>
 														))}
