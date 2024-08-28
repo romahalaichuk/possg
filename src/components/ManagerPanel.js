@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { customFont } from "./fonts";
 import "./ManagerPanel.css";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -27,18 +28,23 @@ const ManagerPanel = ({ onClose }) => {
 	};
 
 	const getProductsSummary = () => {
-		return paymentDetails.reduce((summary, detail) => {
+		const summary = {};
+		const removedSummary = {};
+
+		paymentDetails.forEach((detail) => {
 			detail.selectedItems.forEach((item) => {
 				summary[item.name] = (summary[item.name] || 0) + item.quantity;
 			});
-			// Dodaj usunięte produkty do podsumowania
+
 			if (detail.removedItems && detail.removedItems.length > 0) {
 				detail.removedItems.forEach((item) => {
-					summary[item.name] = (summary[item.name] || 0) - item.quantity;
+					removedSummary[item.name] =
+						(removedSummary[item.name] || 0) - item.quantity;
 				});
 			}
-			return summary;
-		}, {});
+		});
+
+		return { ...summary, ...removedSummary };
 	};
 
 	const calculateTotals = () => {
@@ -67,6 +73,10 @@ const ManagerPanel = ({ onClose }) => {
 		}-${currentDate.getFullYear()}`;
 		let yOffset = 10;
 		const { totalCash, totalCard, totalSales } = calculateTotals();
+
+		doc.addFileToVFS("custom-font.ttf", customFont.regular.base64);
+		doc.addFont("custom-font.ttf", "customFont", "normal");
+		doc.setFont("customFont");
 
 		doc.setFontSize(12);
 		doc.text("Panel Managera", 20, yOffset);
@@ -113,7 +123,7 @@ const ManagerPanel = ({ onClose }) => {
 						"Dodano do rachunku",
 						"Odejmij od rachunku",
 						"Finalna kwota",
-						"Powód usunięcia", // Dodano kolumnę na powód usunięcia
+						"Powód usunięcia",
 					],
 				],
 				body: details.flatMap((detail) =>
@@ -138,12 +148,12 @@ const ManagerPanel = ({ onClose }) => {
 								? formatCurrency(parseFloat(detail.subtractFromBill || 0))
 								: "-",
 							formatCurrency(parseFloat(detail.adjustedTotalAmount || 0)),
-							"", // Puste pole, bo ten wiersz nie dotyczy usuniętych produktów
+							"",
 						])
 						.concat(
 							detail.removedItems?.map((item) => [
 								tableName,
-								"", // Brak kwoty dla usuniętych produktów
+								"",
 								"",
 								item.name,
 								`-${item.quantity}`,
@@ -155,7 +165,7 @@ const ManagerPanel = ({ onClose }) => {
 								"-",
 								"-",
 								"-",
-								item.comment, // Dodano powód usunięcia
+								item.comment,
 							]) || []
 						)
 				),
@@ -183,12 +193,26 @@ const ManagerPanel = ({ onClose }) => {
 			yOffset += 15;
 		});
 
+		if (yOffset > 260) {
+			doc.addPage();
+			yOffset = 10;
+		}
+
 		doc.setFontSize(10);
 		doc.text("Podsumowanie produktów:", 20, yOffset);
 		yOffset += 10;
 
 		const productSummary = getProductsSummary();
 		Object.entries(productSummary).forEach(([productName, quantity]) => {
+			if (yOffset > 260) {
+				doc.addPage();
+				yOffset = 10;
+			}
+			if (quantity < 0) {
+				doc.setTextColor(255, 0, 0);
+			} else {
+				doc.setTextColor(0, 0, 0);
+			}
 			doc.text(`${productName}: ${quantity} szt.`, 20, yOffset);
 			yOffset += 10;
 		});
