@@ -19,25 +19,33 @@ const PaymentManager = ({
 	const [changeAmount, setChangeAmount] = useState(0);
 	const [selectedPaymentType, setSelectedPaymentType] = useState(null);
 	const [modalVisible, setModalVisible] = useState(true);
+	const [finalAmount, setFinalAmount] = useState(adjustedTotalAmount);
+
+	useEffect(() => {
+		const calculateFinalAmount = () => {
+			let calculatedAmount = adjustedTotalAmount;
+			calculatedAmount += addToBill;
+			calculatedAmount -= subtractFromBill;
+			setFinalAmount(calculatedAmount);
+		};
+
+		calculateFinalAmount();
+	}, [adjustedTotalAmount, addToBill, subtractFromBill]);
 
 	useEffect(() => {
 		const amountGivenNumber = parseFloat(amountGiven);
-		const finalAmount = adjustedTotalAmount;
-
 		if (!isNaN(amountGivenNumber)) {
 			const change = amountGivenNumber - finalAmount;
 			setChangeAmount(change > 0 ? change : 0);
 		} else {
 			setChangeAmount(0);
 		}
-	}, [amountGiven, adjustedTotalAmount]);
+	}, [amountGiven, finalAmount]);
 
 	const handleFinalizePayment = () => {
-		const finalAmount = adjustedTotalAmount;
-
 		const paymentDetails = {
 			tableName,
-			totalAmount: adjustedTotalAmount.toFixed(2),
+			totalAmount: finalAmount.toFixed(2),
 			discountAmount: discountAmount.toFixed(2),
 			serviceCharge: serviceCharge.toFixed(2),
 			addToBill: addToBill.toFixed(2),
@@ -49,7 +57,7 @@ const PaymentManager = ({
 			selectedItems,
 			removedItems,
 			adjustments,
-			adjustedTotalAmount: adjustedTotalAmount.toFixed(2),
+			adjustedTotalAmount: finalAmount.toFixed(2),
 		};
 
 		const storedPaymentDetails =
@@ -92,10 +100,23 @@ const PaymentManager = ({
 								{selectedItems.map((item) => (
 									<li key={item.id}>
 										{item.name} - {item.quantity}x -{" "}
-										{(item.price * item.quantity).toFixed(2)} zł
+										{(
+											(item.price || 0) +
+											(item.extras
+												? item.extras.reduce(
+														(sum, extra) =>
+															extra.category === "Dod"
+																? sum + extra.price
+																: sum,
+														0
+												  )
+												: 0)
+										).toFixed(2)}{" "}
+										zł
 									</li>
 								))}
 							</ul>
+
 							{discountAmount > 0 && (
 								<p>Rabat: {discountAmount.toFixed(2)} zł</p>
 							)}
@@ -140,7 +161,7 @@ const PaymentManager = ({
 
 				{selectedPaymentType === "GOTÓWA" && (
 					<div className="cash-payment">
-						<h3>Do zapłaty: {adjustedTotalAmount.toFixed(2)} zł</h3>
+						<h3>Do zapłaty: {finalAmount.toFixed(2)} zł</h3>
 						<input
 							type="number"
 							value={amountGiven}

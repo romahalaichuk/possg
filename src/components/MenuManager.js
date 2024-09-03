@@ -90,6 +90,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setShowRozliczButton(false);
 		}
 	};
+
 	const [showNapojList, setShowNapojList] = useState(false);
 	const [napoj, setNapoj] = useState(null);
 	const modalRef = useRef(null);
@@ -112,9 +113,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 
 			if (item.extras && item.extras.length > 0) {
 				item.extras.forEach((extra) => {
-					if (extra.category === "Dod") {
-						itemPrice += extra.price;
-					}
+					itemPrice += extra.price;
 				});
 			}
 
@@ -125,6 +124,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 
 		return { totalItems, totalAmount, discountAmount };
 	};
+
 	const applyDiscountToSecondPizza = () => {
 		const pizzas = selectedItems.filter((item) => item.category === "Pizza");
 		if (pizzas.length >= 2) {
@@ -158,22 +158,22 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					modalRef.current &&
 					!modalRef.current.contains(e.target) &&
 					overlayRef.current &&
-					overlayRef.current.contains(e.target)) ||
+					!overlayRef.current.contains(e.target)) ||
 				(showProcentModal &&
 					modalRef.current &&
 					!modalRef.current.contains(e.target) &&
 					overlayRef.current &&
-					overlayRef.current.contains(e.target)) ||
+					!overlayRef.current.contains(e.target)) ||
 				(showWynosModal &&
 					modalRef.current &&
 					!modalRef.current.contains(e.target) &&
 					overlayRef.current &&
-					overlayRef.current.contains(e.target)) ||
+					!overlayRef.current.contains(e.target)) ||
 				(showDostawaModal &&
 					modalRef.current &&
 					!modalRef.current.contains(e.target) &&
 					overlayRef.current &&
-					overlayRef.current.contains(e.target))
+					!overlayRef.current.contains(e.target))
 			) {
 				setShowMenuItemsModal(false);
 				setShowProcentModal(false);
@@ -187,6 +187,15 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			}
 		};
 
+		const handleKeyDown = (e) => {
+			if (e.key === "Enter") {
+				if (showWynosModal) setShowWynosModal(false);
+				if (showDostawaModal) setShowDostawaModal(false);
+				if (showProcentModal) setShowProcentModal(false);
+				if (showMenuItemsModal) setShowMenuItemsModal(false);
+			}
+		};
+
 		if (
 			showMenuItemsModal ||
 			showProcentModal ||
@@ -194,12 +203,15 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			showDostawaModal
 		) {
 			document.addEventListener("mousedown", handleClickOutside);
+			document.addEventListener("keydown", handleKeyDown);
 		} else {
 			document.removeEventListener("mousedown", handleClickOutside);
+			document.removeEventListener("keydown", handleKeyDown);
 		}
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
+			document.removeEventListener("keydown", handleKeyDown);
 		};
 	}, [showMenuItemsModal, showProcentModal, showWynosModal, showDostawaModal]);
 
@@ -347,13 +359,11 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			setSelectedItems(updatedItems);
 			setRemovedItems(updatedRemovedItems);
 
-			// Zapisz usunięte produkty w localStorage
 			localStorage.setItem(
 				`removedItems_${tableName}`,
 				JSON.stringify(updatedRemovedItems)
 			);
 
-			// Aktualizuj wybrane produkty dla stolika
 			updateSelectedItems(tableName, updatedItems);
 		}
 	};
@@ -414,6 +424,10 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 				i.id === existingItem.id ? { ...i, quantity: i.quantity + 1 } : i
 			);
 		} else {
+			const addedTime = new Date().toLocaleTimeString([], {
+				hour: "2-digit",
+				minute: "2-digit",
+			}); // Zapisz czas dodania produktu w formacie HH:MM
 			updatedItems = [
 				...selectedItems,
 				{
@@ -421,6 +435,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					uniqueId: generateUniqueId(),
 					quantity: 1,
 					originalId: product.id,
+					addedTime: addedTime, // Dodaj czas jako nowy atrybut
 				},
 			];
 		}
@@ -464,6 +479,18 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	};
 
 	const handleRozliczClick = () => {
+		const currentTime = new Date().toISOString(); // Uzyskaj aktualny czas
+
+		const orderDetails = {
+			tableName: currentTableName,
+			selectedItems,
+			totalPrice,
+			adjustments,
+			orderTime: currentTime, // Dodaj czas złożenia zamówienia
+		};
+
+		localStorage.setItem(`order_${tableName}`, JSON.stringify(orderDetails)); // Zapisz zamówienie do localStorage
+
 		setShowPaymentModal(true);
 	};
 
@@ -508,9 +535,14 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	const handleOverlayClick = (e) => {
 		if (
 			e.target.classList.contains("extras-modal-overlay") ||
-			e.target.classList.contains("pizza-modal-overlay")
+			e.target.classList.contains("procent-modal-overlay") ||
+			e.target.classList.contains("order-type-container-overlay") ||
+			e.target.classList.contains("dostawa-modal-overlay")
 		) {
 			setShowMenuItemsModal(false);
+			setShowProcentModal(false);
+			setShowWynosModal(false);
+			setShowDostawaModal(false);
 		}
 	};
 
@@ -670,20 +702,22 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 								<li key={item.uniqueId}>
 									{item.name} - {item.price ? item.price : 0} zł x{" "}
 									{item.quantity} =
-									{(
-										((item.price || 0) +
-											(item.extras
-												? item.extras.reduce(
-														(sum, extra) =>
-															extra.category === "Dod"
-																? sum + extra.price
-																: sum,
-														0
-												  )
-												: 0)) *
-										item.quantity
-									).toFixed(2)}{" "}
-									zł
+									<span className="final-amount">
+										{(
+											((item.price || 0) +
+												(item.extras
+													? item.extras.reduce(
+															(sum, extra) =>
+																extra.category === "Dod"
+																	? sum + extra.price
+																	: sum,
+															0
+													  )
+													: 0)) *
+											item.quantity
+										).toFixed(2)}{" "}
+										zł
+									</span>
 									<Dodatki
 										selectedItemId={item.id}
 										selectedItems={selectedItems}
@@ -707,6 +741,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 									<button onClick={() => handleItemSelect(item)}>+</button>
 								</li>
 							))}
+
 							{napoj && (
 								<li>
 									{napoj.name} - {napoj.price} zł
@@ -836,11 +871,12 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 						<div className="payment-modal">
 							<PaymentManager
 								selectedItems={selectedItems}
-								removedItems={removedItems} // Nowa linia, dodająca usunięte produkty
+								removedItems={removedItems}
 								adjustedTotalAmount={calculateAdjustedTotal()}
 								onClose={handlePaymentComplete}
 								tableName={currentTableName}
 								discountAmount={discountAmount}
+								calculateAdjustedTotal={calculateAdjustedTotal}
 								serviceCharge={serviceCharge}
 								adjustments={adjustments}
 								addToBill={adjustments.addToBill}

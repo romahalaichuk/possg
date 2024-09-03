@@ -1,21 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Modal.css";
 
 const Modal = ({ open, onClose, onConfirm }) => {
 	const [tableName, setTableName] = useState("");
+	const inputRef = useRef(null);
+
+	useEffect(() => {
+		if (open) {
+			inputRef.current.focus();
+		}
+	}, [open]);
 
 	const handleChange = (e) => {
-		setTableName(e.target.value);
+		const inputValue = e.target.value;
+		const capitalizedValue =
+			inputValue.charAt(0).toUpperCase() + inputValue.slice(1);
+		setTableName(capitalizedValue);
 	};
 
 	const handleSubmit = () => {
 		onConfirm(tableName);
 	};
 
+	const handleKeyDown = (e) => {
+		if (e.key === "Enter") {
+			handleSubmit();
+		}
+	};
+
+	const handleOverlayClick = (e) => {
+		if (e.target === e.currentTarget) {
+			onClose();
+		}
+	};
+
 	if (!open) return null;
 
 	return (
-		<div className="modal-overlay">
+		<div className="modal-overlay" onClick={handleOverlayClick}>
 			<div className="modal">
 				<button className="close-button" onClick={onClose}>
 					×
@@ -25,7 +47,9 @@ const Modal = ({ open, onClose, onConfirm }) => {
 					type="text"
 					value={tableName}
 					onChange={handleChange}
+					onKeyDown={handleKeyDown}
 					placeholder="Nazwa stolika"
+					ref={inputRef}
 				/>
 				<div className="modal-buttons">
 					<button onClick={handleSubmit}>Zatwierdź</button>

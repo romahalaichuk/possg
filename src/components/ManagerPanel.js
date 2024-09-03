@@ -83,7 +83,7 @@ const ManagerPanel = ({ onClose }) => {
 		yOffset += 15;
 
 		doc.setFontSize(10);
-		doc.text(`SALA UTARG: ${totalSales} PLN`, 20, yOffset);
+		doc.text(`LĄCZNIE SALA UTARG: ${totalSales} PLN`, 20, yOffset);
 		yOffset += 10;
 		doc.text(`Łączna kwota gotówki: ${totalCash} PLN`, 20, yOffset);
 		yOffset += 10;
@@ -270,7 +270,8 @@ const ManagerPanel = ({ onClose }) => {
 					<h2>Panel Managera</h2>
 					<div className="manager-info">
 						<div className="info-item">
-							<strong>SALA UTARG:</strong> {calculateTotals().totalSales} PLN
+							<strong>LĄCZNIE SALA UTARG:</strong>{" "}
+							{calculateTotals().totalSales} PLN
 						</div>
 						<div className="info-item">
 							<strong>Łączna kwota gotówki:</strong>{" "}
