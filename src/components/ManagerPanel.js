@@ -48,20 +48,38 @@ const ManagerPanel = ({ onClose }) => {
 	};
 
 	const calculateTotals = () => {
+		// Oblicz całkowitą kwotę gotówki
 		const totalCash = paymentDetails
 			.filter((p) => p.paymentType === "GOTÓWA")
 			.reduce((total, p) => total + parseFloat(p.finalAmount || 0), 0);
 
+		// Oblicz całkowitą kwotę kartą
 		const totalCard = paymentDetails
 			.filter((p) => p.paymentType === "KARTA")
 			.reduce((total, p) => total + parseFloat(p.finalAmount || 0), 0);
 
+		// Łączna sprzedaż
 		const totalSales = totalCash + totalCard;
+
+		// Oblicz całkowite opłaty serwisowe
+		const totalServiceCharges = paymentDetails.reduce(
+			(total, p) => total + parseFloat(p.serviceCharge || 0),
+			0
+		);
+
+		// Oblicz ŁĄCZNIE SALA UTARG
+		const netTotalSales = totalSales;
+
+		// Oblicz SALA UTARG
+		const salaUtarg = netTotalSales - totalServiceCharges;
 
 		return {
 			totalCash: formatCurrency(totalCash),
 			totalCard: formatCurrency(totalCard),
 			totalSales: formatCurrency(totalSales),
+			totalServiceCharges: formatCurrency(totalServiceCharges),
+			netTotalSales: formatCurrency(netTotalSales),
+			salaUtarg: formatCurrency(salaUtarg),
 		};
 	};
 
@@ -72,7 +90,13 @@ const ManagerPanel = ({ onClose }) => {
 			currentDate.getMonth() + 1
 		}-${currentDate.getFullYear()}`;
 		let yOffset = 10;
-		const { totalCash, totalCard, totalSales } = calculateTotals();
+		const {
+			totalCash,
+			totalCard,
+			totalServiceCharges,
+			netTotalSales,
+			salaUtarg,
+		} = calculateTotals();
 
 		doc.addFileToVFS("custom-font.ttf", customFont.regular.base64);
 		doc.addFont("custom-font.ttf", "customFont", "normal");
@@ -83,12 +107,19 @@ const ManagerPanel = ({ onClose }) => {
 		yOffset += 15;
 
 		doc.setFontSize(10);
-		doc.text(`LĄCZNIE SALA UTARG: ${totalSales} PLN`, 20, yOffset);
+		doc.text(`SALA UTARG: ${salaUtarg} PLN`, 20, yOffset);
+		yOffset += 10;
+		doc.text(`ŁĄCZNIE SALA UTARG: ${netTotalSales} PLN`, 20, yOffset);
 		yOffset += 10;
 		doc.text(`Łączna kwota gotówki: ${totalCash} PLN`, 20, yOffset);
 		yOffset += 10;
 		doc.text(`Łączna kwota kartą: ${totalCard} PLN`, 20, yOffset);
 		yOffset += 10;
+
+		if (totalServiceCharges > 0) {
+			doc.text(`Serwisy: ${totalServiceCharges} PLN`, 20, yOffset);
+			yOffset += 10;
+		}
 
 		doc.setFontSize(10);
 		doc.text("Szczegóły płatności:", 20, yOffset);
@@ -270,8 +301,12 @@ const ManagerPanel = ({ onClose }) => {
 					<h2>Panel Managera</h2>
 					<div className="manager-info">
 						<div className="info-item">
+							<strong>SALA UTARG:</strong> {calculateTotals().salaUtarg} PLN
+						</div>
+
+						<div className="info-item">
 							<strong>LĄCZNIE SALA UTARG:</strong>{" "}
-							{calculateTotals().totalSales} PLN
+							{calculateTotals().netTotalSales} PLN
 						</div>
 						<div className="info-item">
 							<strong>Łączna kwota gotówki:</strong>{" "}
@@ -281,6 +316,13 @@ const ManagerPanel = ({ onClose }) => {
 							<strong>Łączna kwota kartą:</strong> {calculateTotals().totalCard}{" "}
 							PLN
 						</div>
+						{calculateTotals().totalServiceCharges > 0 && (
+							<div className="info-item">
+								<strong>Serwisy:</strong>{" "}
+								{calculateTotals().totalServiceCharges} PLN
+							</div>
+						)}
+
 						<div className="info-item">
 							<strong>Szczegóły płatności:</strong>
 							<ul>
