@@ -93,7 +93,12 @@
 .manager-panel .table-toggle:hover {
 	color: #0056b3;
 }
-
+.info-item .sala-utarg {
+	border: 2px solid black;
+	padding: 5px;
+	font-weight: bold;
+	font-size: 30px;
+}
 .manager-info ul ul {
 	margin-left: 20px;
 }

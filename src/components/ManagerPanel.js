@@ -48,29 +48,23 @@ const ManagerPanel = ({ onClose }) => {
 	};
 
 	const calculateTotals = () => {
-		// Oblicz całkowitą kwotę gotówki
 		const totalCash = paymentDetails
 			.filter((p) => p.paymentType === "GOTÓWA")
 			.reduce((total, p) => total + parseFloat(p.finalAmount || 0), 0);
 
-		// Oblicz całkowitą kwotę kartą
 		const totalCard = paymentDetails
 			.filter((p) => p.paymentType === "KARTA")
 			.reduce((total, p) => total + parseFloat(p.finalAmount || 0), 0);
 
-		// Łączna sprzedaż
 		const totalSales = totalCash + totalCard;
 
-		// Oblicz całkowite opłaty serwisowe
 		const totalServiceCharges = paymentDetails.reduce(
 			(total, p) => total + parseFloat(p.serviceCharge || 0),
 			0
 		);
 
-		// Oblicz ŁĄCZNIE SALA UTARG
 		const netTotalSales = totalSales;
 
-		// Oblicz SALA UTARG
 		const salaUtarg = netTotalSales - totalServiceCharges;
 
 		return {
@@ -98,17 +92,31 @@ const ManagerPanel = ({ onClose }) => {
 			salaUtarg,
 		} = calculateTotals();
 
+		// Dodajemy czcionkę i ustawiamy ją
 		doc.addFileToVFS("custom-font.ttf", customFont.regular.base64);
 		doc.addFont("custom-font.ttf", "customFont", "normal");
 		doc.setFont("customFont");
 
+		// Dodajemy tekst do dokumentu PDF
 		doc.setFontSize(12);
 		doc.text("Panel Managera", 20, yOffset);
 		yOffset += 15;
 
+		const salaUtargText = `SALA UTARG: ${salaUtarg} PLN`;
+		const textWidth = doc.getTextWidth(salaUtargText);
+		const textHeight = 10;
+
+		doc.setFontSize(14);
+		doc.setFont("customFont", "bold");
+		doc.text(salaUtargText, 20, yOffset);
+
+		doc.setDrawColor(0, 0, 0);
+		doc.rect(20 - 2, yOffset - textHeight - 2, textWidth + 4, textHeight + 4);
+
+		yOffset += 15;
+
 		doc.setFontSize(10);
-		doc.text(`SALA UTARG: ${salaUtarg} PLN`, 20, yOffset);
-		yOffset += 10;
+		doc.setFont("customFont", "normal");
 		doc.text(`ŁĄCZNIE SALA UTARG: ${netTotalSales} PLN`, 20, yOffset);
 		yOffset += 10;
 		doc.text(`Łączna kwota gotówki: ${totalCash} PLN`, 20, yOffset);
@@ -122,6 +130,20 @@ const ManagerPanel = ({ onClose }) => {
 		}
 
 		doc.setFontSize(10);
+		doc.text(
+			`Ilość stolików: ${
+				Object.keys(
+					paymentDetails.reduce((acc, detail) => {
+						acc[detail.tableName] = true;
+						return acc;
+					}, {})
+				).length
+			}`,
+			20,
+			yOffset
+		);
+		yOffset += 10;
+
 		doc.text("Szczegóły płatności:", 20, yOffset);
 		yOffset += 10;
 
@@ -130,6 +152,8 @@ const ManagerPanel = ({ onClose }) => {
 			acc[detail.tableName].push(detail);
 			return acc;
 		}, {});
+
+		let rowNumber = 1; // Numeracja wierszy
 
 		Object.keys(tablesData).forEach((tableName) => {
 			const details = tablesData[tableName];
@@ -143,6 +167,7 @@ const ManagerPanel = ({ onClose }) => {
 				startY: yOffset,
 				head: [
 					[
+						"Lp.", // Numeracja wierszy
 						"Stolik",
 						"Kwota",
 						"Płatność",
@@ -160,6 +185,7 @@ const ManagerPanel = ({ onClose }) => {
 				body: details.flatMap((detail) =>
 					detail.selectedItems
 						.map((item) => [
+							rowNumber++, // Numeracja wierszy
 							tableName,
 							formatCurrency(parseFloat(detail.totalAmount || 0)),
 							detail.paymentType,
@@ -183,6 +209,7 @@ const ManagerPanel = ({ onClose }) => {
 						])
 						.concat(
 							detail.removedItems?.map((item) => [
+								rowNumber++, // Numeracja wierszy
 								tableName,
 								"",
 								"",
@@ -206,6 +233,10 @@ const ManagerPanel = ({ onClose }) => {
 					fontSize: 6,
 					cellPadding: 2,
 					overflow: "linebreak",
+					font: "customFont",
+				},
+				headStyles: {
+					font: "customFont",
 				},
 				columnStyles: {
 					0: {
@@ -301,7 +332,8 @@ const ManagerPanel = ({ onClose }) => {
 					<h2>Panel Managera</h2>
 					<div className="manager-info">
 						<div className="info-item">
-							<strong>SALA UTARG:</strong> {calculateTotals().salaUtarg} PLN
+							<strong className="sala-utarg">SALA UTARG:</strong>{" "}
+							{calculateTotals().salaUtarg} PLN
 						</div>
 
 						<div className="info-item">
@@ -323,6 +355,17 @@ const ManagerPanel = ({ onClose }) => {
 							</div>
 						)}
 
+						<div className="info-item">
+							<strong>Ilość stolików:</strong>{" "}
+							{
+								Object.keys(
+									paymentDetails.reduce((acc, detail) => {
+										acc[detail.tableName] = true;
+										return acc;
+									}, {})
+								).length
+							}
+						</div>
 						<div className="info-item">
 							<strong>Szczegóły płatności:</strong>
 							<ul>
