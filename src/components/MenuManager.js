@@ -375,21 +375,31 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 		setSelectedItems(updatedItems);
 		updateSelectedItems(tableName, updatedItems);
 	};
-
 	const handleAddExtra = (itemId, extra) => {
-		const updatedItems = selectedItems.map((item) =>
-			item.id === itemId
-				? {
+		const updatedItems = selectedItems.map((item) => {
+			if (item.id === itemId) {
+				if (extra.category === "Pizza") {
+					const maxPrice = Math.max(item.price, extra.price);
+
+					return {
+						...item,
+						extras: [...(item.extras || []), { ...extra, price: 0 }],
+						price: maxPrice,
+					};
+				} else {
+					return {
 						...item,
 						extras: [...(item.extras || []), extra],
-						price: item.price < extra.price ? extra.price : item.price,
-				  }
-				: item
-		);
+					};
+				}
+			}
+			return item;
+		});
 		setSelectedItems(updatedItems);
 		updateSelectedItems(tableName, updatedItems);
 		calculateTotalPrice();
 	};
+
 	const handleAddComment = (comment) => {
 		if (selectedItems.length > 0) {
 			const updatedItems = selectedItems.map((item) =>
@@ -427,7 +437,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			const addedTime = new Date().toLocaleTimeString([], {
 				hour: "2-digit",
 				minute: "2-digit",
-			}); // Zapisz czas dodania produktu w formacie HH:MM
+			});
 			updatedItems = [
 				...selectedItems,
 				{
@@ -435,7 +445,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					uniqueId: generateUniqueId(),
 					quantity: 1,
 					originalId: product.id,
-					addedTime: addedTime, // Dodaj czas jako nowy atrybut
+					addedTime: addedTime,
 				},
 			];
 		}
@@ -479,17 +489,17 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 	};
 
 	const handleRozliczClick = () => {
-		const currentTime = new Date().toISOString(); // Uzyskaj aktualny czas
+		const currentTime = new Date().toISOString();
 
 		const orderDetails = {
 			tableName: currentTableName,
 			selectedItems,
 			totalPrice,
 			adjustments,
-			orderTime: currentTime, // Dodaj czas złożenia zamówienia
+			orderTime: currentTime,
 		};
 
-		localStorage.setItem(`order_${tableName}`, JSON.stringify(orderDetails)); // Zapisz zamówienie do localStorage
+		localStorage.setItem(`order_${tableName}`, JSON.stringify(orderDetails));
 
 		setShowPaymentModal(true);
 	};
