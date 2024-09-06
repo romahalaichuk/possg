@@ -148,7 +148,7 @@
 }
 
 .manager-panel-button {
-	position: absolute;
+	margin-top: 65px;
 	top: 10px;
 	right: 10px;
 	z-index: 100;

@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import "./TableManager.css";
 import Table from "./Table";
 import Modal from "./Modal";
+import WaiterProfileManager from "./WaiterProfileManager";
 import MenuManager from "./MenuManager";
 import WynosListModal from "./WynosListModal";
 import ManagerPanel from "./ManagerPanel";
 import Dostawa from "./Dostawa";
-
+const TABLES_BY_PROFILE_KEY = "tablesByProfile";
 const TABLES_STORAGE_KEY = "tables";
 const WYNOS_TABLES_STORAGE_KEY = "wynosTables";
 const MANAGER_PANEL_STATE_KEY = "managerPanelOpen";
@@ -39,7 +40,16 @@ const initializeWynosTables = () => {
 const saveDataToLocalStorage = (key, data) => {
 	localStorage.setItem(key, JSON.stringify(data));
 };
-
+const saveTablesToLocalStorage = (profileId, tables) => {
+	localStorage.setItem(
+		`${TABLES_BY_PROFILE_KEY}_${profileId}`,
+		JSON.stringify(tables)
+	);
+};
+const loadTablesFromLocalStorage = (profileId) => {
+	const data = localStorage.getItem(`${TABLES_BY_PROFILE_KEY}_${profileId}`);
+	return data ? JSON.parse(data) : [];
+};
 const loadDataFromLocalStorage = (key) => {
 	const data = localStorage.getItem(key);
 	return data ? JSON.parse(data) : null;
@@ -52,6 +62,7 @@ const TableManager = () => {
 	const [menuManagerOpen, setMenuManagerOpen] = useState(false);
 	const [wynosModalOpen, setWynosModalOpen] = useState(false);
 	const [selectedTableId, setSelectedTableId] = useState(null);
+	const [selectedProfile, setSelectedProfile] = useState(null);
 	const [isWynos, setIsWynos] = useState(false);
 	const [managerPanelOpen, setManagerPanelOpen] = useState(false);
 
@@ -79,7 +90,23 @@ const TableManager = () => {
 			setManagerPanelOpen(storedManagerPanelState === "true");
 		}
 	}, []);
-
+	useEffect(() => {
+		if (selectedProfile) {
+			const storedTables = loadTablesFromLocalStorage(selectedProfile.id);
+			if (storedTables.length > 0) {
+				setTables(storedTables);
+			} else {
+				const initialTables = Array.from({ length: 30 }, (_, index) => ({
+					id: index + 1,
+					name: `Table ${index + 1}`,
+					status: "free",
+					products: [],
+				}));
+				setTables(initialTables);
+				saveTablesToLocalStorage(selectedProfile.id, initialTables);
+			}
+		}
+	}, [selectedProfile]);
 	const handleTableClick = (tableId) => {
 		if (tableId === 0) {
 			setWynosModalOpen(true);
@@ -118,9 +145,11 @@ const TableManager = () => {
 			saveDataToLocalStorage(WYNOS_TABLES_STORAGE_KEY, updatedTables);
 		} else {
 			setTables(updatedTables);
+			saveTablesToLocalStorage(selectedProfile.id, updatedTables);
 			saveDataToLocalStorage(TABLES_STORAGE_KEY, updatedTables);
 		}
-
+		setTables(updatedTables);
+		saveTablesToLocalStorage(selectedProfile.id, updatedTables);
 		setModalOpen(false);
 		setMenuManagerOpen(true);
 	};
@@ -188,6 +217,7 @@ const TableManager = () => {
 			saveDataToLocalStorage(WYNOS_TABLES_STORAGE_KEY, updatedTables);
 		} else {
 			setTables(updatedTables);
+			saveTablesToLocalStorage(selectedProfile.id, updatedTables);
 			saveDataToLocalStorage(TABLES_STORAGE_KEY, updatedTables);
 		}
 	};
@@ -216,6 +246,7 @@ const TableManager = () => {
 			saveDataToLocalStorage(WYNOS_TABLES_STORAGE_KEY, updatedTables);
 		} else {
 			setTables(updatedTables);
+			saveTablesToLocalStorage(selectedProfile.id, updatedTables);
 			saveDataToLocalStorage(TABLES_STORAGE_KEY, updatedTables);
 		}
 	};
@@ -226,18 +257,24 @@ const TableManager = () => {
 
 	return (
 		<div className="table-manager">
-			<div className="table-grid">
-				{tables.map((table) => (
-					<Table
-						key={table.id}
-						id={table.id}
-						name={table.name}
-						status={table.status}
-						products={table.products}
-						onTableClick={handleTableClick}
-					/>
-				))}
-			</div>
+			<WaiterProfileManager onProfileSelect={setSelectedProfile} />
+			{selectedProfile && (
+				<>
+					<h2>{selectedProfile.name}'s Tables</h2>
+					<div className="table-grid">
+						{tables.map((table) => (
+							<Table
+								key={table.id}
+								id={table.id}
+								name={table.name}
+								status={table.status}
+								products={table.products}
+								onTableClick={handleTableClick}
+							/>
+						))}
+					</div>
+				</>
+			)}
 			<button className="manager-panel-button" onClick={toggleManagerPanel}>
 				Manager Panel
 			</button>
