@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./WaiterProfileManager.css";
 
 const WAITER_PROFILES_STORAGE_KEY = "waiterProfiles";
+const TABLES_STORAGE_KEY = "tablesByProfile";
 
 const getRandomColor = () => {
 	const letters = "0123456789ABCDEF";
@@ -21,6 +22,19 @@ const loadProfilesFromLocalStorage = () => {
 	return data ? JSON.parse(data) : [];
 };
 
+const saveTablesToLocalStorage = (profileId, tables) => {
+	const storedTables =
+		JSON.parse(localStorage.getItem(TABLES_STORAGE_KEY)) || {};
+	storedTables[profileId] = tables;
+	localStorage.setItem(TABLES_STORAGE_KEY, JSON.stringify(storedTables));
+};
+
+const loadTablesFromLocalStorage = (profileId) => {
+	const storedTables =
+		JSON.parse(localStorage.getItem(TABLES_STORAGE_KEY)) || {};
+	return storedTables[profileId] || [];
+};
+
 const WaiterProfileManager = ({ onProfileSelect }) => {
 	const [profiles, setProfiles] = useState([]);
 	const [newProfileName, setNewProfileName] = useState("");
@@ -28,6 +42,15 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 	useEffect(() => {
 		const storedProfiles = loadProfilesFromLocalStorage();
 		setProfiles(storedProfiles);
+
+		const activeTables = {};
+		storedProfiles.forEach((profile) => {
+			const tables = loadTablesFromLocalStorage(profile.id);
+			const activeCount = tables.filter(
+				(table) => table.status === "occupied"
+			).length;
+			activeTables[profile.id] = activeCount;
+		});
 	}, []);
 
 	const handleAddProfile = () => {
@@ -42,7 +65,19 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 		const updatedProfiles = [...profiles, newProfile];
 		setProfiles(updatedProfiles);
 		saveProfilesToLocalStorage(updatedProfiles);
+
+		// Inicjalizujemy pustą listę stolików dla nowego profilu
+		saveTablesToLocalStorage(newProfile.id, []);
 		setNewProfileName("");
+	};
+
+	// Funkcja obsługująca przypisanie stolików do profilu
+	const handleProfileSelect = (profile) => {
+		onProfileSelect(profile);
+
+		// Załaduj przypisane stoliki dla wybranego profilu
+		const tables = loadTablesFromLocalStorage(profile.id);
+		console.log(`Stoliki dla profilu ${profile.name}:`, tables);
 	};
 
 	return (
@@ -63,9 +98,8 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 						key={profile.id}
 						className="profile-card"
 						style={{ backgroundColor: profile.color }}
-						onClick={() => onProfileSelect(profile)}>
+						onClick={() => handleProfileSelect(profile)}>
 						<div>{profile.name}</div>
-						<div className="unsettled-tables">Nierozliczone stoliki: 0</div>
 					</div>
 				))}
 			</div>

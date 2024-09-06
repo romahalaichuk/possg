@@ -260,7 +260,9 @@ const TableManager = () => {
 			<WaiterProfileManager onProfileSelect={setSelectedProfile} />
 			{selectedProfile && (
 				<>
-					<h2>{selectedProfile.name}'s Tables</h2>
+					<h2 className="waitingprof">
+						Stoliki kelnera {selectedProfile.name}
+					</h2>
 					<div className="table-grid">
 						{tables.map((table) => (
 							<Table
