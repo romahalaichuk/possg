@@ -46,7 +46,7 @@ const ManagerPanel = ({ onClose }) => {
 
 		return { ...summary, ...removedSummary };
 	};
-
+	const WAITER_PROFILES_STORAGE_KEY = "waiterProfiles";
 	const calculateTotals = () => {
 		const totalCash = paymentDetails
 			.filter((p) => p.paymentType === "GOTÓWA")
@@ -76,7 +76,6 @@ const ManagerPanel = ({ onClose }) => {
 			salaUtarg: formatCurrency(salaUtarg),
 		};
 	};
-
 	const handleExportToPDF = () => {
 		const doc = new jsPDF();
 		const currentDate = new Date();
@@ -92,12 +91,10 @@ const ManagerPanel = ({ onClose }) => {
 			salaUtarg,
 		} = calculateTotals();
 
-		// Dodajemy czcionkę i ustawiamy ją
 		doc.addFileToVFS("custom-font.ttf", customFont.regular.base64);
 		doc.addFont("custom-font.ttf", "customFont", "normal");
 		doc.setFont("customFont");
 
-		// Dodajemy tekst do dokumentu PDF
 		doc.setFontSize(12);
 		doc.text("Panel Managera", 20, yOffset);
 		yOffset += 15;
@@ -130,20 +127,6 @@ const ManagerPanel = ({ onClose }) => {
 		}
 
 		doc.setFontSize(10);
-		doc.text(
-			`Ilość stolików: ${
-				Object.keys(
-					paymentDetails.reduce((acc, detail) => {
-						acc[detail.tableName] = true;
-						return acc;
-					}, {})
-				).length
-			}`,
-			20,
-			yOffset
-		);
-		yOffset += 10;
-
 		doc.text("Szczegóły płatności:", 20, yOffset);
 		yOffset += 10;
 
@@ -152,8 +135,6 @@ const ManagerPanel = ({ onClose }) => {
 			acc[detail.tableName].push(detail);
 			return acc;
 		}, {});
-
-		let rowNumber = 1; // Numeracja wierszy
 
 		Object.keys(tablesData).forEach((tableName) => {
 			const details = tablesData[tableName];
@@ -167,7 +148,6 @@ const ManagerPanel = ({ onClose }) => {
 				startY: yOffset,
 				head: [
 					[
-						"Lp.", // Numeracja wierszy
 						"Stolik",
 						"Kwota",
 						"Płatność",
@@ -185,7 +165,6 @@ const ManagerPanel = ({ onClose }) => {
 				body: details.flatMap((detail) =>
 					detail.selectedItems
 						.map((item) => [
-							rowNumber++, // Numeracja wierszy
 							tableName,
 							formatCurrency(parseFloat(detail.totalAmount || 0)),
 							detail.paymentType,
@@ -209,7 +188,6 @@ const ManagerPanel = ({ onClose }) => {
 						])
 						.concat(
 							detail.removedItems?.map((item) => [
-								rowNumber++, // Numeracja wierszy
 								tableName,
 								"",
 								"",
@@ -286,6 +264,7 @@ const ManagerPanel = ({ onClose }) => {
 			setIsClosing(true);
 			setTimeout(() => {
 				localStorage.clear();
+				localStorage.removeItem(WAITER_PROFILES_STORAGE_KEY);
 				setPaymentDetails([]);
 			}, 3000);
 		}, 3000);
@@ -355,17 +334,6 @@ const ManagerPanel = ({ onClose }) => {
 							</div>
 						)}
 
-						<div className="info-item">
-							<strong>Ilość stolików:</strong>{" "}
-							{
-								Object.keys(
-									paymentDetails.reduce((acc, detail) => {
-										acc[detail.tableName] = true;
-										return acc;
-									}, {})
-								).length
-							}
-						</div>
 						<div className="info-item">
 							<strong>Szczegóły płatności:</strong>
 							<ul>
