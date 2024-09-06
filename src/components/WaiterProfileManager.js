@@ -71,11 +71,9 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 		setNewProfileName("");
 	};
 
-	// Funkcja obsługująca przypisanie stolików do profilu
 	const handleProfileSelect = (profile) => {
 		onProfileSelect(profile);
 
-		// Załaduj przypisane stoliki dla wybranego profilu
 		const tables = loadTablesFromLocalStorage(profile.id);
 		console.log(`Stoliki dla profilu ${profile.name}:`, tables);
 	};
@@ -83,6 +81,7 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 	return (
 		<div className="waiter-profile-manager">
 			<div className="add-waiter">
+				{" "}
 				<input
 					type="text"
 					placeholder="Nazwa kelnera"

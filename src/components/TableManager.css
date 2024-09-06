@@ -99,39 +99,11 @@
 	background-color: #0056b3;
 }
 .waitingprof {
-	width: 380px;
 	height: 80px;
-	background: rgba(255, 255, 255, 0.8); /* Lekko przezroczyste tło */
-	border-radius: 8px; /* Większe zaokrąglenie rogów */
+	background-color: #f0f0f0;
+	border-radius: 4px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-	backdrop-filter: blur(10px); /* Efekt rozmycia tła za elementem */
-	border: 1px solid rgba(0, 0, 0, 0.1);
-	animation: pulse 2s infinite; /* Animacja pulsowania */
-
-	/* Stylizacja nagłówka h2 */
-	font-size: 2em;
-	color: #333;
-	margin: 0;
-	font-weight: 700;
-	text-shadow: 1px 1px 0 #ccc, 2px 2px 0 #bbb, 3px 3px 0 #aaa, 4px 4px 0 #999,
-		5px 5px 0 #888;
-	line-height: 1.2;
-}
-
-@keyframes pulse {
-	0% {
-		transform: scale(1);
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-	}
-	50% {
-		transform: scale(1.05);
-		box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-	}
-	100% {
-		transform: scale(1);
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-	}
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
