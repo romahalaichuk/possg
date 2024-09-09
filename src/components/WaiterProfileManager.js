@@ -38,6 +38,7 @@ const loadTablesFromLocalStorage = (profileId) => {
 const WaiterProfileManager = ({ onProfileSelect }) => {
 	const [profiles, setProfiles] = useState([]);
 	const [newProfileName, setNewProfileName] = useState("");
+	const [activeProfileId, setActiveProfileId] = useState(null);
 
 	useEffect(() => {
 		const storedProfiles = loadProfilesFromLocalStorage();
@@ -66,13 +67,13 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 		setProfiles(updatedProfiles);
 		saveProfilesToLocalStorage(updatedProfiles);
 
-		// Inicjalizujemy pustą listę stolików dla nowego profilu
 		saveTablesToLocalStorage(newProfile.id, []);
 		setNewProfileName("");
 	};
 
 	const handleProfileSelect = (profile) => {
 		onProfileSelect(profile);
+		setActiveProfileId(profile.id);
 
 		const tables = loadTablesFromLocalStorage(profile.id);
 		console.log(`Stoliki dla profilu ${profile.name}:`, tables);
@@ -81,7 +82,6 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 	return (
 		<div className="waiter-profile-manager">
 			<div className="add-waiter">
-				{" "}
 				<input
 					type="text"
 					placeholder="Nazwa kelnera"
@@ -95,7 +95,9 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 				{profiles.map((profile) => (
 					<div
 						key={profile.id}
-						className="profile-card"
+						className={`profile-card ${
+							profile.id === activeProfileId ? "active" : "inactive"
+						}`}
 						style={{ backgroundColor: profile.color }}
 						onClick={() => handleProfileSelect(profile)}>
 						<div>{profile.name}</div>

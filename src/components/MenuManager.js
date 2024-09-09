@@ -168,11 +168,6 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					modalRef.current &&
 					!modalRef.current.contains(e.target) &&
 					overlayRef.current &&
-					!overlayRef.current.contains(e.target)) ||
-				(showDostawaModal &&
-					modalRef.current &&
-					!modalRef.current.contains(e.target) &&
-					overlayRef.current &&
 					!overlayRef.current.contains(e.target))
 			) {
 				setShowMenuItemsModal(false);
