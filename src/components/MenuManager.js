@@ -24,7 +24,13 @@ const categories = [
 	"Kawa",
 ];
 
-const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
+const MenuManager = ({
+	tableName,
+	onClose,
+	waiterName,
+	onAddProduct,
+	resetTable,
+}) => {
 	const [minutesToPickup, setMinutesToPickup] = useState("");
 	const [pickupTime, setPickupTime] = useState("");
 	const [customPickupTime, setCustomPickupTime] = useState("");
@@ -644,7 +650,9 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 			<div className={`menu-manager-overlay ${tableStatus}`} ref={overlayRef}>
 				<div className="menu-manager" ref={modalRef}>
 					<div className="menu-header">
-						<h2>{currentTableName}</h2>
+						<h2>
+							{currentTableName} - Kelner: {waiterName}
+						</h2>
 					</div>
 					<div className="category-buttons">
 						{categories.map((category) => (
@@ -854,6 +862,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 						)}
 
 						<Print
+							waiterName={waiterName}
 							selectedItems={selectedItems}
 							tableName={tableName}
 							pickupTime={pickupTime}
@@ -875,6 +884,7 @@ const MenuManager = ({ tableName, onClose, onAddProduct, resetTable }) => {
 					{showPaymentModal && (
 						<div className="payment-modal">
 							<PaymentManager
+								waiterName={waiterName}
 								selectedItems={selectedItems}
 								removedItems={removedItems}
 								adjustedTotalAmount={calculateAdjustedTotal()}

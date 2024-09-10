@@ -461,7 +461,7 @@ export const products = [
 		category: "Makaron",
 	},
 	{
-		id: 269,
+		id: 317,
 		name: "Tagliatelle Gambaretti",
 		price: 45.9,
 		category: "Makaron",
@@ -727,7 +727,7 @@ export const products = [
 		category: "Piwo",
 	},
 	{
-		id: 268,
+		id: 318,
 		name: "Książęce IPA Piwo ",
 		price: 15.9,
 		category: "Piwo",
@@ -877,5 +877,5 @@ export const products = [
 	},
 	{ id: 309, name: "Krem zupa sezonowa", price: 23.9, category: "sałatki" },
 ];
-// id 317 start
+// id 318 start
 // { id: 242, name: "Sałatka Letnia", price: 18, category: "Menu sezonowe" },

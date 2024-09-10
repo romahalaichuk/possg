@@ -12,12 +12,23 @@ const ManagerPanel = ({ onClose }) => {
 	const [isClosing, setIsClosing] = useState(false);
 	const [showSuccess, setShowSuccess] = useState(false);
 	const modalRef = useRef(null);
+	const [expandedWaiters, setExpandedWaiters] = useState({});
 
+	const toggleWaiterDetails = (waiterName) => {
+		setExpandedWaiters((prev) => ({
+			...prev,
+			[waiterName]: !prev[waiterName],
+		}));
+	};
 	useEffect(() => {
 		const storedPaymentDetails =
 			JSON.parse(localStorage.getItem("paymentDetails")) || [];
 		setPaymentDetails(storedPaymentDetails);
 	}, []);
+	const countUniqueTables = () => {
+		const tableNames = paymentDetails.map((detail) => detail.tableName);
+		return new Set(tableNames).size;
+	};
 
 	const formatCurrency = (amount) => {
 		if (typeof amount !== "number") {
@@ -25,6 +36,42 @@ const ManagerPanel = ({ onClose }) => {
 			return "0.00";
 		}
 		return amount.toFixed(2);
+	};
+	const groupByWaiter = () => {
+		const waiterData = {};
+
+		paymentDetails.forEach((detail) => {
+			const waiterName = detail.waiterName || "Nieznany kelner";
+			if (!waiterData[waiterName]) {
+				waiterData[waiterName] = {
+					tables: {},
+					totalAmount: 0,
+					products: {},
+				};
+			}
+			const tableName = detail.tableName;
+			if (!waiterData[waiterName].tables[tableName]) {
+				waiterData[waiterName].tables[tableName] = {
+					totalAmount: 0,
+					items: [],
+				};
+			}
+			waiterData[waiterName].tables[tableName].totalAmount += parseFloat(
+				detail.totalAmount || 0
+			);
+			waiterData[waiterName].totalAmount += parseFloat(detail.totalAmount || 0);
+			waiterData[waiterName].tables[tableName].items.push(
+				...detail.selectedItems
+			);
+
+			// Add to products summary for this waiter
+			detail.selectedItems.forEach((item) => {
+				waiterData[waiterName].products[item.name] =
+					(waiterData[waiterName].products[item.name] || 0) + item.quantity;
+			});
+		});
+
+		return waiterData;
 	};
 
 	const getProductsSummary = () => {
@@ -47,6 +94,7 @@ const ManagerPanel = ({ onClose }) => {
 		return { ...summary, ...removedSummary };
 	};
 	const WAITER_PROFILES_STORAGE_KEY = "waiterProfiles";
+
 	const calculateTotals = () => {
 		const totalCash = paymentDetails
 			.filter((p) => p.paymentType === "GOTÓWA")
@@ -90,6 +138,7 @@ const ManagerPanel = ({ onClose }) => {
 			netTotalSales,
 			salaUtarg,
 		} = calculateTotals();
+		const uniqueTablesCount = countUniqueTables();
 
 		doc.addFileToVFS("custom-font.ttf", customFont.regular.base64);
 		doc.addFont("custom-font.ttf", "customFont", "normal");
@@ -129,6 +178,8 @@ const ManagerPanel = ({ onClose }) => {
 		doc.setFontSize(10);
 		doc.text("Szczegóły płatności:", 20, yOffset);
 		yOffset += 10;
+		doc.text(`Liczba stolików: ${uniqueTablesCount}`, 20, yOffset);
+		yOffset += 10;
 
 		const tablesData = paymentDetails.reduce((acc, detail) => {
 			acc[detail.tableName] = acc[detail.tableName] || [];
@@ -149,6 +200,7 @@ const ManagerPanel = ({ onClose }) => {
 				head: [
 					[
 						"Stolik",
+						"Kelner",
 						"Kwota",
 						"Płatność",
 						"Produkt",
@@ -166,6 +218,7 @@ const ManagerPanel = ({ onClose }) => {
 					detail.selectedItems
 						.map((item) => [
 							tableName,
+							detail.waiterName || "",
 							formatCurrency(parseFloat(detail.totalAmount || 0)),
 							detail.paymentType,
 							item.name,
@@ -189,6 +242,7 @@ const ManagerPanel = ({ onClose }) => {
 						.concat(
 							detail.removedItems?.map((item) => [
 								tableName,
+								detail.waiterName || "",
 								"",
 								"",
 								item.name,
@@ -256,6 +310,15 @@ const ManagerPanel = ({ onClose }) => {
 			doc.text(`${productName}: ${quantity} szt.`, 20, yOffset);
 			yOffset += 10;
 		});
+
+		if (yOffset > 260) {
+			doc.addPage();
+			yOffset = 10;
+		}
+
+		doc.setFontSize(10);
+
+		yOffset += 10;
 
 		doc.save(`panel_managera_${dateString}.pdf`);
 
@@ -336,6 +399,53 @@ const ManagerPanel = ({ onClose }) => {
 
 						<div className="info-item">
 							<strong>Szczegóły płatności:</strong>
+							<p>Ilość stolików: {countUniqueTables()}</p>
+							<div className="info-item">
+								<strong>Kelnerzy:</strong>
+								<ul>
+									{Object.keys(groupByWaiter()).map((waiterName) => (
+										<li key={waiterName}>
+											<button
+												className="waiter-toggle"
+												onClick={() => toggleWaiterDetails(waiterName)}>
+												{expandedWaiters[waiterName] ? "−" : "+"} {waiterName}
+											</button>
+											{expandedWaiters[waiterName] && (
+												<ul>
+													<li>
+														<strong>Łączna kwota:</strong>{" "}
+														{formatCurrency(
+															groupByWaiter()[waiterName].totalAmount
+														)}{" "}
+														PLN
+													</li>
+													{Object.entries(
+														groupByWaiter()[waiterName].tables
+													).map(([tableName, tableDetails]) => (
+														<li key={tableName}>
+															<strong>Stolik: {tableName}</strong>
+															<ul>
+																<li>
+																	Łączna kwota:{" "}
+																	{formatCurrency(tableDetails.totalAmount)} PLN
+																</li>
+																{tableDetails.items.map((item, index) => (
+																	<li key={index}>
+																		Produkt: {item.name}, Ilość: {item.quantity}
+																		, Cena:{" "}
+																		{formatCurrency(item.price * item.quantity)}{" "}
+																		PLN
+																	</li>
+																))}
+															</ul>
+														</li>
+													))}
+												</ul>
+											)}
+										</li>
+									))}
+								</ul>
+							</div>
 							<ul>
 								{paymentDetails.length > 0 ? (
 									Object.keys(
@@ -357,6 +467,7 @@ const ManagerPanel = ({ onClose }) => {
 														.map((detail) => (
 															<li key={detail.tableName + detail.paymentType}>
 																<strong>Stolik: {detail.tableName}</strong>
+																<div>Kelner: {detail.waiterName}</div>
 																<div>
 																	Kwota:{" "}
 																	{formatCurrency(

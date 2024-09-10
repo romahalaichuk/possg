@@ -35,6 +35,10 @@ const loadTablesFromLocalStorage = (profileId) => {
 	return storedTables[profileId] || [];
 };
 
+const capitalizeName = (name) => {
+	return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+};
+
 const WaiterProfileManager = ({ onProfileSelect }) => {
 	const [profiles, setProfiles] = useState([]);
 	const [newProfileName, setNewProfileName] = useState("");
@@ -57,9 +61,11 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 	const handleAddProfile = () => {
 		if (newProfileName.trim() === "") return;
 
+		const formattedName = capitalizeName(newProfileName);
+
 		const newProfile = {
 			id: profiles.length + 1,
-			name: newProfileName,
+			name: formattedName,
 			color: getRandomColor(),
 		};
 
@@ -72,11 +78,14 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 	};
 
 	const handleProfileSelect = (profile) => {
+		console.log("Wybrany profil:", profile);
 		onProfileSelect(profile);
 		setActiveProfileId(profile.id);
+	};
 
-		const tables = loadTablesFromLocalStorage(profile.id);
-		console.log(`Stoliki dla profilu ${profile.name}:`, tables);
+	const handleNameChange = (e) => {
+		const inputValue = e.target.value;
+		setNewProfileName(capitalizeName(inputValue));
 	};
 
 	return (
@@ -86,7 +95,7 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 					type="text"
 					placeholder="Nazwa kelnera"
 					value={newProfileName}
-					onChange={(e) => setNewProfileName(e.target.value)}
+					onChange={handleNameChange}
 				/>
 				<button onClick={handleAddProfile}>Dodaj kelnera</button>
 			</div>

@@ -3,6 +3,7 @@ import "./Print.css";
 
 const Print = ({
 	selectedItems,
+	waiterName,
 	tableName,
 	pickupTime,
 	customPickupTime,
@@ -294,6 +295,7 @@ const Print = ({
 			</div>
 			<div className="dashed-lineee"></div>
 			<h2 style={{ margin: "5px 0" }}>{category}</h2>
+
 			<div className="dashed-linee"></div>
 			{category === "DOSTAWA" && deliveryDetails && (
 				<div style={{ marginBottom: "5px" }}>
@@ -384,7 +386,9 @@ const Print = ({
 					Razem z Pizzą
 				</div>
 			)}
+
 			<div className="table-name">Stolik: {tableName}</div>
+			<h3 className="table-name"> Kelner: {waiterName}</h3>
 			<div className="print-time">{getCurrentDateTime()}</div>
 			{isWynos && <h3 className="wynosh">WYNOS</h3>}
 

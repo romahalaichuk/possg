@@ -5,6 +5,7 @@ import "./PaymentManager.css";
 
 const PaymentManager = ({
 	tableName,
+	waiterName,
 	adjustedTotalAmount,
 	onClose,
 	removedItems = [],
@@ -45,6 +46,7 @@ const PaymentManager = ({
 	const handleFinalizePayment = () => {
 		const paymentDetails = {
 			tableName,
+			waiterName,
 			totalAmount: finalAmount.toFixed(2),
 			discountAmount: discountAmount.toFixed(2),
 			serviceCharge: serviceCharge.toFixed(2),
@@ -96,7 +98,9 @@ const PaymentManager = ({
 					{selectedPaymentType === null ? (
 						<>
 							<p>Stolik: {tableName}</p>
-							<ul>
+							<p>/</p>
+							<p>Kelner: {waiterName}</p>
+							<ul className="item-list">
 								{selectedItems.map((item) => (
 									<li key={item.id}>
 										{item.name} - {item.quantity}x -{" "}
@@ -151,6 +155,7 @@ const PaymentManager = ({
 							onClick={() => handlePaymentTypeClick("GOTÓWA")}>
 							Gotówka
 						</button>
+
 						<button
 							className="button-pay"
 							onClick={() => handlePaymentTypeClick("KARTA")}>

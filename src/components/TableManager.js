@@ -310,6 +310,7 @@ const TableManager = () => {
 			{menuManagerOpen && selectedTable && (
 				<MenuManager
 					tableName={selectedTable.name}
+					waiterName={selectedProfile.name}
 					onClose={handleMenuManagerClose}
 					onAddProduct={handleAddProduct}
 					resetTable={() => resetTable(selectedTable.id)}
