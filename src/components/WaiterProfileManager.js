@@ -122,8 +122,6 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 		<div className="waiter-profile-manager">
 			<div className="add-waiter">
 				<form autoComplete="off">
-					{" "}
-					{/* Dodanie formularza */}
 					<input
 						type="text"
 						placeholder="Nazwa kelnera"
