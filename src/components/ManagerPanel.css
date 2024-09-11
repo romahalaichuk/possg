@@ -160,6 +160,7 @@
 	cursor: pointer;
 	border-radius: 4px;
 	transition: background-color 0.3s ease;
+	z-index: -1;
 }
 
 .manager-panel-button:hover {

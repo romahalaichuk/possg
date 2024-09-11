@@ -20,75 +20,34 @@ const Procent = ({
 	const [isTrzecia, setIsTrzecia] = useState(false);
 	const [showPizzaTrad, setShowPizzaTrad] = useState(true);
 	const [showNapojList, setShowNapojList] = useState(false);
+	const [showBeerPromo, setShowBeerPromo] = useState(false);
 
 	const napoje = [
+		// Lista napojów...
+	];
+
+	const beers = [
 		{
-			id: 1,
-			name: "Coca-Cola 0.85 L",
-			category: "Napój bezalkoholowy pro",
-			price: 0,
-		},
-		{
-			id: 2,
-			name: "Sok JABŁKOWY 1 L",
-			category: "Napój bezalkoholowy pro",
-			price: 0,
-		},
-		{
-			id: 3,
-			name: "Fanta 0.85 L",
-			category: "Napój bezalkoholowy pro",
-			price: 0,
-		},
-		{
-			id: 4,
-			name: "Sprite 0.85 L",
-			category: "Napój bezalkoholowy pro",
-			price: 0,
-		},
-		{
-			id: 5,
-			name: "Sok POMARAŃCZOWY 1 L",
-			category: "Napój bezalkoholowy pro",
-			price: 0,
+			id: 6,
+			name: "Piwo 0.5 L",
+			category: "Piwo",
+			price: 5,
 		},
 	];
 
 	useEffect(() => {
 		const today = new Date().getDay();
 		const isPizzaTradDay = today === 1 || today === 5;
+		setShowPizzaTrad(
+			option === "Wynos" || (option === "Dostawa" && isPizzaTradDay)
+		);
 
-		if (option === "Wynos" || option === "Dostawa" || !isPizzaTradDay) {
-			setShowPizzaTrad(false);
-		} else {
-			setShowPizzaTrad(true);
-		}
-	}, [option]);
-
-	useEffect(() => {
-		const today = new Date().getDay();
 		setIsTrzecia(today === 5 || today === 6);
-	}, []);
-
-	useEffect(() => {
-		const today = new Date().getDay();
 		setIsNapoj(today === 1 || today === 2);
-	}, []);
-
-	useEffect(() => {
-		const today = new Date().getDay();
 		setIsCheeseDay(today === 3 || today === 4);
-	}, []);
-
-	useEffect(() => {
-		const today = new Date().getDay();
 		setIsTanio(today === 1 || today === 4);
-	}, []);
-
-	useEffect(() => {}, [option, isTrzecia]);
-	useEffect(() => {}, [option, isNapoj]);
-	useEffect(() => {}, [option, isCheeseDay]);
-	useEffect(() => {}, [option, isIsTanio]);
+		setShowBeerPromo(today >= 1 && today <= 6);
+	}, [option]);
 
 	const handleSubmit = () => {
 		onSubmit({
@@ -147,6 +106,25 @@ const Procent = ({
 		onClose();
 	};
 
+	const applyBeerPromo = () => {
+		const pizzas = selectedItems.filter(
+			(item) => item.category.toLowerCase() === "pizza"
+		);
+
+		if (pizzas.length > 0) {
+			const beersToAdd = [];
+			for (let i = 0; i < pizzas.length; i++) {
+				beersToAdd.push(beers[0]); // Dodaj 2 piwa do każdego zamówienia pizzy
+				beersToAdd.push(beers[0]);
+			}
+
+			beersToAdd.forEach((beer) => onAddProduct(beer));
+		} else {
+			alert("Proszę dodać pizzę do zamówienia.");
+		}
+		onClose();
+	};
+
 	const renderNapoj = () => {
 		if ((option === "Wynos" || option === "Dostawa") && isNapoj) {
 			return (
@@ -157,6 +135,7 @@ const Procent = ({
 		}
 		return null;
 	};
+
 	const renderPizzaTrad = () => {
 		if (showPizzaTrad) {
 			return (
@@ -165,6 +144,7 @@ const Procent = ({
 		}
 		return null;
 	};
+
 	const renderTrzecia = () => {
 		if ((option === "Wynos" || option === "Dostawa") && isTrzecia) {
 			return (
@@ -189,6 +169,17 @@ const Procent = ({
 			return (
 				<button onClick={handleDiscountAndClose}>
 					Druga pizza(tańsza) – 50%
+				</button>
+			);
+		}
+		return null;
+	};
+
+	const renderBeerPromoButton = () => {
+		if ((option === "Wynos" || option === "Dostawa") && showBeerPromo) {
+			return (
+				<button onClick={applyBeerPromo}>
+					Do każdej pizzy 2 piwa w cenie jednego
 				</button>
 			);
 		}
@@ -240,6 +231,7 @@ const Procent = ({
 			{renderCheeseButton()}
 			{renderTaniejButton()}
 			{renderTrzecia()}
+			{renderBeerPromoButton()}
 			<div className="modal-buttons">
 				<button onClick={handleSubmit}>Zatwierdź</button>
 				<button onClick={onClose}>Zamknij</button>
