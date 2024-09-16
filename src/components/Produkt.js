@@ -817,13 +817,13 @@ export const products = [
 		category: "Piwo",
 	},
 	{
-		id: 312,
+		id: 319,
 		name: "PIWO grzane",
 		price: 19.9,
 		category: "Piwo",
 	},
 	{
-		id: 312,
+		id: 320,
 		name: "WINO grzane",
 		price: 19.9,
 		category: "Piwo",
@@ -889,5 +889,5 @@ export const products = [
 	},
 	{ id: 309, name: "Krem zupa sezonowa", price: 23.9, category: "sałatki" },
 ];
-// id 318 start
+// id 321 start
 // { id: 242, name: "Sałatka Letnia", price: 18, category: "Menu sezonowe" },
