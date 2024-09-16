@@ -816,6 +816,18 @@ export const products = [
 		price: 15.9,
 		category: "Piwo",
 	},
+	{
+		id: 312,
+		name: "PIWO grzane",
+		price: 19.9,
+		category: "Piwo",
+	},
+	{
+		id: 312,
+		name: "WINO grzane",
+		price: 19.9,
+		category: "Piwo",
+	},
 	// BAR>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	{ id: 242, name: "Sałatka z Kozim serem", price: 41.9, category: "sałatki" },
 	{ id: 243, name: "Sałatka Caprese", price: 34.9, category: "sałatki" },
