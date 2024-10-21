@@ -624,7 +624,7 @@ export const products = [
 		category: "Desery",
 	},
 	{ id: 214, name: "Puchar lodowy", price: 20.9, category: "Desery" },
-	{ id: 215, name: "Frizante Casa Burti Flute", price: 75, category: "Wina" },
+	{ id: 215, name: "RizSzante Casa Burti Flute", price: 75, category: "Wina" },
 	{
 		id: 216,
 		name: "Frizante Casa Burti Flute (Kieliszek)",
@@ -853,12 +853,7 @@ export const products = [
 	},
 	{ id: 247, name: "Pizza Mortadella", price: 45.9, category: "pizza" },
 	{ id: 248, name: "Pizza Pollo e spinaci", price: 46.9, category: "pizza" },
-	{
-		id: 249,
-		name: "Ciasto bezowe z musem malinowym",
-		price: 19.9,
-		category: "Desery",
-	},
+
 	{ id: 250, name: "Czerwony Szprycer", price: 29.9, category: "Drinki" },
 	{ id: 251, name: "Zielony Szprycer", price: 29.9, category: "Drinki" },
 	{
@@ -926,10 +921,25 @@ export const products = [
 	},
 	{
 		id: 332,
-		name: "Ciastko bezowe 26.90",
-		price: 19.9,
+		name: "Ciastko bezowe ",
+		price: 26.9,
 		category: "Desery",
 	},
+	{
+		id: 333,
+		name: "Penne Napoli (DLA DZIECI 130 makaronu)",
+		price: 25.9,
+		category: "Desery",
+	},
+	{
+		id: 334,
+		name: "Spaghetti Bolognese (DLA DZIECI 130 makaronu) ",
+		price: 27.9,
+		category: "Desery",
+	},
+	{ id: 335, name: "MINI pizza MARGHARITA", price: 25.9, category: "pizza" },
+	{ id: 336, name: "MINI pizza PROSCIUTTO", price: 28.9, category: "pizza" },
+	{ id: 337, name: "MINI pizza HAWAJSKA", price: 29.9, category: "pizza" },
 ];
 // id 322 start
 // { id: 242, name: "Sałatka Letnia", price: 18, category: "Menu sezonowe" },
