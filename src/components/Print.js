@@ -71,8 +71,8 @@ const Print = ({
                     .product-item {
                         font-size: 11pt;
                         font-weight: bold;
-                        border-top: 2px solid black;
-                        border-bottom: 2px solid black;
+                        
+                        border-bottom: 6px solid black;
                         padding: 2px 0;
                     }
                     .pizza-space {
@@ -139,7 +139,7 @@ const Print = ({
                            }
 
                     .wynosh {
-                        font-size: 15px;
+                        font-size: 22px;
                         margin: 0;
                         padding: 0;
                         font-weight: bold;
@@ -352,7 +352,17 @@ const Print = ({
 
 			{items.map((item, index) => (
 				<div key={`${item.id}-${index}`} className="product-item">
-					{item.name} {item.quantity > 1 && `(${item.quantity})`}
+					{/* Sprawdź, czy to pizza "pół na pół" */}
+					{item.half1 && item.half2 ? (
+						<div>
+							{`Pizza pół na pół z: ${item.half1} i ${item.half2}`}
+							{item.quantity > 1 && ` (${item.quantity})`}
+						</div>
+					) : (
+						<div>
+							{item.name} {item.quantity > 1 && `(${item.quantity})`}
+						</div>
+					)}
 					{item.comment && ` - ${item.comment}`}
 					{item.extras && item.extras.length > 0 && (
 						<div className="extras">
@@ -387,10 +397,10 @@ const Print = ({
 				</div>
 			)}
 
-			<div className="table-name">Stolik: {tableName}</div>
+			{!isWynos && <div className="table-name">Stolik: {tableName}</div>}
 			<h3 className="table-name"> Kelner: {waiterName}</h3>
 			<div className="print-time">{getCurrentDateTime()}</div>
-			{isWynos && <h3 className="wynosh">WYNOS</h3>}
+			{isWynos && <h3 className="wynosh">!!!! WYNOS !!!!!</h3>}
 
 			{pickupTime && (
 				<div
