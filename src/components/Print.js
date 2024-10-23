@@ -68,23 +68,13 @@ const Print = ({
                         padding: 2px 5px;
                         margin: 0;
                     }
-.product-item {
-    font-size: 11pt;
-    font-weight: bold;
-    padding: 2px 0;
-    position: relative;
-}
-
-.product-item::after {
-    content: "________________________";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%; /* Aby linia zajmowała całą szerokość */
-    text-align: center;
-    font-size: 20px; 
-    color: black;
-}
+  .product-item {
+                        font-size: 11pt;
+                        font-weight: bold;
+                        
+                        border-bottom: 8px solid black;
+                        padding: 2px 0;
+                    } 
                     .pizza-space {
                         margin-bottom: 70px;
                     }
