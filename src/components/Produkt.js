@@ -951,6 +951,6 @@ export const products = [
 	{ id: 335, name: "MINI pizza MARGHARITA", price: 25.9, category: "pizza" },
 	{ id: 336, name: "MINI pizza PROSCIUTTO", price: 28.9, category: "pizza" },
 	{ id: 337, name: "MINI pizza HAWAJSKA", price: 29.9, category: "pizza" },
+	{ id: 339, name: "Ciasto na pizze Kulka", price: 6.9, category: "pizza" },
 ];
-// id 339 start
-// { id: 242, name: "Sałatka Letnia", price: 18, category: "Menu sezonowe" },
+// id 340 start
