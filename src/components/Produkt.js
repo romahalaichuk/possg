@@ -952,5 +952,24 @@ export const products = [
 	{ id: 336, name: "MINI pizza PROSCIUTTO", price: 28.9, category: "pizza" },
 	{ id: 337, name: "MINI pizza HAWAJSKA", price: 29.9, category: "pizza" },
 	{ id: 339, name: "Ciasto na pizze Kulka", price: 6.9, category: "pizza" },
+	{
+		id: 340,
+		name: "Promocja LUTY WYPAS PIZZA do syta",
+		price: 39.9,
+		category: "pizza",
+	},
+	{
+		id: 341,
+		name: "Promocja LUTY PIJ ILE CHCESZ wielka dolewka",
+		price: 14.9,
+		category: "pizza",
+	},
+	{
+		id: 342,
+		name: "Promosja LUTY PIJ I JEDZ ILE CHCESZ Pzza + Dolewka",
+		price: 49.9,
+		category: "pizza",
+	},
+	{ id: 343, name: "Promocja Lutty PIZZA ", price: 0.0, category: "pizza" },
 ];
-// id 340 start
+// id 344 start
