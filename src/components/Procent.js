@@ -43,10 +43,10 @@ const Procent = ({
 		);
 
 		setIsTrzecia(today === 5 || today === 6);
-		setIsNapoj(today === 1 || today === 2);
+		setIsNapoj(today === 1 || today === 6);
 		setIsCheeseDay(today === 3 || today === 4);
 		setIsTanio(today === 1 || today === 4);
-		setShowBeerPromo(today >= 1 && today <= 6);
+		setShowBeerPromo(today >= 5 && today <= 6);
 	}, [option]);
 
 	const handleSubmit = () => {
@@ -139,7 +139,9 @@ const Procent = ({
 	const renderPizzaTrad = () => {
 		if (showPizzaTrad) {
 			return (
-				<button>Pizza tradycyjna 29,90zł lub napój gratis do makaronu</button>
+				<button>
+					W LOKALU !! Pizza tradycyjna 29,90zł lub napój gratis do makaronu
+				</button>
 			);
 		}
 		return null;
@@ -179,7 +181,7 @@ const Procent = ({
 		if ((option === "Wynos" || option === "Dostawa") && showBeerPromo) {
 			return (
 				<button onClick={applyBeerPromo}>
-					Do każdej pizzy 2 piwa w cenie jednego
+					W LOKALU !! Do każdej pizzy 2 piwa w cenie jednego
 				</button>
 			);
 		}
@@ -208,7 +210,10 @@ const Procent = ({
 				/>
 			</div>
 			<div className="input-row">
-				<label>Dodaj do rachunku</label>
+				<label>
+					Dodaj do rachunku--W TRAKCIE, PRACUJE NAD TYM--JAK JUŻ TO KWOTĘ KTÓRĄ
+					CHCESZ DODAĆ PODZIEL NA 2 I WPISZ --
+				</label>
 				<input
 					type="number"
 					min="0"
