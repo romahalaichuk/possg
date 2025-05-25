@@ -54,7 +54,7 @@ export const products = [
 	{ id: 44, name: "Diablo 60 cm", price: 94.9, category: "Pizza", cm: 60 },
 	{ id: 45, name: "Torino 23 cm", price: 33.9, category: "Pizza", cm: 23 },
 	{ id: 46, name: "Torino 32 cm", price: 45.9, category: "Pizza", cm: 32 },
-	{ id: 47, name: "Torino 42 cm", price: 49.9, category: "Pizza", cm: 42 },
+	{ id: 47, name: "Torino 42 cm", price: 59.9, category: "Pizza", cm: 42 },
 	{ id: 48, name: "Torino 60 cm", price: 92.9, category: "Pizza", cm: 60 },
 	{ id: 49, name: "Swojska 23 cm", price: 35.9, category: "Pizza", cm: 23 },
 	{ id: 50, name: "Swojska 32 cm", price: 47.9, category: "Pizza", cm: 32 },
