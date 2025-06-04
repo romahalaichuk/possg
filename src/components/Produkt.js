@@ -835,7 +835,7 @@ export const products = [
 		category: "Piwo",
 	},
 	// BAR>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	{ id: 242, name: "Sałatka z Kozim serem", price: 41.9, category: "sałatki" },
+	{ id: 242, name: "Sałatka z Kozim serem", price: 45.00, category: "sałatki" },
 	{ id: 243, name: "Sałatka Caprese", price: 34.9, category: "sałatki" },
 	{ id: 244, name: "Makaron Pesto", price: 41.9, category: "makaron" },
 	{
@@ -971,5 +971,9 @@ export const products = [
 		category: "pizza",
 	},
 	{ id: 343, name: "Promocja Lutty PIZZA ", price: 0.0, category: "pizza" },
+		{ id: 344, name: "Tagliatelle Pollo e Arancia ", price: 43.00, category: "makaron" },
+		{ id: 345, name: "Polędwica wołowa San Giovanni ", price: 59.00, category: "makaron" },
+		{ id: 346, name: "Pizza Sardegna  ", price: 48.00, category: "pizza" },
+		{ id: 347, name: "Tarta cytrynowa  ", price: 21.00, category: "Desery" },
 ];
-// id 344 start
+// id 348 start
