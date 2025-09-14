@@ -420,12 +420,12 @@ export const products = [
 		price: 0,
 		category: "sos",
 	},
-	{ id: 163, name: "Sos czosnkowy:", price: 3.9, category: "sos" },
-	{ id: 164, name: "Sos Pomidorowy:", price: 3.9, category: "sos" },
+	{ id: 163, name: "Sos czosnkowy:", price: 5.0, category: "sos" },
+	{ id: 164, name: "Sos Pomidorowy:", price: 5.0, category: "sos" },
 	{
 		id: 228,
 		name: "Sos Meksykanski (ostry):",
-		price: 3.9,
+		price: 5.0,
 		category: "sos",
 	},
 	//Sosy...............................................................................
@@ -985,5 +985,42 @@ export const products = [
 	},
 	{ id: 346, name: "Pizza Sardegna  ", price: 48.0, category: "pizza" },
 	{ id: 347, name: "Tarta cytrynowa  ", price: 21.0, category: "Desery" },
+	{
+		id: 348,
+		name: "Queasidilla Fuego Loco (chorizo, cebula)  ",
+		price: 42.9,
+		category: "makaron",
+	},
+	{
+		id: 349,
+		name: "el Frita del Carnita (frytki z bolkiem)  ",
+		price: 29.9,
+		category: "makaron",
+	},
+	{
+		id: 350,
+		name: "Batata Frita Chorizo (babat z chorizo) ",
+		price: 29.9,
+		category: "makaron",
+	},
+	{ id: 351, name: " Zupa krem z dyni  ", price: 19.9, category: "makaron" },
+	{
+		id: 352,
+		name: "Zupa krem z kurek ( z grzankami)",
+		price: 29.9,
+		category: "makaron",
+	},
+	{
+		id: 353,
+		name: " Pizza Finferli (kurki, boczek, cebula)  ",
+		price: 49.9,
+		category: "pizza",
+	},
+	{
+		id: 354,
+		name: "Pasta Zucca Piccante   ",
+		price: 43.9,
+		category: "makaron",
+	},
 ];
-// id 348 start
+// id 355 start
