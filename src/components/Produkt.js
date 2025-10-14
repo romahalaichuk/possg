@@ -420,12 +420,12 @@ export const products = [
 		price: 0,
 		category: "sos",
 	},
-	{ id: 163, name: "Sos czosnkowy:", price: 5.0, category: "sos" },
-	{ id: 164, name: "Sos Pomidorowy:", price: 5.0, category: "sos" },
+	{ id: 163, name: "Sos czosnkowy:", price: 3.9, category: "sos" },
+	{ id: 164, name: "Sos Pomidorowy:", price: 3.9, category: "sos" },
 	{
 		id: 228,
 		name: "Sos Meksykanski (ostry):",
-		price: 5.0,
+		price: 3.9,
 		category: "sos",
 	},
 	//Sosy...............................................................................
@@ -1226,5 +1226,11 @@ export const products = [
 		price: 2.0,
 		category: "pizza",
 	},
+	{
+		id: 389,
+		name: "Ogórkowa zupa",
+		price: 14.9,
+		category: "makaron",
+	},
 ];
-// id 389 start
+// id 390 start
