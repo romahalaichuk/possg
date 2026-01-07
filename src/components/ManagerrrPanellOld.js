@@ -3,12 +3,14 @@ import { customFont } from "./fonts";
 import "./ManagerPanel.css";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import SuccessAnimation from "./SuccessAnimation";
 
 const ManagerPanel = ({ onClose }) => {
 	const [paymentDetails, setPaymentDetails] = useState([]);
 	const [expandedTables, setExpandedTables] = useState({});
 	const [expandedProductSummary, setExpandedProductSummary] = useState(false);
-
+	const [isClosing, setIsClosing] = useState(false);
+	const [showSuccess, setShowSuccess] = useState(false);
 	const modalRef = useRef(null);
 	const [expandedWaiters, setExpandedWaiters] = useState({});
 
@@ -276,12 +278,7 @@ const ManagerPanel = ({ onClose }) => {
 						lineWidth: 0.75,
 						lineColor: [0, 0, 0],
 					},
-					12: {
-						cellWidth: 40,
-						overflow: "linebreak",
-					},
 				},
-
 				tableLineColor: [0, 0, 0],
 				tableLineWidth: 0.75,
 			});
@@ -326,13 +323,15 @@ const ManagerPanel = ({ onClose }) => {
 
 		doc.save(`panel_managera_${dateString}.pdf`);
 
-		localStorage.setItem("lastClosedDay", dateString);
-
-		localStorage.clear();
-		localStorage.removeItem(WAITER_PROFILES_STORAGE_KEY);
-		setPaymentDetails([]);
-
-		window.location.reload(); // ← odświeżenie strony natychmiast
+		setShowSuccess(true);
+		setTimeout(() => {
+			setIsClosing(true);
+			setTimeout(() => {
+				localStorage.clear();
+				localStorage.removeItem(WAITER_PROFILES_STORAGE_KEY);
+				setPaymentDetails([]);
+			}, 3000);
+		}, 3000);
 	};
 
 	const toggleTableDetails = (tableName) => {
@@ -356,13 +355,18 @@ const ManagerPanel = ({ onClose }) => {
 		e.stopPropagation();
 	};
 
+	const handleAnimationClose = () => {
+		window.location.reload();
+	};
+
 	return (
 		<>
+			{showSuccess && <SuccessAnimation onClose={handleAnimationClose} />}
 			<div
-				className={`manager-panel-overlay "closing" : ""}`}
+				className={`manager-panel-overlay ${isClosing ? "closing" : ""}`}
 				onClick={handleOverlayClick}>
 				<div
-					className={`manager-panel  "fade-out" : ""}`}
+					className={`manager-panel ${isClosing ? "fade-out" : ""}`}
 					ref={modalRef}
 					onClick={handleModalClick}>
 					<button className="close-button" onClick={onClose}>

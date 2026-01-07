@@ -57,6 +57,7 @@ const SuccessAnimation = ({ onClose }) => {
 						<h2 className="warning-text">Ostrzeżenie</h2>
 						<p className="warning-text">Czy klimatyzacja wyłączona?</p>
 						<p className="warning-text">Czy piec wyłączony?</p>
+
 						<p className="warning-text">Czy Wyspa zamknięta?</p>
 						<p className="warning-text">Czy świeczki zgaszone?</p>
 						<button className="buttonss" onClick={handleWarningClose}>

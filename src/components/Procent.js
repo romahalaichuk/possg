@@ -23,12 +23,23 @@ const Procent = ({
 	const [showBeerPromo, setShowBeerPromo] = useState(false);
 
 	const napoje = [
-		// Lista napojów...
+		{ id: 1, name: "Woda" },
+		{ id: 2, name: "Woda gazowana" },
+		{ id: 3, name: "Woda niegazowana" },
+		{ id: 4, name: "Herbata" },
+		{ id: 5, name: "Kawa" },
+		{ id: 6, name: "Sok pomarańczowy" },
+		{ id: 7, name: "Sok jabłkowy" },
+		{ id: 8, name: "Lemoniada" },
+		{ id: 9, name: "Cola" },
+		{ id: 10, name: "Cola Zero" },
+		{ id: 11, name: "Sprite" },
+		{ id: 12, name: "Fanta" },
 	];
 
 	const beers = [
 		{
-			id: 6,
+			id: 13,
 			name: "Piwo 0.5 L",
 			category: "Piwo",
 			price: 5,
@@ -43,6 +54,7 @@ const Procent = ({
 		);
 
 		setIsTrzecia(today === 5 || today === 6);
+
 		setIsNapoj(today === 1 || today === 6);
 		setIsCheeseDay(today === 3 || today === 4);
 		setIsTanio(today === 1 || today === 4);
@@ -89,7 +101,10 @@ const Procent = ({
 
 	const applyDiscountToThirdPizza = () => {
 		const pizzas = selectedItems.filter(
-			(item) => item.category.toLowerCase() === "pizza" && item.cm !== 60
+			(item) =>
+				item.category.toLowerCase() === "pizza" &&
+				item.cm && // ← wymagane cm
+				item.cm !== 60
 		);
 
 		if (pizzas.length >= 3) {
@@ -167,7 +182,15 @@ const Procent = ({
 	};
 
 	const renderTaniejButton = () => {
-		if ((option === "Wynos" || option === "Dostawa") && isIsTanio) {
+		const hasPizzaWithCm = selectedItems.some(
+			(item) => item.category.toLowerCase() === "pizza" && item.cm
+		);
+
+		if (
+			(option === "Wynos" || option === "Dostawa") &&
+			isIsTanio &&
+			hasPizzaWithCm
+		) {
 			return (
 				<button onClick={handleDiscountAndClose}>
 					Druga pizza(tańsza) – 50%

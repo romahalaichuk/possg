@@ -51,6 +51,9 @@ const MenuManager = ({
 	const [totalPrice, setTotalPrice] = useState(0);
 	const [discountMessage, setDiscountMessage] = useState("");
 	const [showRozliczButton, setShowRozliczButton] = useState(true);
+	const [showCustomForm, setShowCustomForm] = useState(false);
+	const [customName, setCustomName] = useState("");
+	const [customPrice, setCustomPrice] = useState("");
 
 	const [adjustments, setAdjustments] = useState({
 		service: 0,
@@ -263,13 +266,14 @@ const MenuManager = ({
 		} else {
 			const filteredItems = products.filter((item) => {
 				const isPizza32 = item.category === "Pizza" && item.name.includes("32");
+				const isPizza42 = item.category === "Pizza" && item.name.includes("42");
 				const normalizedItemName = normalizeString(item.name);
 
 				return (
 					normalizedItemName.includes(term) &&
 					(deliveryMode === "Wynos" || deliveryMode === "Dostawa"
 						? item.category !== "Pizza" || true
-						: item.category !== "Pizza" || isPizza32)
+						: item.category !== "Pizza" || isPizza32 || isPizza42)
 				);
 			});
 			setSearchResults(filteredItems);
@@ -310,12 +314,17 @@ const MenuManager = ({
 		setShowMenuItemsModal(false);
 		setSearchTerm("");
 	};
-
 	const handleItemSelectWithComment = (item) => {
+		if (item.isCustom) {
+			setShowCustomForm(true);
+			return;
+		}
+
 		const updatedItem = { ...item, comment: "" };
 		handleItemSelect(updatedItem);
 		setSearchTerm("");
 	};
+
 	useEffect(() => {
 		const savedRemovedItems = localStorage.getItem(`removedItems_${tableName}`);
 		if (savedRemovedItems) {
@@ -763,6 +772,46 @@ const MenuManager = ({
 								</li>
 							)}
 						</ul>
+						{showCustomForm && (
+							<div className="custom-form">
+								<h3>Dodaj własny produkt</h3>
+
+								<input
+									type="text"
+									placeholder="Nazwa"
+									value={customName}
+									onChange={(e) => setCustomName(e.target.value)}
+								/>
+
+								<input
+									type="number"
+									placeholder="Cena"
+									value={customPrice}
+									onChange={(e) => setCustomPrice(e.target.value)}
+								/>
+
+								<button
+									onClick={() => {
+										const newItem = {
+											id: Date.now(),
+											name: customName,
+											price: Number(customPrice),
+											category: "custom",
+											emoji: "✏️",
+											comment: "",
+										};
+
+										handleItemSelect(newItem);
+										setShowCustomForm(false);
+										setCustomName("");
+										setCustomPrice("");
+									}}>
+									Dodaj
+								</button>
+
+								<button onClick={() => setShowCustomForm(false)}>Anuluj</button>
+							</div>
+						)}
 
 						{showWynosModal && (
 							<div className="order-type-container">
