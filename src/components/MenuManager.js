@@ -689,7 +689,7 @@ const MenuManager = ({
 										key={item.id}
 										className="search-suggestion"
 										onClick={() => handleItemSelectWithComment(item)}>
-										<span style={{ fontSize: "24px" }}>
+										<span style={{ fontSize: "18px" }}>
 											{item.emoji} {item.name} - {item.price} zł
 										</span>
 									</div>

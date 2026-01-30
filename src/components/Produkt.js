@@ -1651,9 +1651,9 @@ export const products = [
 	},
 	{
 		id: 239,
-		name: "Piwo butelkowe z asortymentu",
-		price: 15.9,
-		category: "Piwo",
+		name: "LUNCH Zestaw lunch (zupa + drugie)",
+		price: 37,
+		category: "Makaron",
 		emoji: "🍺",
 	},
 	{
@@ -2561,6 +2561,20 @@ export const products = [
 		price: 45,
 		category: "Makaron",
 		emoji: "🍝",
+	},
+	{
+		id: 431,
+		name: "LUNCH Drugie danie (tylko drugie)",
+		price: 30,
+		category: "Makaron",
+		emoji: "🍺",
+	},
+	{
+		id: 432,
+		name: "LUNCH Zupa (tylko zupa)",
+		price: 12,
+		category: "Makaron",
+		emoji: "🍺",
 	},
 ];
 // id 390 start

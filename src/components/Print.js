@@ -357,12 +357,18 @@ const Print = ({
 						<div>
 							{`Pizza pół na pół z: ${item.half1} i ${item.half2}`}
 							{item.quantity > 1 && ` (${item.quantity})`}
+							{" - "}
+							{(item.price * item.quantity).toFixed(2)} zł
 						</div>
 					) : (
 						<div>
-							{item.name} {item.quantity > 1 && `(${item.quantity})`}
+							{item.name}
+							{item.quantity > 1 && ` (${item.quantity})`}
+							{" - "}
+							{(item.price * item.quantity).toFixed(2)} zł
 						</div>
 					)}
+
 					{item.comment && ` - ${item.comment}`}
 					{item.extras && item.extras.length > 0 && (
 						<div className="extras">
