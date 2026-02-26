@@ -7,10 +7,15 @@ import MenuManager from "./MenuManager";
 import WynosListModal from "./WynosListModal";
 import ManagerPanel from "./ManagerPanel";
 import Dostawa from "./Dostawa";
+
 const TABLES_BY_PROFILE_KEY = "tablesByProfile";
 const TABLES_STORAGE_KEY = "tables";
 const WYNOS_TABLES_STORAGE_KEY = "wynosTables";
 const MANAGER_PANEL_STATE_KEY = "managerPanelOpen";
+
+// USUŃ STĄD TE LINIE (przenieś do środka komponentu):
+// const [totalGuests, setTotalGuests] = useState(0);
+// const [totalServed, setTotalServed] = useState(0);
 
 const initializeTables = () => {
 	const initialTables = [
@@ -43,7 +48,7 @@ const saveDataToLocalStorage = (key, data) => {
 const saveTablesToLocalStorage = (profileId, tables) => {
 	localStorage.setItem(
 		`${TABLES_BY_PROFILE_KEY}_${profileId}`,
-		JSON.stringify(tables)
+		JSON.stringify(tables),
 	);
 };
 const loadTablesFromLocalStorage = (profileId) => {
@@ -65,6 +70,9 @@ const TableManager = () => {
 	const [selectedProfile, setSelectedProfile] = useState(null);
 	const [isWynos, setIsWynos] = useState(false);
 	const [managerPanelOpen, setManagerPanelOpen] = useState(false);
+	// DODAJ TU TE useState (wewnątrz komponentu):
+	const [totalGuests, setTotalGuests] = useState(0);
+	const [totalServed, setTotalServed] = useState(0);
 
 	useEffect(() => {
 		const storedTables = loadDataFromLocalStorage(TABLES_STORAGE_KEY);
@@ -75,7 +83,7 @@ const TableManager = () => {
 		}
 
 		const storedWynosTables = loadDataFromLocalStorage(
-			WYNOS_TABLES_STORAGE_KEY
+			WYNOS_TABLES_STORAGE_KEY,
 		);
 		if (storedWynosTables) {
 			setWynosTables(storedWynosTables);
@@ -84,12 +92,50 @@ const TableManager = () => {
 		}
 
 		const storedManagerPanelState = loadDataFromLocalStorage(
-			MANAGER_PANEL_STATE_KEY
+			MANAGER_PANEL_STATE_KEY,
 		);
 		if (storedManagerPanelState !== null) {
 			setManagerPanelOpen(storedManagerPanelState === "true");
 		}
 	}, []);
+
+	// DODAJ TEN useEffect PO pierwszym useEffect:
+	useEffect(() => {
+		const updateGuestCounts = () => {
+			let activeGuests = 0;
+
+			// Sumuj gości ze wszystkich aktywnych stolików
+			tables.forEach((table) => {
+				if (table.status === "occupied") {
+					const count = localStorage.getItem(`guestCount_${table.name}`);
+					if (count) {
+						activeGuests += parseInt(count, 10);
+					}
+				}
+			});
+
+			setTotalGuests(activeGuests);
+			setTotalServed(
+				parseInt(localStorage.getItem("totalServedGuests") || "0", 10),
+			);
+		};
+
+		// Aktualizuj przy zmianie stolików
+		updateGuestCounts();
+
+		// Nasłuchuj zmian w localStorage (dla synchronizacji między komponentami)
+		const handleStorageChange = () => updateGuestCounts();
+		window.addEventListener("storage", handleStorageChange);
+
+		// Aktualizuj co 2 sekundy dla pewności
+		const interval = setInterval(updateGuestCounts, 2000);
+
+		return () => {
+			window.removeEventListener("storage", handleStorageChange);
+			clearInterval(interval);
+		};
+	}, [tables]);
+
 	useEffect(() => {
 		if (selectedProfile) {
 			const storedTables = loadTablesFromLocalStorage(selectedProfile.id);
@@ -107,6 +153,7 @@ const TableManager = () => {
 			}
 		}
 	}, [selectedProfile]);
+
 	const handleTableClick = (tableId) => {
 		if (tableId === 0) {
 			setWynosModalOpen(true);
@@ -132,13 +179,13 @@ const TableManager = () => {
 			? wynosTables.map((table) =>
 					table.id === selectedTableId
 						? { ...table, name: tableName, status: "occupied" }
-						: table
-			  )
+						: table,
+				)
 			: tables.map((table) =>
 					table.id === selectedTableId
 						? { ...table, name: tableName, status: "occupied" }
-						: table
-			  );
+						: table,
+				);
 
 		if (isWynos) {
 			setWynosTables(updatedTables);
@@ -192,9 +239,9 @@ const TableManager = () => {
 										quantity: 1,
 									},
 								],
-						  }
-						: table
-			  )
+							}
+						: table,
+				)
 			: tables.map((table) =>
 					table.id === selectedTableId
 						? {
@@ -208,9 +255,9 @@ const TableManager = () => {
 										quantity: 1,
 									},
 								],
-						  }
-						: table
-			  );
+							}
+						: table,
+				);
 
 		if (isWynos) {
 			setWynosTables(updatedTables);
@@ -233,13 +280,13 @@ const TableManager = () => {
 			? wynosTables.map((table) =>
 					table.id === tableId
 						? { ...table, status: "free", products: [] }
-						: table
-			  )
+						: table,
+				)
 			: tables.map((table) =>
 					table.id === tableId
 						? { ...table, status: "free", products: [] }
-						: table
-			  );
+						: table,
+				);
 
 		if (isWynos) {
 			setWynosTables(updatedTables);
@@ -260,9 +307,20 @@ const TableManager = () => {
 			<WaiterProfileManager onProfileSelect={setSelectedProfile} />
 			{selectedProfile && (
 				<>
-					<h2 className="waitingprof">
-						Stoliki kelnera {selectedProfile.name}
-					</h2>
+					<div className="stats-header">
+						<h2 className="waitingprof">
+							Stoliki kelnera {selectedProfile.name}
+						</h2>
+						<div className="guests-stats">
+							<span className="active-guests">
+								Aktualna ilość gości: <strong>{totalGuests}</strong>
+							</span>
+							<span className="served-guests">
+								Obsłużeni goście: <strong>{totalServed}</strong>
+							</span>
+						</div>
+					</div>
+					{/* BRAKUJE DIVA table-grid - DODAJ GO: */}
 					<div className="table-grid">
 						{tables.map((table) => (
 							<Table

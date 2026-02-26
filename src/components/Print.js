@@ -1,6 +1,146 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./Print.css";
+const niceMessages = [
+	"Twój uśmiech rozświetla każde pomieszczenie.",
+	"Ktoś dziś myśli o Tobie bardzo ciepło.",
+	"Twoja dobroć wraca do Ciebie w najlepszy możliwy sposób.",
+	"Przed Tobą wyjątkowy posiłek.",
+	"Twoje serce wie, co jest dla Ciebie najlepsze.",
+	"Dziś jest dobry dzień, by spróbować czegoś nowego.",
+	"Twoja obecność czyni to miejsce wyjątkowym.",
+	"Małe przyjemności czynią życie pięknym.",
+	"Ktoś docenia Twoją wyjątkowość.",
+	"Dobry smak to sztuka, którą Ty doskonale rozumiesz.",
+	"Twoja energia przyciąga same pozytywne chwile.",
+	"Najlepsze rzeczy dzieją się, gdy jesteś sobą.",
+	"Ten posiłek to nagroda, którą zasługujesz.",
+	"Twoja wyjątkowość nie pozostaje niezauważona.",
+	"Dziś los uśmiecha się do Ciebie.",
+	"Każdy dzień zaczyna się od Twojego dobrego wyboru.",
+	"Twoja intuicja prowadzi Cię do wspaniałych doznań.",
+	"To będzie smaczna przygoda.",
+	"Ktoś dziś mówi o Tobie w samych superlatywach.",
+	"Twoja pozytywna aura przyciąga same dobre rzeczy.",
+	"Dobrze wyglądasz, gdy jesteś szczęśliwy.",
+	"Ten moment należy tylko do Ciebie.",
+	"Twoja otwartość na nowe smaki jest inspirująca.",
+	"Świat staje się lepszy przez ludzi takich jak Ty.",
+	"Twoja obecność to prezent dla tego miejsca.",
+	"Twoja obecność wnosi łagodny spokój.",
+	"Masz w sobie naturalne ciepło.",
+	"Twoja energia jest miękka i przyjazna.",
+	"Wyróżnia Cię spokojna jasność.",
+	"Twoja aura sprzyja harmonii.",
+	"Masz dar tworzenia miłej atmosfery.",
+	"Twoje bycie jest kojące.",
+	"Twoja życzliwość jest wyczuwalna.",
+	"Masz w sobie pogodną lekkość.",
+	"Twoja obecność daje komfort.",
+	"Wnosisz ze sobą serdeczność.",
+	"Twoja natura jest łagodna.",
+	"Masz w sobie cichą radość.",
+	"Twoja energia przynosi spokój.",
+	"Wyróżnia Cię miękka siła.",
+	"Twoja obecność sprzyja uśmiechom.",
+	"Masz w sobie jasne ciepło.",
+	"Twoja aura jest przyjazna.",
+	"Wnosisz dobrą atmosferę.",
+	"Twoja obecność koi otoczenie.",
+	"Masz naturalną serdeczność.",
+	"Twoje nastawienie jest pogodne.",
+	"Wyróżnia Cię spokojna harmonia.",
+	"Twoja energia jest łagodna.",
+	"Masz w sobie przyjemny blask.",
+	"Twoja obecność daje lekkość.",
+	"Wnosisz ze sobą spokój.",
+	"Twoja natura jest serdeczna.",
+	"Masz w sobie dobrą energię.",
+	"Twoja aura jest miękka.",
+	"Wyróżnia Cię ciepła prostota.",
+	"Twoja obecność uspokaja.",
+	"Masz w sobie naturalną dobroć.",
+	"Twoja energia sprzyja pogodzie ducha.",
+	"Wnosisz łagodną radość.",
+	"Twoja natura jest harmonijna.",
+	"Masz w sobie spokojne światło.",
+	"Twoja obecność jest przyjemna.",
+	"Wyróżnia Cię cicha serdeczność.",
+	"Twoja aura wnosi spokój.",
+	"Masz w sobie miękką jasność.",
+	"Twoja energia jest kojąca.",
+	"Wnosisz naturalne ciepło.",
+	"Twoja obecność daje ukojenie.",
+	"Masz w sobie pogodną siłę.",
+	"Twoja natura jest jasna.",
+	"Wyróżnia Cię serdeczne ciepło.",
+	"Twoja aura sprzyja komfortowi.",
+	"Masz w sobie spokojną radość.",
+	"Twoja obecność jest łagodna.",
+	"Wnosisz ze sobą harmonię.",
+	"Twoja energia jest przyjazna.",
+	"Masz naturalną pogodę ducha.",
+	"Twoja natura daje spokój.",
+	"Wyróżnia Cię miękka łagodność.",
+	"Twoja obecność wnosi jasność.",
+	"Masz w sobie ciepłą równowagę.",
+	"Twoja aura jest kojąca.",
+	"Wnosisz ze sobą lekkość.",
+	"Twoja energia daje komfort.",
+	"Masz w sobie przyjazną jasność.",
+	"Twoja obecność sprzyja harmonii.",
+	"Wyróżnia Cię spokojne ciepło.",
+	"Twoja natura jest przyjemna.",
+	"Masz w sobie łagodny blask.",
+	"Twoja aura daje ukojenie.",
+	"Wnosisz cichą radość.",
+	"Twoja energia jest serdeczna.",
+	"Masz naturalny spokój.",
+	"Twoja obecność wnosi pogodę.",
+	"Wyróżnia Cię jasna łagodność.",
+	"Twoja natura jest kojąca.",
+	"Masz w sobie dobrą harmonię.",
+	"Twoja aura jest pogodna.",
+	"Wnosisz miękką serdeczność.",
+	"Twoja energia wnosi spokój.",
+	"Masz w sobie przyjemną ciszę.",
+	"Twoja obecność jest jasna.",
+	"Wyróżnia Cię łagodna pogoda ducha.",
+	"Twoja natura jest ciepła.",
+	"Twoja obecność jest delikatnie kojąca.",
+	"Masz w sobie spokojną serdeczność.",
+	"Twoja aura wnosi miękkie ciepło.",
+	"Wyróżnia Cię naturalna łagodność.",
+	"Twoja energia sprzyja wyciszeniu.",
+	"Masz w sobie jasną harmonię.",
+	"Twoja obecność jest ciepło przyjmowana.",
+	"Wnosisz ze sobą spokojną aurę.",
+	"Twoja natura jest miękko pogodna.",
+	"Masz w sobie subtelne ciepło.",
+	"Twoja energia jest przyjemnie spokojna.",
+	"Wyróżnia Cię serdeczna łagodność.",
+	"Twoja obecność wnosi ukojenie.",
+	"Masz w sobie naturalną jasność.",
+	"Twoja aura jest delikatna.",
+	"Wnosisz ze sobą pogodny spokój.",
+	"Twoja natura jest ciepło łagodna.",
+	"Masz w sobie spokojny urok.",
+	"Twoja energia jest miękko serdeczna.",
+	"Wyróżnia Cię jasne ukojenie.",
+	"Twoja obecność daje wyciszenie.",
+	"Masz w sobie dobrą łagodność.",
+	"Twoja aura sprzyja ciszy.",
+	"Wnosisz ze sobą naturalne ukojenie.",
+	"Twoja natura jest subtelnie pogodna.",
+	"Masz w sobie ciepły spokój.",
+	"Twoja energia jest delikatna.",
+	"Wyróżnia Cię miękki spokój.",
+	"Twoja obecność jest serdeczna.",
+	"Masz w sobie łagodną ciszę.",
+];
 
+const getRandomMessage = () => {
+	return niceMessages[Math.floor(Math.random() * niceMessages.length)];
+};
 const Print = ({
 	selectedItems,
 	waiterName,
@@ -26,7 +166,18 @@ const Print = ({
 	const printContentRef = useRef(null);
 	const [hasContentToPrint, setHasContentToPrint] = useState(false);
 	const [printedItems, setPrintedItems] = useState([]);
+	const [dailyMessage, setDailyMessage] = useState("");
 
+	useEffect(() => {
+		const savedPrintedItems =
+			JSON.parse(localStorage.getItem("printedItems")) || [];
+		setPrintedItems(savedPrintedItems);
+	}, []);
+
+	// DODAJ TEN useEffect:
+	useEffect(() => {
+		setDailyMessage(getRandomMessage());
+	}, []);
 	useEffect(() => {
 		setHasContentToPrint(selectedItems.length > 0);
 	}, [selectedItems]);
@@ -144,6 +295,17 @@ const Print = ({
                         padding: 0;
                         font-weight: bold;
                     }
+						                    .nice-message {
+                        margin-top: 15px;
+                        padding: 10px 5px;
+                        font-style: italic;
+                        font-size: 9pt;
+                        text-align: center;
+                        border-top: 1px dashed #ccc;
+                        border-bottom: 1px dashed #ccc;
+                        color: #555;
+                        background-color: #f9f9f9;
+                    }
                     .pickup-time {
                         font-weight: bold;
                     }
@@ -205,6 +367,7 @@ const Print = ({
 			BAR: [],
 			DOSTAWA: [],
 			WYNOS: [],
+			CUSTOM: [],
 		};
 
 		const itemMap = {};
@@ -269,7 +432,12 @@ const Print = ({
 							categories.BAR.push(item);
 						}
 						break;
+					case "custom": // DODAJ TEN CASE
+						categories.CUSTOM.push(item);
+						break;
 					default:
+						// Jeśli nie pasuje do żadnej kategorii, dodaj do CUSTOM
+						categories.CUSTOM.push(item);
 						break;
 				}
 			}
@@ -420,11 +588,26 @@ const Print = ({
 						{pickupTime === "Invalid Date"
 							? "Odbiór na: Invalid Date"
 							: customPickupTime.includes(":")
-							? `Odbiór na: ${pickupTime}`
-							: `Odbiór do: ${pickupTime}`}
+								? `Odbiór na: ${pickupTime}`
+								: `Odbiór do: ${pickupTime}`}
 					</p>
 				</div>
 			)}
+			<div
+				style={{
+					marginTop: "15px",
+					padding: "10px 5px",
+					fontStyle: "italic",
+					fontSize: "13pt",
+					textAlign: "center",
+					borderTop: "1px dashed #ccc",
+					borderBottom: "1px dashed #ccc",
+					color: "#555",
+					backgroundColor: "#f9f9f9",
+				}}>
+				{" "}
+				✨ {dailyMessage} ✨{" "}
+			</div>
 			<div className="dashed-line"></div>
 		</div>
 	);
@@ -442,9 +625,9 @@ const Print = ({
 								category,
 								groupedItems[category],
 								hasPizza,
-								hasMakaron
-						  )
-						: null
+								hasMakaron,
+							)
+						: null,
 				)}
 				{showDeliveryDetails &&
 					renderCategory("DOSTAWA", groupedItems["DOSTAWA"], false, false)}

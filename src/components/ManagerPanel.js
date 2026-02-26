@@ -11,7 +11,9 @@ const ManagerPanel = ({ onClose }) => {
 
 	const modalRef = useRef(null);
 	const [expandedWaiters, setExpandedWaiters] = useState({});
-
+	const getTotalServedGuests = () => {
+		return parseInt(localStorage.getItem("totalServedGuests") || "0", 10);
+	};
 	const toggleWaiterDetails = (waiterName) => {
 		setExpandedWaiters((prev) => ({
 			...prev,
@@ -55,11 +57,11 @@ const ManagerPanel = ({ onClose }) => {
 				};
 			}
 			waiterData[waiterName].tables[tableName].totalAmount += parseFloat(
-				detail.totalAmount || 0
+				detail.totalAmount || 0,
 			);
 			waiterData[waiterName].totalAmount += parseFloat(detail.totalAmount || 0);
 			waiterData[waiterName].tables[tableName].items.push(
-				...detail.selectedItems
+				...detail.selectedItems,
 			);
 
 			// Add to products summary for this waiter
@@ -89,7 +91,23 @@ const ManagerPanel = ({ onClose }) => {
 			}
 		});
 
-		return { ...summary, ...removedSummary };
+		// Połącz wyniki
+		const combined = {};
+
+		// Najpierw dodaj wszystkie z summary
+		Object.keys(summary).forEach((key) => {
+			combined[key] = summary[key];
+		});
+
+		// Potem dodaj/usuń z removedSummary
+		Object.keys(removedSummary).forEach((key) => {
+			combined[key] = (combined[key] || 0) + removedSummary[key];
+		});
+
+		// Zwróć POSORTOWANE alfabetycznie
+		return Object.fromEntries(
+			Object.entries(combined).sort(([a], [b]) => a.localeCompare(b, "pl")),
+		);
 	};
 	const WAITER_PROFILES_STORAGE_KEY = "waiterProfiles";
 
@@ -106,7 +124,7 @@ const ManagerPanel = ({ onClose }) => {
 
 		const totalServiceCharges = paymentDetails.reduce(
 			(total, p) => total + parseFloat(p.serviceCharge || 0),
-			0
+			0,
 		);
 
 		const netTotalSales = totalSales;
@@ -179,7 +197,8 @@ const ManagerPanel = ({ onClose }) => {
 		yOffset += 10;
 		doc.text(`Liczba stolików: ${uniqueTablesCount}`, 20, yOffset);
 		yOffset += 10;
-
+		doc.text(`Ilość obsłużonych gości: ${getTotalServedGuests()}`, 20, yOffset);
+		yOffset += 10;
 		const tablesData = paymentDetails.reduce((acc, detail) => {
 			acc[detail.tableName] = acc[detail.tableName] || [];
 			acc[detail.tableName].push(detail);
@@ -247,7 +266,7 @@ const ManagerPanel = ({ onClose }) => {
 								item.name,
 								`-${item.quantity}`,
 								`-${formatCurrency(
-									parseFloat(item.price * item.quantity || 0)
+									parseFloat(item.price * item.quantity || 0),
 								)}`,
 								"-",
 								"-",
@@ -255,8 +274,8 @@ const ManagerPanel = ({ onClose }) => {
 								"-",
 								"-",
 								item.comment,
-							]) || []
-						)
+							]) || [],
+						),
 				),
 				theme: "striped",
 				margin: { top: 10, bottom: 10 },
@@ -397,6 +416,10 @@ const ManagerPanel = ({ onClose }) => {
 						<div className="info-item">
 							<strong>Szczegóły płatności:</strong>
 							<p>Ilość stolików: {countUniqueTables()}</p>
+							<p className="served-guests-info">
+								<strong>Ilość obsłużonych gości:</strong>{" "}
+								{getTotalServedGuests()}
+							</p>
 							<div className="info-item">
 								<strong>Kelnerzy:</strong>
 								<ul>
@@ -412,12 +435,12 @@ const ManagerPanel = ({ onClose }) => {
 													<li>
 														<strong>Łączna kwota:</strong>{" "}
 														{formatCurrency(
-															groupByWaiter()[waiterName].totalAmount
+															groupByWaiter()[waiterName].totalAmount,
 														)}{" "}
 														PLN
 													</li>
 													{Object.entries(
-														groupByWaiter()[waiterName].tables
+														groupByWaiter()[waiterName].tables,
 													).map(([tableName, tableDetails]) => (
 														<li key={tableName}>
 															<strong>Stolik: {tableName}</strong>
@@ -449,7 +472,7 @@ const ManagerPanel = ({ onClose }) => {
 										paymentDetails.reduce((acc, detail) => {
 											acc[detail.tableName] = true;
 											return acc;
-										}, {})
+										}, {}),
 									).map((tableName) => (
 										<li key={tableName}>
 											<button
@@ -468,7 +491,7 @@ const ManagerPanel = ({ onClose }) => {
 																<div>
 																	Kwota:{" "}
 																	{formatCurrency(
-																		parseFloat(detail.totalAmount || 0)
+																		parseFloat(detail.totalAmount || 0),
 																	)}{" "}
 																	PLN
 																</div>
@@ -482,8 +505,8 @@ const ManagerPanel = ({ onClose }) => {
 																					{item.quantity}, Cena:{" "}
 																					{formatCurrency(
 																						parseFloat(
-																							item.price * item.quantity || 0
-																						)
+																							item.price * item.quantity || 0,
+																						),
 																					)}{" "}
 																					PLN
 																				</li>
@@ -505,8 +528,8 @@ const ManagerPanel = ({ onClose }) => {
 																						{item.name} -{" "}
 																						{formatCurrency(
 																							parseFloat(
-																								item.price * item.quantity || 0
-																							)
+																								item.price * item.quantity || 0,
+																							),
 																						)}{" "}
 																						PLN (Ilość: {item.quantity}) (
 																						Powód: {item.comment})
@@ -532,13 +555,13 @@ const ManagerPanel = ({ onClose }) => {
 						{expandedProductSummary && (
 							<div className="info-item">
 								<ul>
-									{Object.entries(getProductsSummary()).map(
-										([productName, quantity]) => (
+									{Object.entries(getProductsSummary())
+										.sort(([a], [b]) => a.localeCompare(b, "pl")) // SORTOWANIE ALFABETYCZNE
+										.map(([productName, quantity]) => (
 											<li key={productName}>
 												{productName}: {quantity} szt.
 											</li>
-										)
-									)}
+										))}
 								</ul>
 							</div>
 						)}

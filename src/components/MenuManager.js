@@ -73,7 +73,20 @@ const MenuManager = ({
 	};
 	const generateUniqueId = () => `item-${Date.now()}`;
 	const [removedItems, setRemovedItems] = useState([]);
+	const [guestCount, setGuestCount] = useState(() => {
+		const saved = localStorage.getItem(`guestCount_${tableName}`);
+		return saved ? parseInt(saved, 10) : 1;
+	});
+	// DODAJ TE FUNKCJE:
+	const handleGuestCountChange = (e) => {
+		const value = parseInt(e.target.value, 10);
+		if (!isNaN(value) && value >= 1) {
+			setGuestCount(value);
+		}
+	};
 
+	const incrementGuests = () => setGuestCount((prev) => prev + 1);
+	const decrementGuests = () => setGuestCount((prev) => Math.max(1, prev - 1));
 	const handleOpenWynosModal = () => {
 		if (!showWynosModal) {
 			setDeliveryMode("Wynos");
@@ -143,7 +156,7 @@ const MenuManager = ({
 			const updatedItems = selectedItems.map((item) =>
 				item.id === cheapestPizza.id
 					? { ...item, price: item.price * 0.5 }
-					: item
+					: item,
 			);
 
 			setSelectedItems(updatedItems);
@@ -159,6 +172,12 @@ const MenuManager = ({
 		setSelectedItems(storedSelectedItems);
 		setTableStatus(storedSelectedItems.length > 0 ? "occupied" : "free");
 	}, [tableName]);
+	// DODAJ TEN useEffect:
+	useEffect(() => {
+		if (tableName) {
+			localStorage.setItem(`guestCount_${tableName}`, guestCount.toString());
+		}
+	}, [guestCount, tableName]);
 
 	useEffect(() => {
 		const handleClickOutside = (e) => {
@@ -281,32 +300,37 @@ const MenuManager = ({
 	};
 
 	const handleItemSelect = (item) => {
+		// Jeśli to własny produkt bez uniqueId, dodaj go
+		const itemToAdd = item.uniqueId
+			? item
+			: {
+					...item,
+					uniqueId: generateUniqueId(),
+					originalId: item.id,
+					quantity: 1,
+				};
+
 		const existingItem = selectedItems.find(
-			(i) => i.originalId === item.id && i.id === item.uniqueId
+			(i) =>
+				i.originalId === itemToAdd.originalId && i.id === itemToAdd.uniqueId,
 		);
 
 		let updatedItems;
 		if (existingItem) {
 			updatedItems = selectedItems.map((i) =>
-				i.id === existingItem.id ? { ...i, quantity: i.quantity + 1 } : i
+				i.uniqueId === existingItem.uniqueId
+					? { ...i, quantity: i.quantity + 1 }
+					: i,
 			);
 		} else {
-			updatedItems = [
-				...selectedItems,
-				{
-					...item,
-					uniqueId: generateUniqueId(),
-					quantity: 1,
-					originalId: item.id,
-				},
-			];
+			updatedItems = [...selectedItems, itemToAdd];
 		}
 
 		setSelectedItems(updatedItems);
 		updateSelectedItems(tableName, updatedItems);
 
-		if (!printedItems.includes(item.id)) {
-			addToPrintedItems(item.id);
+		if (!printedItems.includes(itemToAdd.id)) {
+			addToPrintedItems(itemToAdd.id);
 		}
 
 		calculateTotalPrice();
@@ -315,6 +339,10 @@ const MenuManager = ({
 		setSearchTerm("");
 	};
 	const handleItemSelectWithComment = (item) => {
+		// Zawsze czyść wyszukiwanie na początku
+		setSearchTerm("");
+		setSearchResults([]);
+
 		if (item.isCustom) {
 			setShowCustomForm(true);
 			return;
@@ -322,7 +350,6 @@ const MenuManager = ({
 
 		const updatedItem = { ...item, comment: "" };
 		handleItemSelect(updatedItem);
-		setSearchTerm("");
 	};
 
 	useEffect(() => {
@@ -355,7 +382,7 @@ const MenuManager = ({
 		const comment = prompt("Podaj powód usunięcia produktu:");
 		if (comment) {
 			const itemToRemove = selectedItems.find(
-				(item) => item.uniqueId === uniqueId
+				(item) => item.uniqueId === uniqueId,
 			);
 			const updatedRemovedItems = [
 				...removedItems,
@@ -363,7 +390,7 @@ const MenuManager = ({
 			];
 
 			const updatedItems = selectedItems.filter(
-				(item) => item.uniqueId !== uniqueId
+				(item) => item.uniqueId !== uniqueId,
 			);
 
 			setSelectedItems(updatedItems);
@@ -371,7 +398,7 @@ const MenuManager = ({
 
 			localStorage.setItem(
 				`removedItems_${tableName}`,
-				JSON.stringify(updatedRemovedItems)
+				JSON.stringify(updatedRemovedItems),
 			);
 
 			updateSelectedItems(tableName, updatedItems);
@@ -380,7 +407,7 @@ const MenuManager = ({
 
 	const handleCommentChange = (comment, uniqueId) => {
 		const updatedItems = selectedItems.map((item) =>
-			item.uniqueId === uniqueId ? { ...item, comment } : item
+			item.uniqueId === uniqueId ? { ...item, comment } : item,
 		);
 		setSelectedItems(updatedItems);
 		updateSelectedItems(tableName, updatedItems);
@@ -413,7 +440,7 @@ const MenuManager = ({
 	const handleAddComment = (comment) => {
 		if (selectedItems.length > 0) {
 			const updatedItems = selectedItems.map((item) =>
-				item.category === "Pizza" ? { ...item, comment } : item
+				item.category === "Pizza" ? { ...item, comment } : item,
 			);
 			setSelectedItems(updatedItems);
 			updateSelectedItems(tableName, updatedItems);
@@ -426,8 +453,8 @@ const MenuManager = ({
 						...item,
 						extras: item.extras.filter((extra) => extra.id !== extraId),
 						price: calculateBasePrice(item, extraId),
-				  }
-				: item
+					}
+				: item,
 		);
 		setSelectedItems(updatedItems);
 		updateSelectedItems(tableName, updatedItems);
@@ -435,13 +462,13 @@ const MenuManager = ({
 	};
 	const handleAddProduct = (product) => {
 		const existingItem = selectedItems.find(
-			(item) => item.originalId === product.id && item.id === product.uniqueId
+			(item) => item.originalId === product.id && item.id === product.uniqueId,
 		);
 
 		let updatedItems;
 		if (existingItem) {
 			updatedItems = selectedItems.map((i) =>
-				i.id === existingItem.id ? { ...i, quantity: i.quantity + 1 } : i
+				i.id === existingItem.id ? { ...i, quantity: i.quantity + 1 } : i,
 			);
 		} else {
 			const addedTime = new Date().toLocaleTimeString([], {
@@ -515,13 +542,25 @@ const MenuManager = ({
 	};
 
 	const handlePaymentComplete = () => {
+		// DODAJ TO NA POCZĄTKU - zapisz obsłużonych gości
+		const currentServed = parseInt(
+			localStorage.getItem("totalServedGuests") || "0",
+			10,
+		);
+		const newTotal = currentServed + guestCount;
+		localStorage.setItem("totalServedGuests", newTotal.toString());
+
+		// Wyczyść licznik dla tego stolika
+		localStorage.removeItem(`guestCount_${tableName}`);
+
+		// RESZTA TWOJEGO ISTNIEJĄCEGO KODU (bez zmian):
 		let servedWynosTables =
 			JSON.parse(localStorage.getItem("servedWynosTables")) || [];
 		if (!servedWynosTables.includes(tableName)) {
 			servedWynosTables.push(tableName);
 			localStorage.setItem(
 				"servedWynosTables",
-				JSON.stringify(servedWynosTables)
+				JSON.stringify(servedWynosTables),
 			);
 		}
 
@@ -541,7 +580,7 @@ const MenuManager = ({
 		setShowProcentModal(false);
 
 		const updatedItems = selectedItems.map((item) =>
-			item.name === "Pizza" ? { ...item, comment: adjustments.comment } : item
+			item.name === "Pizza" ? { ...item, comment: adjustments.comment } : item,
 		);
 
 		setSelectedItems(updatedItems);
@@ -628,7 +667,7 @@ const MenuManager = ({
 				currentTime.getMonth(),
 				currentTime.getDate(),
 				parseInt(hours, 10),
-				parseInt(mins, 10)
+				parseInt(mins, 10),
 			);
 		} else {
 			pickup = new Date(currentTime.getTime() + minutes * 60000);
@@ -662,6 +701,25 @@ const MenuManager = ({
 						<h2>
 							{currentTableName} - Kelner: {waiterName}
 						</h2>
+					</div>
+					{/* DODAJ TEN DIV: */}
+					<div className="guest-counter">
+						<h3>Ile gości:</h3>
+						<div className="guest-input-container">
+							<button className="guest-btn" onClick={decrementGuests}>
+								−
+							</button>
+							<input
+								type="number"
+								min="1"
+								value={guestCount}
+								onChange={handleGuestCountChange}
+								className="guest-input"
+							/>
+							<button className="guest-btn" onClick={incrementGuests}>
+								+
+							</button>
+						</div>
 					</div>
 					<div className="category-buttons">
 						{categories.map((category) => (
@@ -735,8 +793,8 @@ const MenuManager = ({
 																extra.category === "Dod"
 																	? sum + extra.price
 																	: sum,
-															0
-													  )
+															0,
+														)
 													: 0)) *
 											item.quantity
 										).toFixed(2)}{" "}
@@ -792,13 +850,16 @@ const MenuManager = ({
 
 								<button
 									onClick={() => {
+										if (!customName.trim() || !customPrice) return;
+
 										const newItem = {
 											id: Date.now(),
-											name: customName,
+											name: customName.trim(),
 											price: Number(customPrice),
 											category: "custom",
 											emoji: "✏️",
 											comment: "",
+											quantity: 1,
 										};
 
 										handleItemSelect(newItem);
@@ -841,8 +902,8 @@ const MenuManager = ({
 										{pickupTime === "Invalid Date"
 											? "Odbiór na: Invalid Date"
 											: customPickupTime.includes(":")
-											? `Odbiór na: ${pickupTime}`
-											: `Odbiór do: ${pickupTime}`}
+												? `Odbiór na: ${pickupTime}`
+												: `Odbiór do: ${pickupTime}`}
 									</p>
 								)}
 								<button

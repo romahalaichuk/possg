@@ -107,3 +107,47 @@
 	justify-content: center;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.stats-header {
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 15px;
+	margin-bottom: 20px;
+	padding: 0 20px;
+}
+
+.guests-stats {
+	display: flex;
+	gap: 30px;
+	font-size: 16px;
+	align-items: center;
+}
+
+.active-guests {
+	color: #007bff;
+	font-weight: 500;
+	font-size: 18px;
+}
+
+.active-guests strong {
+	font-size: 24px;
+	margin-left: 8px;
+	color: #0056b3;
+}
+
+.served-guests {
+	color: #dc3545;
+	font-weight: 500;
+	font-size: 18px;
+}
+
+.served-guests strong {
+	font-size: 24px;
+	margin-left: 8px;
+	color: #a71d2a;
+}
+
+.waitingprof {
+	margin: 0;
+	font-size: 24px;
+}
