@@ -526,21 +526,10 @@ const MenuManager = ({
 	};
 
 	const handleRozliczClick = () => {
-		const currentTime = new Date().toISOString();
-
-		const orderDetails = {
-			tableName: currentTableName,
-			selectedItems,
-			totalPrice,
-			adjustments,
-			orderTime: currentTime,
-		};
-
-		localStorage.setItem(`order_${tableName}`, JSON.stringify(orderDetails));
-
-		setShowPaymentModal(true);
+		// Pokaż okienko weryfikacji gości zamiast od razu płatności
+		setVerifiedGuestCount(guestCount);
+		setShowGuestVerifyModal(true);
 	};
-
 	const handlePaymentComplete = () => {
 		// DODAJ TO NA POCZĄTKU - zapisz obsłużonych gości
 		const currentServed = parseInt(
@@ -692,12 +681,87 @@ const MenuManager = ({
 		comment: "",
 		paymentMethod: "",
 	});
+	const [showGuestVerifyModal, setShowGuestVerifyModal] = useState(false);
+	const [verifiedGuestCount, setVerifiedGuestCount] = useState(1);
+	const handleVerifyGuests = () => {
+		// Zapisz poprawioną liczbę gości
+		setGuestCount(verifiedGuestCount);
+		localStorage.setItem(
+			`guestCount_${tableName}`,
+			verifiedGuestCount.toString(),
+		);
 
+		// Zamknij okienko weryfikacji
+		setShowGuestVerifyModal(false);
+
+		// Otwórz normalne okno płatności (stara logika z handleRozliczClick)
+		const currentTime = new Date().toISOString();
+		const orderDetails = {
+			tableName: currentTableName,
+			selectedItems,
+			totalPrice,
+			adjustments,
+			orderTime: currentTime,
+		};
+		localStorage.setItem(`order_${tableName}`, JSON.stringify(orderDetails));
+		setShowPaymentModal(true);
+	};
+
+	const handleGuestVerifyChange = (e) => {
+		const value = e.target.value; // nie parsuj od razu!
+
+		// Pozwól na puste pole lub pojedyncze cyfry podczas pisania
+		if (value === "" || value === "0") {
+			setVerifiedGuestCount(""); // tymczasowo puste
+			return;
+		}
+
+		const numValue = parseInt(value, 10);
+		if (!isNaN(numValue) && numValue >= 1) {
+			setVerifiedGuestCount(numValue);
+		}
+	};
+
+	const incrementVerifiedGuests = () =>
+		setVerifiedGuestCount((prev) => prev + 1);
+	const decrementVerifiedGuests = () =>
+		setVerifiedGuestCount((prev) => Math.max(1, prev - 1));
+
+	const handleCancelVerify = () => {
+		setShowGuestVerifyModal(false);
+	};
 	return (
 		<>
 			<div className={`menu-manager-overlay ${tableStatus}`} ref={overlayRef}>
 				<div className="menu-manager" ref={modalRef}>
 					<div className="menu-header">
+						{/* PRZYCISKI NA GÓRZE */}
+						<div className="top-buttons">
+							<button onClick={onClose}>Zamknij</button>
+							{showRozliczButton && (
+								<button onClick={handleRozliczClick}>Rozlicz</button>
+							)}
+							<Print
+								waiterName={waiterName}
+								selectedItems={selectedItems}
+								tableName={tableName}
+								pickupTime={pickupTime}
+								customPickupTime={customPickupTime}
+								pickupTimeData={pickupTimeData}
+								deliveryDetails={deliveryDetails}
+								showDeliveryDetails={showDeliveryDetails}
+								onClose={onClose}
+								totalAmount={totalAmount}
+								discountAmount={discountAmount}
+								serviceCharge={serviceCharge}
+								adjustments={adjustments}
+								calculateAdjustedTotal={calculateAdjustedTotal}
+								isWynos={isWynos}
+								discountMessage={discountMessage}
+								resetTable={resetTable}
+							/>
+						</div>
+
 						<h2>
 							{currentTableName} - Kelner: {waiterName}
 						</h2>
@@ -781,7 +845,7 @@ const MenuManager = ({
 					<div className="selected-items">
 						<ul>
 							{selectedItems.map((item, index) => (
-								<li key={item.uniqueId}>
+								<li key={`${item.uniqueId}-${index}`}>
 									{item.name} - {item.price ? item.price : 0} zł x{" "}
 									{item.quantity} =
 									<span className="final-amount">
@@ -966,33 +1030,64 @@ const MenuManager = ({
 							</ul>
 						</div>
 					</div>
-					<div className="modal-buttons">
-						<button onClick={onClose}>Zamknij</button>
 
-						{showRozliczButton && (
-							<button onClick={handleRozliczClick}>Rozlicz</button>
-						)}
+					{showGuestVerifyModal && (
+						<div
+							className="guest-verify-modal-overlay"
+							onClick={(e) =>
+								e.target === e.currentTarget && handleCancelVerify()
+							}>
+							<div className="guest-verify-modal">
+								<h3>Weryfikacja liczby gości</h3>
+								<p>Czy tyle było gości przy tym stoliku?</p>
 
-						<Print
-							waiterName={waiterName}
-							selectedItems={selectedItems}
-							tableName={tableName}
-							pickupTime={pickupTime}
-							customPickupTime={customPickupTime}
-							pickupTimeData={pickupTimeData}
-							deliveryDetails={deliveryDetails}
-							showDeliveryDetails={showDeliveryDetails}
-							onClose={onClose}
-							totalAmount={totalAmount}
-							discountAmount={discountAmount}
-							serviceCharge={serviceCharge}
-							adjustments={adjustments}
-							calculateAdjustedTotal={calculateAdjustedTotal}
-							isWynos={isWynos}
-							discountMessage={discountMessage}
-							resetTable={resetTable}
-						/>
-					</div>
+								<div className="guest-verify-input-container">
+									<button
+										className="guest-btn"
+										onClick={decrementVerifiedGuests}>
+										−
+									</button>
+									<input
+										type="number"
+										min="1"
+										value={verifiedGuestCount === "" ? "" : verifiedGuestCount}
+										onChange={handleGuestVerifyChange}
+										onFocus={(e) => e.target.select()} // zaznacza całość przy kliknięciu
+										className="guest-input"
+										onKeyDown={(e) => {
+											if (e.key === "Enter") {
+												const finalValue =
+													verifiedGuestCount === ""
+														? 1
+														: parseInt(verifiedGuestCount, 10);
+												setVerifiedGuestCount(finalValue);
+												handleVerifyGuests();
+											}
+										}}
+										autoFocus
+									/>
+									<button
+										className="guest-btn"
+										onClick={incrementVerifiedGuests}>
+										+
+									</button>
+								</div>
+
+								<div className="guest-verify-buttons">
+									<button className="btn-confirm" onClick={handleVerifyGuests}>
+										Tak ✓ (Enter)
+									</button>
+									<button className="btn-cancel" onClick={handleCancelVerify}>
+										Anuluj
+									</button>
+								</div>
+
+								<p className="guest-verify-hint">
+									Możesz poprawić liczbę gości jeśli kelner zapomniał
+								</p>
+							</div>
+						</div>
+					)}
 					{showPaymentModal && (
 						<div className="payment-modal">
 							<PaymentManager

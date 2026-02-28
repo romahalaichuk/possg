@@ -597,16 +597,19 @@ const Print = ({
 				style={{
 					marginTop: "15px",
 					padding: "10px 5px",
-					fontStyle: "italic",
-					fontSize: "13pt",
+					fontStyle: "normal",
+					fontWeight: "900", // extra bold
+					fontSize: "10pt", // mała = gruba
 					textAlign: "center",
-					borderTop: "1px dashed #ccc",
-					borderBottom: "1px dashed #ccc",
-					color: "#555",
-					backgroundColor: "#f9f9f9",
+					border: "10px solid #000", // ramka wokół
+					color: "#000",
+					backgroundColor: "#fff",
+					textTransform: "uppercase",
+					letterSpacing: "1px",
+					fontFamily: "Arial, Helvetica, sans-serif", // bezszeryfowa
 				}}>
 				{" "}
-				✨ {dailyMessage} ✨{" "}
+				✨ {dailyMessage.toUpperCase()} ✨{" "}
 			</div>
 			<div className="dashed-line"></div>
 		</div>
