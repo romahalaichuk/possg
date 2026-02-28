@@ -730,6 +730,30 @@ const MenuManager = ({
 	const handleCancelVerify = () => {
 		setShowGuestVerifyModal(false);
 	};
+	const isPlainItem = (item) => {
+		return (
+			(!item.extras || item.extras.length === 0) &&
+			(!item.comment || item.comment.trim() === "")
+		);
+	};
+	const groupedItems = [];
+
+	selectedItems.forEach((item) => {
+		if (!isPlainItem(item)) {
+			groupedItems.push({ ...item, mergedQuantity: item.quantity });
+			return;
+		}
+
+		const existing = groupedItems.find(
+			(g) => isPlainItem(g) && g.name === item.name && g.size === item.size,
+		);
+
+		if (existing) {
+			existing.mergedQuantity += item.quantity;
+		} else {
+			groupedItems.push({ ...item, mergedQuantity: item.quantity });
+		}
+	});
 	return (
 		<>
 			<div className={`menu-manager-overlay ${tableStatus}`} ref={overlayRef}>

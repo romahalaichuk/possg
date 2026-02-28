@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import TableManager from "./components/TableManager";
 import Music from "../src/Music"; // Dodaj ten import
 import "./App.css";
-
+import cursorImg from "./components/6f3f9a16-9d30-4051-b4bf-c54bef9698e4.png";
 const videoUrls = [
 	"https://www.youtube.com/embed/ZGnLVjkBEls?autoplay=1&mute=1",
 	"https://www.youtube.com/embed/Btt_7wLpwxM?autoplay=1&mute=1",
@@ -354,6 +354,24 @@ const ButterflyCanvas = () => {
 		/>
 	);
 };
+const CustomCursor = () => {
+	const cursorRef = useRef(null);
+
+	useEffect(() => {
+		const move = (e) => {
+			if (cursorRef.current) {
+				cursorRef.current.style.left = e.clientX + "px";
+				cursorRef.current.style.top = e.clientY + "px";
+			}
+		};
+		window.addEventListener("mousemove", move);
+		return () => window.removeEventListener("mousemove", move);
+	}, []);
+
+	return (
+		<img ref={cursorRef} src={cursorImg} className="custom-cursor" alt="" />
+	);
+};
 function App() {
 	const [currentUrl, setCurrentUrl] = useState(videoUrls[0]);
 	const [key, setKey] = useState(Date.now());
@@ -390,6 +408,7 @@ function App() {
 
 	return (
 		<div className={`App ${isFullscreen ? "fullscreen" : ""}`}>
+			<CustomCursor />
 			{isFullscreen && (
 				<div className="buttons">
 					<button onClick={exitFullscreen}>Exit Fullscreen</button>

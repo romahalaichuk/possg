@@ -1,3 +1,21 @@
+*,
+*::before,
+*::after {
+	cursor: none !important;
+}
+
+iframe {
+	cursor: none !important;
+}
+
+.custom-cursor {
+	position: fixed;
+	width: 72px;
+	height: 72px;
+	pointer-events: none;
+	z-index: 2147483647;
+	transform: translate(-25%, -15%);
+}
 .App {
 	display: flex;
 	justify-content: center;
