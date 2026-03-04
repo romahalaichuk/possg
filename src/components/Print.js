@@ -601,7 +601,7 @@ const Print = ({
 					fontWeight: "900", // extra bold
 					fontSize: "10pt", // mała = gruba
 					textAlign: "center",
-					border: "10px solid #000", // ramka wokół
+					border: "5px solid #000", // ramka wokół
 					color: "#000",
 					backgroundColor: "#fff",
 					textTransform: "uppercase",

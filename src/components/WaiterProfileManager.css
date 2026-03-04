@@ -68,7 +68,9 @@
 	align-items: center;
 	white-space: nowrap;
 	background-color: transparent;
-	transition: transform 0.3s ease, opacity 0.3s ease;
+	transition:
+		transform 0.3s ease,
+		opacity 0.3s ease;
 }
 
 .profile-card.active {
@@ -123,4 +125,52 @@
 
 .modal-content button:hover {
 	background-color: #45a049;
+}
+.prediction-slip {
+	width: 260px;
+	padding: 15px;
+	border: 3px double #000;
+	text-align: center;
+	font-family: "Courier New", monospace;
+	font-size: 18px;
+	line-height: 1.5;
+}
+
+.prediction-title {
+	font-weight: 900;
+	font-size: 26px;
+	letter-spacing: 2px;
+	margin: 10px 0;
+	text-transform: uppercase;
+}
+
+.prediction-stars {
+	font-size: 28px;
+	margin: 8px 0;
+}
+
+.prediction-text {
+	margin: 15px 0;
+	font-size: 20px;
+	font-weight: 600;
+	white-space: pre-wrap;
+}
+@media print {
+	body * {
+		visibility: hidden !important;
+	}
+
+	#prediction-print-area,
+	#prediction-print-area * {
+		visibility: visible !important;
+	}
+
+	#prediction-print-area {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		padding: 10px;
+		font-family: "Courier New", monospace;
+	}
 }
