@@ -2576,5 +2576,11 @@ export const products = [
 		category: "Makaron",
 		emoji: "🍺",
 	},
+	{
+		id: 433,
+		name: "LUNCH słodkie policzki (Zupa+drugie+deser)",
+		price: 42,
+		category: "Makaron",
+		emoji: "🍺",
+	},
 ];
-// id 390 start
