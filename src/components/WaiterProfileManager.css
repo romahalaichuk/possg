@@ -1,176 +1,275 @@
+/* ========== PODSTAWOWE STYLE ========== */
 .waiter-profile-manager {
 	position: fixed;
 	top: 10px;
-	/* left: 10px; */
-
+	left: 10px;
+	right: 10px;
 	border-radius: 5px;
 	max-width: 100vw;
-}
-
-.header-section {
-	display: flex;
-	align-items: center;
-	gap: 20px;
-	margin-bottom: 20px;
+	z-index: 100;
 }
 
 .add-waiter {
 	display: flex;
 	flex-direction: row;
 	gap: 10px;
+	flex-wrap: wrap;
+	align-items: center;
 }
 
 .add-waiter input {
 	flex-grow: 1;
-	padding: 5px;
+	padding: 8px;
 	font-size: 14px;
 	border: 1px solid #ccc;
 	border-radius: 3px;
+	min-width: 120px;
 }
 
 .add-waiter button {
-	padding: 5px 10px;
+	padding: 8px 16px;
 	font-size: 14px;
 	background-color: #007bff;
 	color: #fff;
 	border: none;
 	border-radius: 3px;
 	cursor: pointer;
+	transition: background-color 0.2s;
 }
 
 .add-waiter button:hover {
 	background-color: #0056b3;
 }
 
+.prediction-btn {
+	margin-left: 10px;
+	background: linear-gradient(135deg, #8e44ad, #9b59b6) !important;
+	color: white;
+	font-weight: bold;
+}
+
+/* ========== LISTA PROFILI ========== */
 .profile-list {
-	display: flex; /*test*/
+	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	gap: 5px; /*test*/
-
-	border: 1px solid transparent;
-	border-radius: 5px;
+	gap: 8px;
+	margin-top: 10px;
 }
 
 .profile-card {
 	flex: 1 1 calc(20% - 20px);
-	min-width: 30px;
-
-	width: 50px;
-	padding: 10px;
+	min-width: 80px;
+	padding: 12px;
 	color: #fff;
 	cursor: pointer;
-	border-radius: 58px;
+	border-radius: 50px;
 	text-align: center;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	white-space: nowrap;
-	background-color: transparent;
 	transition:
 		transform 0.3s ease,
 		opacity 0.3s ease;
+	font-weight: 500;
 }
 
 .profile-card.active {
-	transform: scale(1.2);
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	transform: scale(1.15);
+	box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+	border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 .profile-card.inactive {
-	opacity: 0.5;
+	opacity: 0.6;
 }
 
+/* ========== MODALE ========== */
 .password-modal-overlay {
 	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0, 0, 0, 0.6);
-
+	background-color: rgba(0, 0, 0, 0.7);
+	display: flex;
 	justify-content: center;
 	align-items: center;
 	z-index: 9999;
 }
 
 .modal-content {
-	background-color: white;
-	padding: 20px;
-	border-radius: 8px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+	background: white;
+	padding: 30px;
+	border-radius: 12px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 	text-align: center;
-	z-index: 10000;
+	min-width: 300px;
 }
 
 .modal-content input {
 	width: 100%;
-	padding: 10px;
-	margin-top: 10px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
+	padding: 12px;
+	margin: 10px 0;
+	border: 2px solid #e0e0e0;
+	border-radius: 6px;
 	font-size: 16px;
 }
 
 .modal-content button {
-	margin-top: 10px;
-	padding: 10px 20px;
+	margin: 5px;
+	padding: 10px 24px;
 	border: none;
 	background-color: #4caf50;
 	color: white;
 	cursor: pointer;
-	border-radius: 4px;
+	border-radius: 6px;
 }
 
-.modal-content button:hover {
-	background-color: #45a049;
+.modal-content button:last-child {
+	background-color: #e74c3c;
 }
+
+.gender-buttons {
+	display: flex;
+	gap: 20px;
+	margin: 20px 0;
+	justify-content: center;
+}
+
+.gender-btn {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	padding: 20px 30px !important;
+	font-size: 16px !important;
+	min-width: 120px;
+}
+
+.gender-btn.male {
+	background: linear-gradient(135deg, #3498db, #2980b9) !important;
+}
+
+.gender-btn.female {
+	background: linear-gradient(135deg, #e91e63, #c2185b) !important;
+}
+
+.gender-icon {
+	font-size: 32px;
+}
+
+/* ========== STYLE DRUKOWANIA - NAJWAŻNIEJSZE! ========== */
+
+/* 🔴 Kontener drukowania - UKRYTY na ekranie, ale widoczny dla drukarki */
+#prediction-print-area {
+	position: absolute;
+	left: -9999px;
+	top: 0;
+	width: 1px;
+	height: 1px;
+	overflow: visible;
+}
+
+/* Style paragonu */
 .prediction-slip {
-	width: 260px;
-	padding: 15px;
-	border: 3px double #000;
+	width: 76mm;
+	padding: 10mm 5mm;
+	background: white;
+	border: 2px solid #000;
 	text-align: center;
 	font-family: "Courier New", monospace;
-	font-size: 18px;
+	font-size: 14px;
 	line-height: 1.5;
+	color: #000;
+	box-sizing: border-box;
 }
 
 .prediction-title {
 	font-weight: 900;
-	font-size: 26px;
-	letter-spacing: 2px;
+	font-size: 18px;
+	letter-spacing: 1px;
 	margin: 10px 0;
 	text-transform: uppercase;
+	border-bottom: 2px solid #000;
+	padding-bottom: 8px;
 }
 
 .prediction-stars {
-	font-size: 28px;
+	font-size: 20px;
 	margin: 8px 0;
+}
+
+.prediction-divider {
+	font-size: 12px;
+	margin: 10px 0;
+	letter-spacing: 1px;
 }
 
 .prediction-text {
 	margin: 15px 0;
-	font-size: 20px;
+	font-size: 16px;
 	font-weight: 600;
-	white-space: pre-wrap;
+	line-height: 1.6;
+	padding: 0 5px;
+	font-style: italic;
 }
+
+.prediction-date {
+	font-size: 11px;
+	margin-top: 10px;
+	color: #666;
+}
+
+/* ========== MEDIA PRINT - KLUCZOWE! ========== */
 @media print {
+	@page {
+		size: 80mm auto;
+		margin: 0;
+	}
+
+	/* Ukryj WSZYSTKO */
 	body * {
 		visibility: hidden !important;
 	}
 
+	/* Pokaż TYLKO strefę druku i jej dzieci */
 	#prediction-print-area,
 	#prediction-print-area * {
 		visibility: visible !important;
 	}
 
+	/* Pozycjonowanie strefy druku */
 	#prediction-print-area {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		padding: 10px;
-		font-family: "Courier New", monospace;
+		position: fixed !important;
+		left: 0 !important;
+		top: 0 !important;
+		width: 100% !important;
+		height: 100% !important;
+		background: white !important;
+		display: flex !important;
+		justify-content: center !important;
+		align-items: flex-start !important;
+		padding-top: 10mm !important;
+	}
+
+	.prediction-slip {
+		border: none !important;
+		box-shadow: none !important;
+	}
+}
+
+/* ========== RESPONSYWNOŚĆ ========== */
+@media (max-width: 768px) {
+	.add-waiter {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.prediction-btn {
+		margin-left: 0;
+		margin-top: 10px;
 	}
 }

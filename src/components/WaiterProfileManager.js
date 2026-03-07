@@ -319,8 +319,6 @@ const saveTablesToLocalStorage = (profileId, tables) => {
 	localStorage.setItem(TABLES_STORAGE_KEY, JSON.stringify(storedTables));
 };
 
-// USUNIĘTA FUNKCJA loadTablesFromLocalStorage, BO NIE JEST UŻYWANA
-
 const capitalizeName = (name) => {
 	return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 };
@@ -333,10 +331,10 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 	const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 	const [passwordInput, setPasswordInput] = useState("");
 	const [selectedProfile, setSelectedProfile] = useState(null);
-
 	const [isGenderSelectOpen, setIsGenderSelectOpen] = useState(false);
 
-	// Ref do ustawienia focusa na pole hasła
+	// 🔴 FLAGA BLOKUJĄCA PODWÓJNE DRUKOWANIE
+	const isPrintingRef = useRef(false);
 	const passwordInputRef = useRef(null);
 
 	useEffect(() => {
@@ -344,7 +342,6 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 		setProfiles(storedProfiles);
 	}, []);
 
-	// Ustawienie focusa na polu hasła po otwarciu modala
 	useEffect(() => {
 		if (isPasswordModalOpen && passwordInputRef.current) {
 			passwordInputRef.current.focus();
@@ -358,18 +355,16 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 		}
 
 		const formattedName = capitalizeName(newProfileName);
-
 		const newProfile = {
-			id: profiles.length + 1,
+			id: Date.now(),
 			name: formattedName,
-			password: newProfilePassword, // Dodajemy hasło do profilu
+			password: newProfilePassword,
 			color: getRandomColor(),
 		};
 
 		const updatedProfiles = [...profiles, newProfile];
 		setProfiles(updatedProfiles);
 		saveProfilesToLocalStorage(updatedProfiles);
-
 		saveTablesToLocalStorage(newProfile.id, []);
 		setNewProfileName("");
 		setNewProfilePassword("");
@@ -377,69 +372,125 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 
 	const handleProfileSelect = (profile) => {
 		setSelectedProfile(profile);
-		setIsPasswordModalOpen(true); // Otwieramy modal do wprowadzenia hasła
+		setIsPasswordModalOpen(true);
 	};
+
 	const getRandomPrediction = (arr) => {
 		return arr[Math.floor(Math.random() * arr.length)];
 	};
+
 	const printPrediction = (text) => {
-		const printArea = document.getElementById("prediction-print-area");
+		if (isPrintingRef.current) return;
+		isPrintingRef.current = true;
 
-		if (!printArea) return;
+		// Stwórz ukryty iframe
+		const iframe = document.createElement("iframe");
+		iframe.style.position = "fixed";
+		iframe.style.bottom = "-1000px";
+		iframe.style.right = "-1000px";
+		iframe.style.width = "1px";
+		iframe.style.height = "1px";
+		iframe.style.border = "none";
 
-		printArea.style.display = "block";
+		document.body.appendChild(iframe);
 
-		printArea.innerHTML = `
-        <div class="prediction-slip">
-            <div class="prediction-stars">✨ ✨ ✨</div>
-            <div class="prediction-title">WRÓŻBITA LUNDORA</div>
-            <div>==============================</div>
-            <div class="prediction-text">${text}</div>
-            <div>==============================</div>
-            <div class="prediction-stars">✨ ✨ ✨</div>
-        </div>
-    `;
+		const doc = iframe.contentWindow.document;
 
-		window.print();
+		doc.open();
+		doc.write(`
+		<!DOCTYPE html>
+		<html>
+		<head>
+			<meta charset="UTF-8">
+			<style>
+				* { margin: 0; padding: 0; box-sizing: border-box; }
+				body { 
+					font-family: "Courier New", Courier, monospace; 
+					background: white;
+					padding: 10px;
+					width: 80mm;
+				}
+				.slip { 
+					width: 76mm; 
+					text-align: center; 
+					border: 2px solid #000; 
+					padding: 15px 10px;
+				}
+				.stars { font-size: 22px; margin: 8px 0; letter-spacing: 4px; }
+				.title { 
+					font-size: 20px; 
+					font-weight: 900; 
+					border-bottom: 2px solid #000; 
+					padding: 10px 0;
+					margin: 10px 0;
+					text-transform: uppercase;
+				}
+				.divider { font-size: 12px; margin: 12px 0; letter-spacing: 2px; }
+				.text { 
+					font-size: 16px; 
+					font-weight: 600;
+					font-style: italic; 
+					margin: 15px 0; 
+					line-height: 1.6;
+				}
+				.date { font-size: 11px; color: #666; margin-top: 10px; }
+			</style>
+		</head>
+		<body>
+			<div class="slip">
+				<div class="stars">✨ ✨ ✨</div>
+				<div class="title">WRÓŻBITA LUNDORA</div>
+				<div class="divider">==============================</div>
+				<div class="text">${text}</div>
+				<div class="divider">==============================</div>
+				<div class="stars">✨ ✨ ✨</div>
+				<div class="date">${new Date().toLocaleDateString("pl-PL")}</div>
+			</div>
+		</body>
+		</html>
+	`);
+		doc.close();
 
-		printArea.style.display = "none";
+		// Drukuj z iframe
+		setTimeout(() => {
+			iframe.contentWindow.focus();
+			iframe.contentWindow.print();
+
+			// Usuń iframe po drukowaniu
+			setTimeout(() => {
+				document.body.removeChild(iframe);
+				isPrintingRef.current = false;
+			}, 1000);
+		}, 100);
 	};
-
 	const handlePredictionStart = () => {
 		setIsGenderSelectOpen(true);
 	};
 
 	const handleSelectMale = () => {
 		const text = getRandomPrediction(malePredictions);
-
-		printPrediction(text); // ← musi być pierwsze
-
-		setIsGenderSelectOpen(false); // ← dopiero po print()
+		printPrediction(text);
+		setIsGenderSelectOpen(false);
 	};
 
 	const handleSelectFemale = () => {
 		const text = getRandomPrediction(femalePredictions);
-
 		printPrediction(text);
-
 		setIsGenderSelectOpen(false);
 	};
 
 	const handlePasswordSubmit = () => {
-		// Sprawdzenie hasła
 		if (passwordInput === selectedProfile.password) {
-			console.log("Wybrany profil:", selectedProfile);
 			onProfileSelect(selectedProfile);
 			setActiveProfileId(selectedProfile.id);
 			setIsPasswordModalOpen(false);
-			setPasswordInput(""); // Resetujemy pole hasła
+			setPasswordInput("");
 		} else {
 			alert("Nieprawidłowe hasło");
-			setPasswordInput(""); // Czyścimy pole hasła
+			setPasswordInput("");
 		}
 	};
 
-	// Obsługa klawisza Enter
 	const handleKeyPress = (e) => {
 		if (e.key === "Enter") {
 			handlePasswordSubmit();
@@ -447,8 +498,7 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 	};
 
 	const handleNameChange = (e) => {
-		const inputValue = e.target.value;
-		setNewProfileName(capitalizeName(inputValue));
+		setNewProfileName(capitalizeName(e.target.value));
 	};
 
 	const handlePasswordChange = (e) => {
@@ -458,7 +508,7 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 	return (
 		<div className="waiter-profile-manager">
 			<div className="add-waiter">
-				<form autoComplete="off">
+				<form autoComplete="off" onSubmit={(e) => e.preventDefault()}>
 					<input
 						type="text"
 						placeholder="Nazwa kelnera"
@@ -466,7 +516,6 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 						onChange={handleNameChange}
 						autoComplete="off"
 						name="new-waiter-name"
-						inputMode="text"
 					/>
 					<input
 						type="password"
@@ -478,21 +527,11 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 					/>
 				</form>
 				<button onClick={handleAddProfile}>Dodaj kelnera</button>
-				<button
-					style={{
-						marginLeft: "10px",
-						backgroundColor: "#8e44ad",
-						color: "white",
-						padding: "8px 12px",
-						borderRadius: "6px",
-						border: "none",
-						cursor: "pointer",
-						fontWeight: "bold",
-					}}
-					onClick={handlePredictionStart}>
+				<button className="prediction-btn" onClick={handlePredictionStart}>
 					Wróżbita Lundora
 				</button>
 			</div>
+
 			<div className="profile-list">
 				{profiles.map((profile) => (
 					<div
@@ -506,23 +545,20 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 					</div>
 				))}
 			</div>
-			{/* Modal do wprowadzania hasła */}
+
 			{isPasswordModalOpen && (
 				<div className="password-modal-overlay">
 					<div className="modal-content">
-						<h3>Wprowadź hasło dla profilu: {selectedProfile?.name}</h3>
-						<form autoComplete="off">
-							<input
-								type="password"
-								placeholder="Hasło"
-								value={passwordInput}
-								onChange={(e) => setPasswordInput(e.target.value)}
-								ref={passwordInputRef} // Ref do focusa
-								onKeyPress={handleKeyPress} // Obsługa Enter
-								autoComplete="new-password" // Wyłączenie autouzupełniania
-								name="password-input"
-							/>
-						</form>
+						<h3>Wprowadź hasło: {selectedProfile?.name}</h3>
+						<input
+							type="password"
+							placeholder="Hasło"
+							value={passwordInput}
+							onChange={(e) => setPasswordInput(e.target.value)}
+							ref={passwordInputRef}
+							onKeyPress={handleKeyPress}
+							autoComplete="new-password"
+						/>
 						<button onClick={handlePasswordSubmit}>Potwierdź</button>
 						<button onClick={() => setIsPasswordModalOpen(false)}>
 							Anuluj
@@ -530,19 +566,31 @@ const WaiterProfileManager = ({ onProfileSelect }) => {
 					</div>
 				</div>
 			)}
+
 			{isGenderSelectOpen && (
 				<div className="password-modal-overlay">
-					<div className="modal-content">
+					<div className="modal-content gender-modal">
 						<h3>Wróżba dla kogo?</h3>
-
-						<button onClick={handleSelectMale}>Facet</button>
-						<button onClick={handleSelectFemale}>Kobieta</button>
-
-						<button onClick={() => setIsGenderSelectOpen(false)}>Anuluj</button>
+						<div className="gender-buttons">
+							<button className="gender-btn male" onClick={handleSelectMale}>
+								<span className="gender-icon">👨</span>
+								Facet
+							</button>
+							<button
+								className="gender-btn female"
+								onClick={handleSelectFemale}>
+								<span className="gender-icon">👩</span>
+								Kobieta
+							</button>
+						</div>
+						<button
+							className="cancel-btn"
+							onClick={() => setIsGenderSelectOpen(false)}>
+							Anuluj
+						</button>
 					</div>
 				</div>
 			)}
-			<div id="prediction-print-area" style={{ display: "none" }}></div>;
 		</div>
 	);
 };
