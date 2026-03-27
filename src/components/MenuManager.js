@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import "./MenuManager.css";
 import { products } from "./Produkt";
 import PaymentManager from "./PaymentManager";
@@ -526,12 +526,12 @@ const MenuManager = ({
 		setTotalPrice(totalPrice);
 	};
 
-	const handleRozliczClick = () => {
+	const handleRozliczClick = useCallback(() => {
 		setVerifiedGuestCount(guestCount);
 		setTimeout(() => {
 			setShowGuestVerifyModal(true);
 		}, 0);
-	};
+	}, [guestCount]);
 
 	useEffect(() => {
 		let buffer = "";
@@ -540,7 +540,6 @@ const MenuManager = ({
 		const handleKeyPress = (e) => {
 			const now = Date.now();
 
-			// reset bufora jeśli przerwa > 1 sekundy
 			if (now - lastKeyTime > 1000) {
 				buffer = "";
 			}
@@ -550,18 +549,15 @@ const MenuManager = ({
 			const key = e.key.toLowerCase();
 			buffer += key;
 
-			// trzymamy ostatnie 2 znaki
 			if (buffer.length > 2) {
 				buffer = buffer.slice(-2);
 			}
 
-			// ER
 			if (buffer === "er" && showRozliczButton) {
 				handleRozliczClick();
 				buffer = "";
 			}
 
-			// samo R
 			if (key === "r" && showRozliczButton) {
 				handleRozliczClick();
 			}
@@ -569,7 +565,7 @@ const MenuManager = ({
 
 		window.addEventListener("keydown", handleKeyPress);
 		return () => window.removeEventListener("keydown", handleKeyPress);
-	}, [showRozliczButton, guestCount]);
+	}, [showRozliczButton, handleRozliczClick]);
 	const handlePaymentComplete = () => {
 		const currentServed = parseInt(
 			localStorage.getItem("totalServedGuests") || "0",
