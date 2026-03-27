@@ -1,0 +1,50 @@
+/* components/Calendar.css */
+.calendar {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 20px;
+}
+
+.calendar-grid {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 10px;
+	margin: 20px 0;
+}
+
+.calendar-day {
+	border: 1px solid #ddd;
+	padding: 10px;
+	text-align: center;
+	cursor: pointer;
+	position: relative;
+}
+
+.has-reservation {
+	background-color: #b3e6b3; /* Kolor dla dni z rezerwacjami */
+}
+
+.soon {
+	border: 2px solid red; /* Czerwony kolor dla dni bliskich rezerwacjom */
+}
+
+.reservation {
+	font-size: 0.9em;
+	margin-top: 5px;
+	cursor: pointer; /* Umożliwia kliknięcie */
+}
+
+.reservation-time {
+	font-weight: bold;
+}
+
+.remove-button {
+	margin-left: 5px;
+	color: red;
+	cursor: pointer;
+}
+
+.reservation-form {
+	margin-top: 10px;
+}

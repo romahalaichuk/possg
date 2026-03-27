@@ -310,7 +310,7 @@ const Dodatki = ({
 			{showModal && (
 				<ExtrasModal
 					extras={availableExtras.filter(
-						(extra) => !pizzaSize || extra.cm === pizzaSize
+						(extra) => !pizzaSize || extra.cm === pizzaSize,
 					)}
 					onClose={closeModal}
 					onAddExtra={handleAddExtraToItem}
