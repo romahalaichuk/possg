@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import "./PaymentManager.css";
@@ -24,63 +24,9 @@ const PaymentManager = ({
 
 	const inputRef = useRef(null);
 
-	// Obliczanie końcowej kwoty
-	useEffect(() => {
-		let calculatedAmount = adjustedTotalAmount;
-		calculatedAmount += addToBill;
-		calculatedAmount -= subtractFromBill;
-		setFinalAmount(calculatedAmount);
-	}, [adjustedTotalAmount, addToBill, subtractFromBill]);
+	// ✅ FUNKCJE NAJPIERW (useCallback)
 
-	// Obliczanie reszty
-	useEffect(() => {
-		const amountGivenNumber = parseFloat(amountGiven);
-		if (!isNaN(amountGivenNumber)) {
-			const change = amountGivenNumber - finalAmount;
-			setChangeAmount(change > 0 ? change : 0);
-		} else {
-			setChangeAmount(0);
-		}
-	}, [amountGiven, finalAmount]);
-
-	// Autofocus na input przy gotówce
-	useEffect(() => {
-		if (selectedPaymentType === "GOTÓWA") {
-			setTimeout(() => {
-				inputRef.current?.focus();
-			}, 100);
-		}
-	}, [selectedPaymentType]);
-
-	// Obsługa klawiatury
-	useEffect(() => {
-		const handleKeyPress = (e) => {
-			// wybór płatności
-			if (selectedPaymentType === null) {
-				if (e.key.toLowerCase() === "g") {
-					setSelectedPaymentType("GOTÓWA");
-				}
-				if (e.key.toLowerCase() === "k") {
-					setSelectedPaymentType("KARTA");
-				}
-			}
-
-			// ENTER = opłacone
-			if (e.key === "Enter" && selectedPaymentType !== null) {
-				handleFinalizePayment();
-			}
-
-			// ESC = cofnięcie / zamknięcie
-			if (e.key === "Escape") {
-				handleCancelPayment();
-			}
-		};
-
-		window.addEventListener("keydown", handleKeyPress);
-		return () => window.removeEventListener("keydown", handleKeyPress);
-	}, [selectedPaymentType, amountGiven, changeAmount]);
-
-	const handleFinalizePayment = () => {
+	const handleFinalizePayment = useCallback(() => {
 		const paymentDetails = {
 			tableName,
 			waiterName,
@@ -109,15 +55,83 @@ const PaymentManager = ({
 
 		setSelectedPaymentType(null);
 		onClose(paymentDetails);
-	};
+	}, [
+		tableName,
+		waiterName,
+		finalAmount,
+		discountAmount,
+		serviceCharge,
+		addToBill,
+		subtractFromBill,
+		selectedPaymentType,
+		amountGiven,
+		changeAmount,
+		selectedItems,
+		removedItems,
+		adjustments,
+		onClose,
+	]);
 
-	const handleCancelPayment = () => {
+	const handleCancelPayment = useCallback(() => {
 		if (selectedPaymentType === null) {
 			setModalVisible(false);
 		} else {
 			setSelectedPaymentType(null);
 		}
-	};
+	}, [selectedPaymentType]);
+
+	// Obliczanie końcowej kwoty
+	useEffect(() => {
+		let calculatedAmount = adjustedTotalAmount;
+		calculatedAmount += addToBill;
+		calculatedAmount -= subtractFromBill;
+		setFinalAmount(calculatedAmount);
+	}, [adjustedTotalAmount, addToBill, subtractFromBill]);
+
+	// Obliczanie reszty
+	useEffect(() => {
+		const amountGivenNumber = parseFloat(amountGiven);
+		if (!isNaN(amountGivenNumber)) {
+			const change = amountGivenNumber - finalAmount;
+			setChangeAmount(change > 0 ? change : 0);
+		} else {
+			setChangeAmount(0);
+		}
+	}, [amountGiven, finalAmount]);
+
+	// Autofocus
+	useEffect(() => {
+		if (selectedPaymentType === "GOTÓWA") {
+			setTimeout(() => {
+				inputRef.current?.focus();
+			}, 100);
+		}
+	}, [selectedPaymentType]);
+
+	// ✅ KLUCZOWY FIX (keyboard)
+	useEffect(() => {
+		const handleKeyPress = (e) => {
+			if (selectedPaymentType === null) {
+				if (e.key.toLowerCase() === "g") {
+					setSelectedPaymentType("GOTÓWA");
+				}
+				if (e.key.toLowerCase() === "k") {
+					setSelectedPaymentType("KARTA");
+				}
+			}
+
+			if (e.key === "Enter" && selectedPaymentType !== null) {
+				handleFinalizePayment();
+			}
+
+			if (e.key === "Escape") {
+				handleCancelPayment();
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyPress);
+		return () => window.removeEventListener("keydown", handleKeyPress);
+	}, [selectedPaymentType, handleFinalizePayment, handleCancelPayment]);
 
 	return modalVisible ? (
 		<div className="payment-manager-overlay">
