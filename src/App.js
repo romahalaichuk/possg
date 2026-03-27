@@ -323,6 +323,7 @@ const ButterflyCanvas = () => {
 							);
 						}
 					} else {
+						// <-- TERAZ DOBRZE
 						this.isFleeing = false;
 						this.fleeSpeed *= 0.92;
 						this.wingSpeed = 0.12 + Math.random() * 0.15;

@@ -338,7 +338,7 @@ const MenuManager = ({
 		setSearchResults([]);
 		setShowMenuItemsModal(false);
 		setSearchTerm("");
-	};
+	}; // <-- TEN ŚREDNIK I ZAMKNIĘCIE BRAKUJE W TWOIM KODZIE!
 	const handleItemSelectWithComment = (item) => {
 		// Zawsze czyść wyszukiwanie na początku
 		setSearchTerm("");
