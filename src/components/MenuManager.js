@@ -32,6 +32,7 @@ const MenuManager = ({
 	resetTable,
 }) => {
 	const [minutesToPickup, setMinutesToPickup] = useState("");
+
 	const [pickupTime, setPickupTime] = useState("");
 	const [customPickupTime, setCustomPickupTime] = useState("");
 	const [selectedItems, setSelectedItems] = useState([]);
@@ -526,12 +527,49 @@ const MenuManager = ({
 	};
 
 	const handleRozliczClick = () => {
-		// Pokaż okienko weryfikacji gości zamiast od razu płatności
-		setVerifiedGuestCount(guestCount);
+	setVerifiedGuestCount(guestCount);
+	setTimeout(() => {
 		setShowGuestVerifyModal(true);
-	};
+	}, 0);
+};
+	useEffect(() => {
+		let buffer = "";
+		let lastKeyTime = 0;
+
+		const handleKeyPress = (e) => {
+			const now = Date.now();
+
+			// reset bufora jeśli przerwa > 1 sekundy
+			if (now - lastKeyTime > 1000) {
+				buffer = "";
+			}
+
+			lastKeyTime = now;
+
+			const key = e.key.toLowerCase();
+			buffer += key;
+
+			// trzymamy ostatnie 2 znaki
+			if (buffer.length > 2) {
+				buffer = buffer.slice(-2);
+			}
+
+			// ER
+			if (buffer === "er" && showRozliczButton) {
+				handleRozliczClick();
+				buffer = "";
+			}
+
+			// samo R
+			if (key === "r" && showRozliczButton) {
+				handleRozliczClick();
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyPress);
+		return () => window.removeEventListener("keydown", handleKeyPress);
+	}, [showRozliczButton, guestCount]);
 	const handlePaymentComplete = () => {
-		// DODAJ TO NA POCZĄTKU - zapisz obsłużonych gości
 		const currentServed = parseInt(
 			localStorage.getItem("totalServedGuests") || "0",
 			10,
@@ -539,10 +577,8 @@ const MenuManager = ({
 		const newTotal = currentServed + guestCount;
 		localStorage.setItem("totalServedGuests", newTotal.toString());
 
-		// Wyczyść licznik dla tego stolika
 		localStorage.removeItem(`guestCount_${tableName}`);
 
-		// RESZTA TWOJEGO ISTNIEJĄCEGO KODU (bez zmian):
 		let servedWynosTables =
 			JSON.parse(localStorage.getItem("servedWynosTables")) || [];
 		if (!servedWynosTables.includes(tableName)) {
@@ -684,17 +720,14 @@ const MenuManager = ({
 	const [showGuestVerifyModal, setShowGuestVerifyModal] = useState(false);
 	const [verifiedGuestCount, setVerifiedGuestCount] = useState(1);
 	const handleVerifyGuests = () => {
-		// Zapisz poprawioną liczbę gości
 		setGuestCount(verifiedGuestCount);
 		localStorage.setItem(
 			`guestCount_${tableName}`,
 			verifiedGuestCount.toString(),
 		);
 
-		// Zamknij okienko weryfikacji
 		setShowGuestVerifyModal(false);
 
-		// Otwórz normalne okno płatności (stara logika z handleRozliczClick)
 		const currentTime = new Date().toISOString();
 		const orderDetails = {
 			tableName: currentTableName,

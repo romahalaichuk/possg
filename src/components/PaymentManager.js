@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import "./PaymentManager.css";
@@ -22,17 +22,17 @@ const PaymentManager = ({
 	const [modalVisible, setModalVisible] = useState(true);
 	const [finalAmount, setFinalAmount] = useState(adjustedTotalAmount);
 
-	useEffect(() => {
-		const calculateFinalAmount = () => {
-			let calculatedAmount = adjustedTotalAmount;
-			calculatedAmount += addToBill;
-			calculatedAmount -= subtractFromBill;
-			setFinalAmount(calculatedAmount);
-		};
+	const inputRef = useRef(null);
 
-		calculateFinalAmount();
+	// Obliczanie końcowej kwoty
+	useEffect(() => {
+		let calculatedAmount = adjustedTotalAmount;
+		calculatedAmount += addToBill;
+		calculatedAmount -= subtractFromBill;
+		setFinalAmount(calculatedAmount);
 	}, [adjustedTotalAmount, addToBill, subtractFromBill]);
 
+	// Obliczanie reszty
 	useEffect(() => {
 		const amountGivenNumber = parseFloat(amountGiven);
 		if (!isNaN(amountGivenNumber)) {
@@ -42,6 +42,43 @@ const PaymentManager = ({
 			setChangeAmount(0);
 		}
 	}, [amountGiven, finalAmount]);
+
+	// Autofocus na input przy gotówce
+	useEffect(() => {
+		if (selectedPaymentType === "GOTÓWA") {
+			setTimeout(() => {
+				inputRef.current?.focus();
+			}, 100);
+		}
+	}, [selectedPaymentType]);
+
+	// Obsługa klawiatury
+	useEffect(() => {
+		const handleKeyPress = (e) => {
+			// wybór płatności
+			if (selectedPaymentType === null) {
+				if (e.key.toLowerCase() === "g") {
+					setSelectedPaymentType("GOTÓWA");
+				}
+				if (e.key.toLowerCase() === "k") {
+					setSelectedPaymentType("KARTA");
+				}
+			}
+
+			// ENTER = opłacone
+			if (e.key === "Enter" && selectedPaymentType !== null) {
+				handleFinalizePayment();
+			}
+
+			// ESC = cofnięcie / zamknięcie
+			if (e.key === "Escape") {
+				handleCancelPayment();
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyPress);
+		return () => window.removeEventListener("keydown", handleKeyPress);
+	}, [selectedPaymentType, amountGiven, changeAmount]);
 
 	const handleFinalizePayment = () => {
 		const paymentDetails = {
@@ -54,7 +91,7 @@ const PaymentManager = ({
 			subtractFromBill: subtractFromBill.toFixed(2),
 			finalAmount: finalAmount.toFixed(2),
 			paymentType: selectedPaymentType,
-			amountGiven: parseFloat(amountGiven).toFixed(2) || 0,
+			amountGiven: parseFloat(amountGiven || 0).toFixed(2),
 			changeAmount: changeAmount.toFixed(2),
 			selectedItems,
 			removedItems,
@@ -67,15 +104,11 @@ const PaymentManager = ({
 		storedPaymentDetails.push(paymentDetails);
 		localStorage.setItem(
 			"paymentDetails",
-			JSON.stringify(storedPaymentDetails)
+			JSON.stringify(storedPaymentDetails),
 		);
 
 		setSelectedPaymentType(null);
 		onClose(paymentDetails);
-	};
-
-	const handlePaymentTypeClick = (paymentType) => {
-		setSelectedPaymentType(paymentType);
 	};
 
 	const handleCancelPayment = () => {
@@ -84,11 +117,6 @@ const PaymentManager = ({
 		} else {
 			setSelectedPaymentType(null);
 		}
-	};
-
-	const handleBackToPaymentTypeSelection = () => {
-		setSelectedPaymentType(null);
-		setModalVisible(true);
 	};
 
 	return modalVisible ? (
@@ -100,6 +128,7 @@ const PaymentManager = ({
 							<p>Stolik: {tableName}</p>
 							<p>/</p>
 							<p>Kelner: {waiterName}</p>
+
 							<ul className="item-list">
 								{selectedItems.map((item) => (
 									<li key={item.id}>
@@ -112,8 +141,8 @@ const PaymentManager = ({
 															extra.category === "Dod"
 																? sum + extra.price
 																: sum,
-														0
-												  )
+														0,
+													)
 												: 0)
 										).toFixed(2)}{" "}
 										zł
@@ -133,41 +162,41 @@ const PaymentManager = ({
 							{subtractFromBill > 0 && (
 								<p>Odjęto od rachunku: {subtractFromBill.toFixed(2)} zł</p>
 							)}
+
 							<button className="close-button" onClick={handleCancelPayment}>
 								<FontAwesomeIcon icon={faTimes} />
 							</button>
 						</>
 					) : (
-						<>
-							<button
-								className="back-button"
-								onClick={handleBackToPaymentTypeSelection}>
-								<FontAwesomeIcon icon={faTimes} />
-							</button>
-						</>
+						<button
+							className="back-button"
+							onClick={() => setSelectedPaymentType(null)}>
+							<FontAwesomeIcon icon={faTimes} />
+						</button>
 					)}
 				</div>
 
-				{selectedPaymentType === null ? (
+				{selectedPaymentType === null && (
 					<div className="payment-options">
 						<button
 							className="button-pay"
-							onClick={() => handlePaymentTypeClick("GOTÓWA")}>
-							Gotówka
+							onClick={() => setSelectedPaymentType("GOTÓWA")}>
+							Gotówka (G)
 						</button>
 
 						<button
 							className="button-pay"
-							onClick={() => handlePaymentTypeClick("KARTA")}>
-							Karta
+							onClick={() => setSelectedPaymentType("KARTA")}>
+							Karta (K)
 						</button>
 					</div>
-				) : null}
+				)}
 
 				{selectedPaymentType === "GOTÓWA" && (
 					<div className="cash-payment">
 						<h3>Do zapłaty: {finalAmount.toFixed(2)} zł</h3>
 						<input
+							ref={inputRef}
 							type="number"
 							value={amountGiven}
 							onChange={(e) => setAmountGiven(e.target.value)}
@@ -175,16 +204,16 @@ const PaymentManager = ({
 						/>
 						<p>Reszta: {changeAmount.toFixed(2)} zł</p>
 						<button className="finalize-button" onClick={handleFinalizePayment}>
-							Opłacone
+							Opłacone (Enter)
 						</button>
 					</div>
 				)}
 
 				{selectedPaymentType === "KARTA" && (
 					<div className="card-payment">
-						<h3>Implementacja płatności kartą</h3>
+						<h3>Płatność kartą</h3>
 						<button className="finalize-button" onClick={handleFinalizePayment}>
-							Opłacone kartą
+							Opłacone kartą (Enter)
 						</button>
 					</div>
 				)}
