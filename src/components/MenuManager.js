@@ -827,7 +827,8 @@ const MenuManager = ({
 							value={searchTerm}
 							onChange={handleSearchChange}
 						/>
-						<h3>Zamówienie stolika</h3>
+						<h3>Zamówienie stolika</h3> <p>Liczba pozycji: {totalItems}</p>
+						<p>Suma: {calculateAdjustedTotal().toFixed(2)} zł</p>
 						{searchTerm.trim() !== "" && (
 							<div className="search-suggestions">
 								{searchResults.map((item) => (
@@ -1162,5 +1163,18 @@ const MenuManager = ({
 		</>
 	);
 };
+document.addEventListener("keydown", (e) => {
+	const box = document.querySelector(".selected-items");
+	if (!box) return;
+
+	const step = 40;
+
+	if (e.key === "ArrowDown") {
+		box.scrollTop += step;
+	}
+	if (e.key === "ArrowUp") {
+		box.scrollTop -= step;
+	}
+});
 
 export default MenuManager;
