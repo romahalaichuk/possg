@@ -11,18 +11,38 @@ const videoUrls = [
 	"https://www.youtube.com/embed/2wqpy036z24?autoplay=1&mute=1",
 	"https://www.youtube.com/embed/VR-x3HdhKLQ?autoplay=1&mute=1",
 ];
+
 const ButterflyCanvas = () => {
 	const canvasRef = useRef(null);
 	const mouseRef = useRef({ x: -1000, y: -1000 });
+	const fightModeRef = useRef(false);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		const ctx = canvas.getContext("2d");
+		const keyBuffer = { value: "" };
+
+		const handleKeyDown = (e) => {
+			// 🔥 ZMIANA: Bez Ctrl, tylko "qwaszx"
+			keyBuffer.value += e.key.toLowerCase();
+
+			if (keyBuffer.value.length > 6) {
+				keyBuffer.value = keyBuffer.value.slice(-6);
+			}
+
+			if (keyBuffer.value === "qwaszx") {
+				fightModeRef.current = !fightModeRef.current;
+				keyBuffer.value = "";
+				console.log("FIGHT MODE:", fightModeRef.current);
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 
 		const butterflies = [];
-		const hearts = []; // tablica serduszek
+		const hearts = [];
 
 		const handleMouseMove = (e) => {
 			mouseRef.current = { x: e.clientX, y: e.clientY };
@@ -44,7 +64,6 @@ const ButterflyCanvas = () => {
 			},
 		];
 
-		// KLASA SERDUSZKA
 		class Heart {
 			constructor(x, y) {
 				this.x = x;
@@ -74,7 +93,6 @@ const ButterflyCanvas = () => {
 				ctx.translate(this.x, this.y);
 				ctx.fillStyle = this.color;
 
-				// Rysuj serduszko
 				ctx.beginPath();
 				ctx.moveTo(0, 0);
 				ctx.bezierCurveTo(
@@ -88,7 +106,6 @@ const ButterflyCanvas = () => {
 				ctx.bezierCurveTo(this.size, 0, this.size / 2, -this.size / 2, 0, 0);
 				ctx.fill();
 
-				// Błysk
 				ctx.fillStyle = "rgba(255,255,255,0.6)";
 				ctx.beginPath();
 				ctx.arc(
@@ -108,9 +125,12 @@ const ButterflyCanvas = () => {
 			constructor(id) {
 				this.id = id;
 				this.reset();
-				this.partner = null; // drugi motyl
+				this.partner = null;
 				this.loveMode = false;
 				this.danceCenter = { x: canvas.width / 2, y: canvas.height / 2 };
+				// 🔥 NOWE: Prędkość dla trybu walki
+				this.vx = 0;
+				this.vy = 0;
 			}
 
 			reset() {
@@ -120,7 +140,7 @@ const ButterflyCanvas = () => {
 				this.baseSpeedY = 0.6 + Math.random() * 0.8;
 				this.speedY = this.baseSpeedY;
 				this.speedX = (Math.random() - 0.5) * 0.8;
-				this.pattern = wingPatterns[this.id % 2]; // 2 różne kolory dla pary
+				this.pattern = wingPatterns[this.id % 2];
 				this.wingAngle = Math.random() * Math.PI * 2;
 				this.wingSpeed = 0.12 + Math.random() * 0.15;
 				this.opacity = 0;
@@ -131,23 +151,114 @@ const ButterflyCanvas = () => {
 				this.isFleeing = false;
 				this.glitterOffset = Math.random() * 100;
 				this.heartTimer = 0;
+				this.vx = 0;
+				this.vy = 0;
 			}
 
 			update(otherButterfly) {
 				this.time += 1;
 				this.heartTimer++;
 
+				// 🔥 TRYB WALKI - POPRAWIONY
+				if (fightModeRef.current && otherButterfly) {
+					const dx = this.x - otherButterfly.x;
+					const dy = this.y - otherButterfly.y;
+					const dist = Math.sqrt(dx * dx + dy * dy);
+
+					// Oblicz kierunek do przeciwnika
+					const angleToOther = Math.atan2(-dy, -dx); // Kierunek DO drugiego motyla
+
+					// Przyspieszenie w stronę przeciwnika (agresja)
+					const chaseForce = 0.8;
+					this.vx += Math.cos(angleToOther) * chaseForce;
+					this.vy += Math.sin(angleToOther) * chaseForce;
+
+					// Tarcie
+					this.vx *= 0.95;
+					this.vy *= 0.95;
+
+					// Chaos/szaleństwo
+					this.vx += Math.sin(this.time * 0.3 + this.id * 10) * 2;
+					this.vy += Math.cos(this.time * 0.25 + this.id * 10) * 2;
+
+					// KOLIZJA - odbicie!
+					if (dist < this.size * 0.8 && dist > 0) {
+						// Efekt serduszek przy uderzeniu
+						for (let i = 0; i < 8; i++) {
+							hearts.push(
+								new Heart(
+									this.x + (Math.random() - 0.5) * 40,
+									this.y + (Math.random() - 0.5) * 40,
+								),
+							);
+						}
+
+						// 🔥 ODBICIE - silne odepchnięcie
+						const bounceAngle = Math.atan2(dy, dx);
+						const bounceForce = 15 + Math.random() * 10;
+
+						this.vx = Math.cos(bounceAngle) * bounceForce;
+						this.vy = Math.sin(bounceAngle) * bounceForce;
+
+						// Odepchnij też drugiego motyla (jeśli ma logikę)
+						otherButterfly.vx = -Math.cos(bounceAngle) * bounceForce;
+						otherButterfly.vy = -Math.sin(bounceAngle) * bounceForce;
+					}
+
+					// Zastosuj prędkość
+					this.x += this.vx;
+					this.y += this.vy;
+
+					// Rotacja w kierunku ruchu
+					this.rotation = Math.atan2(this.vy, this.vx) + Math.PI / 2;
+					this.wingSpeed = 0.8; // Szybkie machanie
+
+					// Granice ekranu - odbijaj od ścian
+					if (this.x < 50) {
+						this.x = 50;
+						this.vx *= -0.8;
+					}
+					if (this.x > canvas.width - 50) {
+						this.x = canvas.width - 50;
+						this.vx *= -0.8;
+					}
+					if (this.y < 50) {
+						this.y = 50;
+						this.vy *= -0.8;
+					}
+					if (this.y > canvas.height - 50) {
+						this.y = canvas.height - 50;
+						this.vy *= -0.8;
+					}
+
+					return; // Blokuj resztę logiki w trybie walki
+				}
+
+				// 🔥 RESET prędkości gdy wyłączamy tryb walki
+				if (
+					!fightModeRef.current &&
+					(Math.abs(this.vx) > 0.1 || Math.abs(this.vy) > 0.1)
+				) {
+					this.vx *= 0.9;
+					this.vy *= 0.9;
+				}
+
 				// OBLICZ ODLEGŁOŚĆ OD PARTNERA
 				let dx = 0,
 					dy = 0,
 					distanceToPartner = 9999;
-				// delikatne przyciąganie motyli do siebie, żeby w ogóle się spotkały
-				if (otherButterfly && distanceToPartner > 150) {
-					this.x += dx * 0.005;
-					this.y += dy * 0.003;
+				if (otherButterfly) {
+					dx = otherButterfly.x - this.x;
+					dy = otherButterfly.y - this.y;
+					distanceToPartner = Math.sqrt(dx * dx + dy * dy);
+
+					// delikatne przyciąganie motyli do siebie
+					if (distanceToPartner > 150) {
+						this.x += dx * 0.005;
+						this.y += dy * 0.003;
+					}
 				}
 
-				// TRYB ZAKOCHANYCH - gdy blisko siebie (300px) i nie uciekają
 				const mouseDx = this.x - mouseRef.current.x;
 				const mouseDy = this.y - mouseRef.current.y;
 				const distanceToMouse = Math.sqrt(
@@ -161,29 +272,25 @@ const ButterflyCanvas = () => {
 				) {
 					this.loveMode = true;
 
-					// TAŃCZ WOKÓŁ ŚRODKA MIĘDZY NIMI
 					const centerX = (this.x + otherButterfly.x) / 2;
 					const centerY = (this.y + otherButterfly.y) / 2;
 					const danceRadius = 80 + Math.sin(this.time * 0.02) * 30;
-					const angle = this.time * 0.03 + this.id * Math.PI; // przeciwnie do partnera
+					const angle = this.time * 0.03 + this.id * Math.PI;
 
 					const targetX = centerX + Math.cos(angle) * danceRadius;
 					const targetY = centerY + Math.sin(angle) * danceRadius * 0.5;
 
-					// Płynnie dolec do pozycji tańca
 					this.x += (targetX - this.x) * 0.03;
 					this.y += (targetY - this.y) * 0.03;
 					this.rotation = angle + Math.PI / 2;
-					this.wingSpeed = 0.25; // szybsze machanie gdy zakochany
+					this.wingSpeed = 0.25;
 
-					// WYSTRZEL SERDUSZKA co 40 klatek - z tyłu motylka (za nim, wg rotacji)
 					if (this.heartTimer % 40 === 0) {
 						const backOffset = this.size * 0.8;
 						const offsetX = -Math.sin(this.rotation) * backOffset;
 						const offsetY = Math.cos(this.rotation) * backOffset;
 
 						for (let i = 0; i < 4; i++) {
-							// <--- tu ustawiasz ilość serduszek
 							hearts.push(
 								new Heart(
 									this.x + offsetX + (Math.random() - 0.5) * this.size * 0.3,
@@ -195,14 +302,13 @@ const ButterflyCanvas = () => {
 				} else {
 					this.loveMode = false;
 
-					// Normalne zachowanie + ucieczka od myszy
 					if (distanceToMouse < 200 && distanceToMouse > 0) {
 						this.isFleeing = true;
 						this.fleeAngle = Math.atan2(mouseDy, mouseDx);
 						this.fleeSpeed = Math.min((200 - distanceToMouse) / 8, 10);
 						this.wingSpeed = 0.5;
 					}
-					// Jeśli dotknę motyla myszką – niech wystrzeli serduszka
+
 					if (distanceToMouse < this.size * 0.8) {
 						if (this.heartTimer % 5 === 0) {
 							const backOffset = this.size * 0.6;
@@ -227,14 +333,12 @@ const ButterflyCanvas = () => {
 						this.y += Math.sin(this.fleeAngle) * this.fleeSpeed;
 						this.rotation = this.fleeAngle + Math.PI / 2;
 					} else {
-						// Normalny ruch - leć do góry z falowaniem
 						this.y -= this.baseSpeedY;
 						this.x += Math.sin(this.time * 0.015) * 2 + this.speedX;
 						this.rotation = Math.sin(this.time * 0.008) * 0.15;
 					}
 				}
 
-				// Granice ekranu
 				if (this.x < -100) this.x = canvas.width + 100;
 				if (this.x > canvas.width + 100) this.x = -100;
 
@@ -313,7 +417,6 @@ const ButterflyCanvas = () => {
 					ctx.lineWidth = 2;
 					ctx.stroke();
 
-					// Żyłki
 					ctx.strokeStyle = "rgba(0,0,0,0.15)";
 					ctx.lineWidth = 1;
 					for (let i = 1; i <= 4; i++) {
@@ -328,7 +431,6 @@ const ButterflyCanvas = () => {
 						ctx.stroke();
 					}
 
-					// Plamki
 					const spots = [
 						{ x: 0.85, y: -0.9, r: 0.15 },
 						{ x: 1.1, y: -0.6, r: 0.12 },
@@ -353,7 +455,6 @@ const ButterflyCanvas = () => {
 						ctx.stroke();
 					});
 
-					// Brokat
 					ctx.fillStyle = this.pattern.glitter;
 					for (let i = 0; i < 8; i++) {
 						const gx =
@@ -455,7 +556,6 @@ const ButterflyCanvas = () => {
 				ctx.translate(this.x, this.y);
 				ctx.rotate(this.rotation);
 
-				// Cień
 				ctx.save();
 				ctx.translate(10, 15);
 				ctx.scale(1, 0.6);
@@ -470,7 +570,6 @@ const ButterflyCanvas = () => {
 				this.drawWing(ctx, false, true);
 				this.drawWing(ctx, true, true);
 
-				// Ciało
 				ctx.fillStyle = "#2d3436";
 				ctx.beginPath();
 				ctx.ellipse(0, 0, 4, this.size * 0.75, 0, 0, Math.PI * 2);
@@ -535,7 +634,6 @@ const ButterflyCanvas = () => {
 			}
 		}
 
-		// STWÓRZ 2 MOTYLE z ID 0 i 1
 		for (let i = 0; i < 2; i++) {
 			setTimeout(() => {
 				butterflies.push(new Butterfly(i));
@@ -546,7 +644,6 @@ const ButterflyCanvas = () => {
 		const animate = () => {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-			// Aktualizuj i rysuj serduszka
 			for (let i = hearts.length - 1; i >= 0; i--) {
 				hearts[i].update();
 				hearts[i].draw(ctx);
@@ -555,13 +652,11 @@ const ButterflyCanvas = () => {
 				}
 			}
 
-			// Aktualizuj motyle - przekaż referencję do drugiego
 			butterflies.forEach((b, index) => {
 				const other = butterflies[index === 0 ? 1 : 0];
 				b.update(other);
 			});
 
-			// Rysuj motyle
 			butterflies.forEach((b) => b.draw(ctx));
 
 			animationId = requestAnimationFrame(animate);
@@ -576,6 +671,7 @@ const ButterflyCanvas = () => {
 		window.addEventListener("resize", handleResize);
 
 		return () => {
+			window.removeEventListener("keydown", handleKeyDown);
 			window.removeEventListener("resize", handleResize);
 			window.removeEventListener("mousemove", handleMouseMove);
 			cancelAnimationFrame(animationId);
