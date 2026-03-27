@@ -527,11 +527,12 @@ const MenuManager = ({
 	};
 
 	const handleRozliczClick = () => {
-	setVerifiedGuestCount(guestCount);
-	setTimeout(() => {
-		setShowGuestVerifyModal(true);
-	}, 0);
-};
+		setVerifiedGuestCount(guestCount);
+		setTimeout(() => {
+			setShowGuestVerifyModal(true);
+		}, 0);
+	};
+
 	useEffect(() => {
 		let buffer = "";
 		let lastKeyTime = 0;
