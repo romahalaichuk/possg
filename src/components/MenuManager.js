@@ -538,6 +538,14 @@ const MenuManager = ({
 		let lastKeyTime = 0;
 
 		const handleKeyPress = (e) => {
+			// ❗ NIE reaguj gdy piszemy w input/textarea
+			if (
+				document.activeElement.tagName === "INPUT" ||
+				document.activeElement.tagName === "TEXTAREA"
+			) {
+				return;
+			}
+
 			const now = Date.now();
 
 			if (now - lastKeyTime > 1000) {
