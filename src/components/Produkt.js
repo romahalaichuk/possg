@@ -1151,7 +1151,7 @@ export const products = [
 	// 	category: "sos",
 	// 	emoji: "🧴",
 	// },
-	{ id: 163, name: "Sos czosnkowy:", price: 4, category: "sos", emoji: "🧴" },
+	{ id: 163, name: "Sos czosnkowy :", price: 4, category: "sos", emoji: "🧴" },
 	{
 		id: 164,
 		name: "Sos Pomidorowy:",
